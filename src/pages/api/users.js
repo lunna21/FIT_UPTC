@@ -4,15 +4,15 @@ const prisma = new PrismaClient();
 
 // Función para manejar el método POST
 export async function POST(req, res) {
-    const { username, password, role, personId, id } = req.body;
+    const { id, nombre_usuario, email, password, role } = req.body;
     try {
-        const user = await prisma.uSER.create({
+        const user = await prisma.user.create({
             data: {
-                username,
+                id,
+                nombre_usuario,
+                email,
                 password,
                 role,
-                personId,
-                id,
             },
         });
         res.status(201).json(user);
@@ -25,7 +25,7 @@ export async function POST(req, res) {
 // Función para manejar el método GET
 export async function GET(req, res) {
     try {
-        const users = await prisma.uSER.findMany();
+        const users = await prisma.user.findMany();
         res.status(200).json(users);
     } catch (error) {
         console.error(error);

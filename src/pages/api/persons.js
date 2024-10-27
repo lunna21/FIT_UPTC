@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function POST(req, res) {
   const { document, firstName, lastName, email } = req.body;
   try {
-    const person = await prisma.pERSON.create({
+    const person = await prisma.personas.create({
       data: {
         document,
         firstName,

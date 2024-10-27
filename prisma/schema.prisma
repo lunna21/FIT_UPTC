@@ -7,30 +7,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PERSON {
-  document  String    @id @db.VarChar(255)
-  firstName String    @db.VarChar(255)
-  lastName  String    @db.VarChar(255)
-  email     String    @unique(map: "email") @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-  updatedAt DateTime? @default(now()) @db.DateTime(0)
-  USER      USER[]
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model personas {
+  id                       BigInt                    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  tipo_documento           String                    @db.VarChar(20)
+  numero_documento         String                    @unique(map: "numero_documento") @db.VarChar(20)
+  nombre_completo          String                    @db.VarChar(100)
+  telefono                 String?                   @db.VarChar(20)
+  correo_electronico       String                    @unique(map: "correo_electronico") @db.VarChar(100)
+  rol                      personas_rol
+  estamento                personas_estamento?
+  codigo_estudiantil       String?                   @unique(map: "codigo_estudiantil") @db.VarChar(20)
+  fecha_nacimiento         DateTime?                 @db.Date
+  eps                      String?                   @db.VarChar(50)
+  grupo_sanguineo          personas_grupo_sanguineo?
+  alergias                 String?                   @db.Text
+  medicamento_nombre       String?                   @db.VarChar(100)
+  medicamento_dosis        String?                   @db.VarChar(50)
+  medicamento_razon        String?                   @db.Text
+  emergencia_nombre        String?                   @db.VarChar(100)
+  emergencia_parentesco    String?                   @db.VarChar(50)
+  emergencia_telefono      String?                   @db.VarChar(20)
+  consentimiento_informado Bytes?
 }
 
-model USER {
-  id       String     @id @db.VarChar(255)
-  username String     @db.VarChar(255)
-  password String     @db.VarChar(255)
-  role     USER_role? @default(STUDENT)
-  personId String?    @db.VarChar(255)
-
-  PERSON   PERSON?    @relation(fields: [personId], references: [document], onDelete: NoAction, onUpdate: NoAction, map: "USER_ibfk_1")
-
-  @@index([personId], map: "personId")
+model user {
+  id             BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  nombre_usuario String    @db.VarChar(50)
+  email          String    @unique(map: "email") @db.VarChar(100)
+  password       String    @db.VarChar(255)
+  role           user_role
 }
 
-enum USER_role {
-  STUDENT
-  ADMIN
-  EMPLOYEE
+enum personas_rol {
+  empleado
+  administrador
+  estudiante
+}
+
+enum personas_estamento {
+  pregrado_presencial
+  postgrado
+  FESAD
+}
+
+enum personas_grupo_sanguineo {
+  A_     @map("A+")
+  B_     @map("B+")
+  AB_    @map("AB+")
+  O_     @map("O+")
+  A_neg  @map("A-")
+  B_neg  @map("B-")
+  AB_neg @map("AB-")
+  O_neg  @map("O-")
+}
+
+enum user_role {
+  empleado
+  administrador
+  estudiante
 }
