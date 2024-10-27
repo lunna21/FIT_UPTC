@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+:root{
+    --primary-color: hsl(46, 93%, 55%);
+    --hoverColor:hsla(46, 93%, 55%, 0.436);
+    --paleGreen:hsl(51, 68%, 49%);
+    --blackColor:hsl(0,0%,18%);
+    --whiteColor:hsl(0,0%,100%);
+    --greyText:hsl(0,0%,75%);
+    --bgColor:hsl(113,11%,85%);
+    --inputColor:hsl(330,12%,97%);
+      
+    /* Font ang Typography */
+    --biggestFontSize: 2.5rem;
+    --h1FontSize: 1.5rem;
+    --h2FontSize: 1.25rem;
+    --h3FontSize: 1rem;
+    --normalFontSize:.938rem;
+    --smallFontSize: .813rem;
+    --smalleestFontSize: .75rem;
+}
+
+.flex{
+    display: flex;
+    align-items: center;
+}
+.grid{
+    display: grid;
+    align-items: center;
+    gap: 1.5rem
+}
+html{
+    font-size:90%;
+}
+a{ 
+    text-decoration : none;
+}
+
+li{
+    list-style:none
+}
+.icon{
+    font-size: var(--h2FontSize);
+    cursor: pointer;
+}
+
+img,video{
+    height: auto;
+    width: 100%;
+}
+
+.message{
+    display: none;
+}
+
+.showMessage{
+    display: block;
+    color:var(--whiteColor);
+    padding: 10px;
+    background: rgb(255, 0,0);
+    border-radius: 3px;
+    text-align:  center;
+}
+
+.btn{
+    border:none;
+    outline:none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    color: var(--greyText);
+    
+}
+
+.btn .icon{
+    margin-left: .5rem;
+}
+
+.btn:hover{
+    color: var(--primary-color);
+    background:var(--whiteColor);
+}
+
+ .registerPage{
+    height: 100vh;
+    width: 100%;
+    margin:auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 7px 50px rgb(214, 223,213);
+    
+    .containerR{
+        height: 80vh;
+        display: flex; /* Asegúrate de que el contenedor sea un flexbox */
+        flex-direction: column;
+        width: 60%;
+        margin: auto;
+        justify-content: space-between;
+        border-radius: 10px;
+        overflow: auto;
+        background: hsl(0,0%,91%);
+
+        
+    .formDiv{
+        display: block;
+        flex-basis: 50%;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding:2rem;
+        justify-content: space-between;
+                .headerDiv{
+                    
+                display: flex;
+                gap: 1rem; 
+                padding: 1.3rem 0 0.3rem;
+                margin-bottom: 0;
+                align-items: center;
+                justify-content: space-around;
+
+                img{
+                    width: 150px;
+                    padding-bottom: 0;
+                    margin-bottom: 0.3rem; 
+                }
+      
+                h3{
+                    font-size: 25px;
+                    color: var(--blackColor);
+                    font-family: 'Montserrat', sans-serif; 
+                    font-weight: 700; 
+                    margin-top: 0.5rem;
+                }
+
+                .footerDiv{
+                    padding: 1rem;
+                     justify-content: space-between;
+                     backdrop-filter: blur(1px);
+                     border-radius: 10px;
+                     position: relative;
+                     display: flex;
+                     align-items: center;
+        
+                     .text{
+                         color: var(--blackColor);
+                         margin-right: 1rem;
+                         text-align: center;
+                         text-decoration: underline;
+                     }   
+        
+                     .btn{
+                    background-color: var(--primary-color);
+                    color: var(--whiteColor);
+                     padding: .2rem 4rem;
+                     border-radius: 10px;
+                     font-weight: 400;
+                     transition: .3s ease;
+                     overflow: auto; 
+                     display: block;
+                    
+                     &:hover{
+                         background: var(--hoverColor);
+                         color: var(--blackColor);
+                     }
+
+                     .icon{
+                        font-size: 25px;
+                        transition: .3s ease;
+                    } 
+                    }
+                }
+         
+
+            }
+            .obligatorioText {
+                font-size: 0.9rem;
+                color: #ff0000; 
+                margin-top: 1rem;
+                margin-left: 2rem;
+                text-align: left;
+            }
+        .formR {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);                
+            gap: 0.7rem;
+            padding: 1rem;
+                .inputDiv{
+                    width: 100%; /* Mantén el ancho de los inputs dentro de su contenedor */
+                    padding: 0.5rem;
+                    box-sizing: border-box;
+                       .icon{
+                            color: var(--greyText);
+                        }
+                        input{
+                            background: none;
+                            outline: none;
+                            border: none;
+                            width: 100%;
+                            padding: 0.5rem; /* Espaciado interno para los inputs */
+                        }
+                        label{
+                            color: var(--blackColor);
+                            font-weight: 400;
+                            font-size: 14px;
+                            padding: .5rem 0;
+                            display: block;
+                        }
+
+                        .asterisk {
+                            color: red;
+                                                  }
+                          
+                        .input{
+                            gap: .3rem;
+                            padding: 1rem;
+                            background: var(--inputColor);
+                            border-radius: 10px;
+                        }
+
+                    }
+                    .btn{
+                        grid-column: span 2; /* Mantiene el botón en la parte inferior */
+                        padding: .8rem;
+                        background: var(--primary-color);
+                        border-radius: 10px;
+                        color: var(--whiteColor);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 16px;
+                        width: 100%; 
+                        margin-bottom: 0;
+                        transition: .3s ease;                       
+
+                        .icon{
+                            font-size: 25px;
+                            transition: .3s ease;
+                        }
+
+                        &:hover{
+                            background: var(--hoverColor);
+                            color: var(--blackColor);
+                            .icon{
+                                color: var(--blackColor);
+                                transform: translateX(5px);
+                            }
+                        }
+                    }
+
+             }
+               }
+    }
+}
