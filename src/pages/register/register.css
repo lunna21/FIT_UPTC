@@ -27,40 +27,34 @@
     --smalleestFontSize: .75rem;
 }
 
-.flex{
+.register-flex{
     display: flex;
     align-items: center;
 }
-.grid{
+.register-grid{
     display: grid;
     align-items: center;
     gap: 1.5rem
 }
-html{
-    font-size:90%;
-}
-a{ 
+
+.register-a{ 
     text-decoration : none;
 }
-
-li{
-    list-style:none
-}
-.icon{
+.register-icon{
     font-size: var(--h2FontSize);
     cursor: pointer;
 }
 
-img,video{
+.register-img {
     height: auto;
     width: 100%;
 }
 
-.message{
+.register-message{
     display: none;
 }
 
-.showMessage{
+.register-showMessage{
     display: block;
     color:var(--whiteColor);
     padding: 10px;
@@ -69,7 +63,7 @@ img,video{
     text-align:  center;
 }
 
-.btn{
+.register-btn{
     border:none;
     outline:none;
     cursor: pointer;
@@ -79,16 +73,16 @@ img,video{
     
 }
 
-.btn .icon{
+.register-btn .register-icon{
     margin-left: .5rem;
 }
 
-.btn:hover{
+.register-btn:hover{
     color: var(--primary-color);
     background:var(--whiteColor);
 }
 
- .registerPage{
+.register-registerPage{
     height: 100vh;
     width: 100%;
     margin:auto;
@@ -96,7 +90,7 @@ img,video{
     overflow: hidden;
     box-shadow: 0 7px 50px rgb(214, 223,213);
     
-    .containerR{
+    .register-containerR{
         height: 80vh;
         display: flex; /* Asegúrate de que el contenedor sea un flexbox */
         flex-direction: column;
@@ -108,14 +102,14 @@ img,video{
         background: hsl(0,0%,91%);
 
         
-    .formDiv{
+    .register-formDiv{
         display: block;
         flex-basis: 50%;
         flex-direction: column;
         gap: 1.5rem;
         padding:2rem;
         justify-content: space-between;
-                .headerDiv{
+                .register-headerDiv{
                     
                 display: flex;
                 gap: 1rem; 
@@ -138,7 +132,7 @@ img,video{
                     margin-top: 0.5rem;
                 }
 
-                .footerDiv{
+                .register-footerDiv{
                     padding: 1rem;
                      justify-content: space-between;
                      backdrop-filter: blur(1px);
@@ -147,20 +141,20 @@ img,video{
                      display: flex;
                      align-items: center;
         
-                     .text{
+                     .register-text{
                          color: var(--blackColor);
                          margin-right: 1rem;
                          text-align: center;
                          text-decoration: underline;
                      }   
         
-                     .btn{
+                     .register-btn{
                     background-color: var(--primary-color);
                     color: var(--whiteColor);
                      padding: .2rem 4rem;
                      border-radius: 10px;
                      font-weight: 400;
-                     transition: .3s ease;
+                     transition: 255ms ease;
                      overflow: auto; 
                      display: block;
                     
@@ -169,32 +163,32 @@ img,video{
                          color: var(--blackColor);
                      }
 
-                     .icon{
+                     .register-icon{
                         font-size: 25px;
-                        transition: .3s ease;
+                        transition: 255ms ease;
                     } 
                     }
                 }
          
 
             }
-            .obligatorioText {
+            .register-obligatorioText {
                 font-size: 0.9rem;
                 color: #ff0000; 
                 margin-top: 1rem;
                 margin-left: 2rem;
                 text-align: left;
             }
-        .formR {
+        .register-formR {
             display: grid;
             grid-template-columns: repeat(2, 1fr);                
             gap: 0.7rem;
             padding: 1rem;
-                .inputDiv{
+                .register-inputDiv{
                     width: 100%; /* Mantén el ancho de los inputs dentro de su contenedor */
                     padding: 0.5rem;
                     box-sizing: border-box;
-                       .icon{
+                       .register-icon{
                             color: var(--greyText);
                         }
                         input{
@@ -212,11 +206,11 @@ img,video{
                             display: block;
                         }
 
-                        .asterisk {
+                        .register-asterisk {
                             color: red;
                                                   }
                           
-                        .input{
+                        .register-input{
                             gap: .3rem;
                             padding: 1rem;
                             background: var(--inputColor);
@@ -224,7 +218,7 @@ img,video{
                         }
 
                     }
-                    .btn{
+                    .register-btn{
                         grid-column: span 2; /* Mantiene el botón en la parte inferior */
                         padding: .8rem;
                         background: var(--primary-color);
@@ -236,17 +230,17 @@ img,video{
                         font-size: 16px;
                         width: 100%; 
                         margin-bottom: 0;
-                        transition: .3s ease;                       
+                        transition: 255ms ease;                       
 
-                        .icon{
+                        .register-icon{
                             font-size: 25px;
-                            transition: .3s ease;
+                            transition: 255ms ease;
                         }
 
                         &:hover{
                             background: var(--hoverColor);
                             color: var(--blackColor);
-                            .icon{
+                            .register-icon{
                                 color: var(--blackColor);
                                 transform: translateX(5px);
                             }
