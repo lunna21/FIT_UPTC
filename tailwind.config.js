@@ -6,10 +6,10 @@ const config = {
   ],
   theme: {
     extend: {
-      // fontFamily: {
-      //   montserrat: ['var(--font-montserrat)'],
-      //   poppins: ['var(--font-poppins)'],
-      // },
+        fontFamily: {
+        montserrat: ['var(--font-montserrat)'],
+        poppins: ['var(--font-poppins)'],
+      },
       colors: {
         primary: {
           DEFAULT: '#FFCC00',
@@ -21,7 +21,7 @@ const config = {
           white: '#F1F1F1',
           black: '#000101',
           gray: {
-            light: '#D9D9D9',
+            light: 'hsl(0, 0%, 91%)',
             medium: 'rgba(49, 49, 49, 0.72)',
             dark: '#373634',
           },
