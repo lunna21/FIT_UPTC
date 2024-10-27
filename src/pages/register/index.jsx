@@ -6,17 +6,14 @@ import './register.css'
 
 
 //Import Icons
-import { MdOutlinePermIdentity } from "react-icons/md";
-import { MdEmail } from "react-icons/md";
+import { MdOutlinePermIdentity, MdEmail, MdVerified,MdDriveFileRenameOutline } from "react-icons/md";
+import { TbFileSmile } from "react-icons/tb";
 import { BsFillTelephoneFill } from "react-icons/bs";
-import { IoInformationCircleSharp } from "react-icons/io5";
+import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
 import { AiOutlineSwapLeft } from "react-icons/ai";
 import { LiaAllergiesSolid } from "react-icons/lia";
 import { GiMedicines } from "react-icons/gi";
-import { FaFilePdf } from "react-icons/fa6";
-import { IoPersonAddSharp } from "react-icons/io5";
-import { FaAddressCard } from "react-icons/fa";
-import { FaFileArrowUp } from "react-icons/fa6";
+import { FaFilePdf, FaAddressCard, FaFileArrowUp } from "react-icons/fa6";
 
 
 
@@ -50,15 +47,23 @@ const Register = () => {
     const checkUserExists = async (e) => {
         e.preventDefault();
         try {
-            const response = await Axios.post("http://localhost:3002/check-user", {
-                typeDocument: formData.typeDocument,
-                numberDocument: formData.numberDocument
-            });
-            if (!response.data.exists) {
-                alert("Usuario no registrado. Completa los demás campos.");
-            } else {
-                alert("Usuario ya registrado. Por favor digita un nuevo documento.");
-            }
+            // Aquí deberías hacer la llamada a tu API para verificar si el usuario existe
+            // const response = await fetch('/api/check-user', {
+            //     method: 'POST',
+            //     body: JSON.stringify({
+            //         tipo_documento: formData.tipo_documento,
+            //         numberDocument: formData.numberDocument
+            //     })
+            // });
+            // const data = await response.json();
+            // if (!data.exists) {
+            //     setIsValidated(true);
+            // } else {
+            //     alert('Usuario ya registrado');
+            // }
+            
+            // Por ahora, simulamos la validación:
+            setIsValidated(true);
         } catch (error) {
             console.error("Error al verificar el usuario", error);
             alert("Error al verificar el usuario: " + error);
@@ -154,10 +159,10 @@ const Register = () => {
                     <form className="formR grid registerForm" onSubmit={handleSubmit}>
 
                         <div className="inputDiv">
-                            <label htmlFor="tipo_documento">Tipo de Documento (*)</label>
+                            <label htmlFor="tipo_Documento">Tipo de Documento (*)</label>
                             <div className="input flex">
                                 <FaAddressCard className="icon" />
-                                <select id="tipo_documento" required value={formData.tipo_documento} onChange={handleChange}   >
+                                <select id="typeDocument" name='typeDocument' required value={formData.typeDocument} onChange={handleChange} className={`select-input ${formData.typeDocument ? 'filled' : ''}`}  >
                                     <option value="">Selecciona un tipo de documento</option>
                                     <option value="CC">Cédula de Ciudadanía</option>
                                     <option value="TI">Tarjeta de Identidad</option>
@@ -169,11 +174,15 @@ const Register = () => {
                             <label htmlFor="numdoc">Número de documento (*)</label>
                             <div className="input flex"> 
                                 <MdOutlinePermIdentity className="icon" />
-                               <input type="number" name="numberDocument" placeholder="Ingresa tu número de documento" value={formData.numberDocument} onChange={handleChange} required  maxLength={50}/>
+                               <input type="number" name="studentCode" placeholder="Ingresa tu número de documento" value={formData.studentCode} onChange={handleChange} required  maxLength={10}/>
                             </div>
                         </div>
                         
-                        <button type="button" className="btn flex" onClick={checkUserExists}>Verificar Existencia</button> 
+                        <button type="button" className="btn flex" onClick={checkUserExists}
+                        disabled={!formData.tipo_documento || !formData.numberDocument}
+                        >Verificar Existencia
+                        <MdVerified className="icon" />
+                        </button> 
 
 
                         {/*Other information */}
@@ -252,15 +261,17 @@ const Register = () => {
                         <div className="mb-4">
                        
                             <label htmlFor="block text-gray-700">Medicamentos Preescritos</label>
-                            <div className="input" >
+                            
                             {formData.medications.map((medication, index) => (
                                 <div key={index} className="mb-2">
+                                    <div className="input">
                                     <input type="text" name="name" placeholder="Nombre del medicamento" value={medication.name} onChange={(e) => handleMedicationChange(index, e)} className="w-full px-3 py-2 border rounded mb-2" />
                                     <input type="text" name="dosage" placeholder="Dosis del medicamento" value={medication.dosage} onChange={(e) => handleMedicationChange(index, e)} className="w-full px-3 py-2 border rounded mb-2" />
                                     <input type="text" name="reason" placeholder="Razón de la prenscripción del medicamento" value={medication.reason} onChange={(e) => handleMedicationChange(index, e)} className="w-full px-3 py-2 border rounded" />
+                                    </div>
                                 </div>
                             ))}
-                            </div>
+                            
                             </div>
                             <button type="button" onClick={addMedication} className="btn flex"> Agregar Medicamento
                             <GiMedicines className="icon" color='#ffff'/>
@@ -270,19 +281,21 @@ const Register = () => {
                         <div className="inputDiv">
                             <label htmlFor="block text-gray-700">Contacto en Caso de Emergencia (*)</label>
                                 <div className="input flex">
+                                     <MdDriveFileRenameOutline className="icon"/> 
                                     <input type="text" name="fullName" placeholder="Nombre Completo" value={formData.emergencyContact.fullName} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded mb-2" />
+                                   
                                 </div>
-                                <div className="input flex">
+                                <div className="input">
                                     <input type="text" name="relationship" placeholder="Parentesco" value={formData.emergencyContact.relationship} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded mb-2" />
                                 </div>
-                                <div className="input flex">
+                                <div className="input">
                                     <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded" />
                                 </div>
                         </div>
                         
                         {/* Consentimiento Informado */}
                         <div className="col-span-full">
-                            <label htmlFor="consentimiento-informado" className="text-gray-700 flex items-center space-x-2">
+                            <label htmlFor="consentimiento-informado" className="flex items-center space-x-2">
                                 <a target="_blank" className ="hover:text-yellow-600" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</a>
                                 <a href="../../../assets/CONSENTIMIENTOINFORMADO.pdf"><FaFilePdf className="h-8 w-8 text-yellow-500 hover:text-yellow-600" /></a>
                             </label>
@@ -300,11 +313,23 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className="mb-4">
-                            <label className="block text-gray-700">Attach Parental Authorization (for minors)</label>
-                            <input type="file" name="parentalAuthorization" onChange={handleFileChange} className="w-full px-3 py-2 border rounded" />
+                        <div className="col-span-full">
+                            <label htmlFor="parental-authorization" className="flex items-center space-x-2">
+                                Autorización de padre o madre (para menores de 18 años)
+                                <TbFileSmile className="h-8 w-8 text-yellow-500 hover:text-yellow-600" />
+                            </label>
+                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
+                                <div className="text-center">
+                                    <label htmlFor="parentalAuthorization" className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
+                                        <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500" />
+                                        <span>Sube la Autorización debidamente diligenciada</span>
+                                        <input id="parentalAuthorization" type="file" name="parentalAuthorization" onChange={handleFileChange} className="sr-only" />
+                                    </label>
+                                    <p className="text-xs leading-5 text-gray-600">PDF hasta 5 MB</p>
+                                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+                                </div>
+                            </div>
                         </div>
-                       
                         <button type="submit" className="btn flex">Register
                         <IoPersonAddSharp className="icon" />
                         </button>
