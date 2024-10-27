@@ -1,0 +1,12 @@
+
+
+@media (max-width: 660px) {
+    .login-container {
+      width: 100%;
+      min-width: auto;
+      height: 100vh;
+    }
+    .login-info {
+      display: none;
+    }
+  }

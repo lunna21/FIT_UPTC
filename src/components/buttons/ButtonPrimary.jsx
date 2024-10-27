@@ -2,15 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ButtonPrimary = ({ onClick, buttonText, IconButton, reverse=false }) => {
+    const buttonTailwindClass = "flex items-center justify-center gap-20 w-full p-3 bg-primary-medium hover:bg-primary-light text-neutral-gray-dark hover:text-neutral-black text-base rounded-lg transition-colors duration-300 h-11"
+    const iconTailwindClass = "text-2xl transition-transform duration-300 group-hover:translate-x-1"
+
     if(reverse) {
         return (
             <button
                 type="button"
                 {...(onClick ? { onClick } : {})}
-                className="flex items-center justify-center gap-20 w-full p-3 bg-primary-medium hover:bg-primary-light text-neutral-gray-dark hover:text-neutral-black text-base rounded-lg transition-colors duration-300 h-11"
+                className={buttonTailwindClass}
             >
                 {
-                    IconButton && <IconButton className="text-2xl transition-transform duration-300 group-hover:translate-x-1" />
+                    IconButton && <IconButton className={iconTailwindClass} />
                 }
                 <span>{buttonText}</span>
             </button>
@@ -20,11 +23,11 @@ const ButtonPrimary = ({ onClick, buttonText, IconButton, reverse=false }) => {
         <button
             type="button"
             {...(onClick ? { onClick } : {})}
-            className="flex items-center justify-center gap-20 w-full p-3 bg-primary-medium hover:bg-primary-light text-neutral-white hover:text-neutral-black text-base rounded-lg transition-colors duration-300 h-11"
+            className={buttonTailwindClass}
         >
             <span>{buttonText}</span>
             {
-                IconButton && <IconButton className="text-2xl transition-transform duration-300 group-hover:translate-x-1" />
+                IconButton && <IconButton className={iconTailwindClass} />
             }
         </button>
     );
