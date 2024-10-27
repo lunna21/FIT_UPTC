@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import '../../global.css'
 import logo from '../../assets/logo.png'
 
 // Import Icons
