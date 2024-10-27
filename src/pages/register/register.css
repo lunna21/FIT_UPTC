@@ -196,7 +196,7 @@
                             outline: none;
                             border: none;
                             width: 100%;
-                            padding: 0.5rem; /* Espaciado interno para los inputs */
+                            padding: 0.3rem; 
                         }
                         label{
                             color: var(--blackColor);
@@ -212,7 +212,7 @@
                           
                         .register-input{
                             gap: .3rem;
-                            padding: 1rem;
+                            padding: 0.5rem;
                             background: var(--inputColor);
                             border-radius: 10px;
                         }
