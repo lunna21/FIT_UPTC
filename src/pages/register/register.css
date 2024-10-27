@@ -27,40 +27,34 @@
     --smalleestFontSize: .75rem;
 }
 
-.flex{
+.register-flex{
     display: flex;
     align-items: center;
 }
-.grid{
+.register-grid{
     display: grid;
     align-items: center;
     gap: 1.5rem
 }
-html{
-    font-size:90%;
-}
-a{ 
+
+.register-a{ 
     text-decoration : none;
 }
-
-li{
-    list-style:none
-}
-.icon{
+.register-icon{
     font-size: var(--h2FontSize);
     cursor: pointer;
 }
 
-img,video{
+.register-img {
     height: auto;
     width: 100%;
 }
 
-.message{
+.register-message{
     display: none;
 }
 
-.showMessage{
+.register-showMessage{
     display: block;
     color:var(--whiteColor);
     padding: 10px;
@@ -69,7 +63,7 @@ img,video{
     text-align:  center;
 }
 
-.btn{
+.register-btn{
     border:none;
     outline:none;
     cursor: pointer;
@@ -79,161 +73,16 @@ img,video{
     
 }
 
-.btn .icon{
+.register-btn .register-icon{
     margin-left: .5rem;
 }
 
-.btn:hover{
+.register-btn:hover{
     color: var(--primary-color);
     background:var(--whiteColor);
 }
 
-/* Estilos base para los selects */
-select {
-    background: none;
-    outline: none;
-    border: none;
-    width: 100%;
-    padding: 0.3rem;
-    color: var(--blackColor);
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-    
-    &:focus {
-        outline: none;
-    }
-    
-    /* Eliminar la flecha por defecto en algunos navegadores */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    
-    /* Agregar una flecha personalizada */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 1.2em;
-    padding-right: 2rem;
-}
-
-/* Contenedor para los selects */
-.input.flex select {
-    background-color: var(--inputColor);
-    border-radius: 10px;
-    
-    /* Estilo para las opciones */
-    option {
-        background-color: var(--whiteColor);
-        color: var(--blackColor);
-        padding: 0.5rem;
-        font-size: var(--normalFontSize);
-        
-        &:hover {
-            background-color: var(--hoverColor);
-        }
-        
-        &:checked {
-            background-color: var(--primary-color);
-            color: var(--whiteColor);
-        }
-    }
-}
-
-/* Estilos específicos para el select de tipo de documento */
-#typeDocument, #bloodType {
-    &.filled {
-        color: var(--blackColor);
-        font-weight: 500;
-    }
-    
-    &:required:invalid {
-        color: var(--greyText);
-    }
-    
-    option[value=""][disabled] {
-        display: none;
-    }
-    
-    option {
-        color: var(--blackColor);
-    }
-}
-
-/* Estilos para el contenedor del select cuando tiene el ícono */
-.input.flex {
-    position: relative;
-    
-    .icon + select {
-        padding-left: 2rem;
-    }
-    
-    &:focus-within {
-        border: 1px solid var(--primary-color);
-    }
-}
-
-/* Estilos para el select cuando está deshabilitado */
-select:disabled {
-    background-color: var(--inputColor);
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Estilos para mensajes de error en selects requeridos */
-select:invalid {
-    border-color: #ff0000;
-}
-
-/* Estilos para el hover y focus */
-.input.flex:hover select,
-.input.flex select:hover {
-    background-color: var(--inputColor);
-}
-
-.input.flex select:focus {
-    background-color: var(--inputColor);
-    border: 1px solid var(--primary-color);
-}
-
-/* Estilos para los múltiples selects en el form */
-.formR {
-    .inputDiv {
-        select {
-            transition: all 0.3s ease;
-            
-            &:hover {
-                transform: translateY(-2px);
-            }
-        }
-    }
-}
-
-/* Estilos específicos para el select de tipo de sangre */
-select[name="bloodType"] {
-    font-weight: 500;
-    
-    option {
-        font-weight: 500;
-    }
-}
-
-/* Estilos para los estados de validación */
-select:required:valid {
-    border-right: 3px solid var(--paleGreen);
-}
-
-/* Animación para el foco */
-@keyframes selectFocus {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-.input.flex select:focus {
-    animation: selectFocus 0.3s ease-in-out;
-}
-
- .registerPage{
+.register-registerPage{
     height: 100vh;
     width: 100%;
     margin:auto;
@@ -241,7 +90,7 @@ select:required:valid {
     overflow: hidden;
     box-shadow: 0 7px 50px rgb(214, 223,213);
     
-    .containerR{
+    .register-containerR{
         height: 80vh;
         display: flex; /* Asegúrate de que el contenedor sea un flexbox */
         flex-direction: column;
@@ -253,14 +102,14 @@ select:required:valid {
         background: hsl(0,0%,91%);
 
         
-    .formDiv{
+    .register-formDiv{
         display: block;
         flex-basis: 50%;
         flex-direction: column;
         gap: 1.5rem;
         padding:2rem;
         justify-content: space-between;
-                .headerDiv{
+                .register-headerDiv{
                     
                 display: flex;
                 gap: 1rem; 
@@ -283,7 +132,7 @@ select:required:valid {
                     margin-top: 0.5rem;
                 }
 
-                .footerDiv{
+                .register-footerDiv{
                     padding: 1rem;
                      justify-content: space-between;
                      backdrop-filter: blur(1px);
@@ -292,20 +141,20 @@ select:required:valid {
                      display: flex;
                      align-items: center;
         
-                     .text{
+                     .register-text{
                          color: var(--blackColor);
                          margin-right: 1rem;
                          text-align: center;
                          text-decoration: underline;
                      }   
         
-                     .btn{
+                     .register-btn{
                     background-color: var(--primary-color);
                     color: var(--whiteColor);
                      padding: .2rem 4rem;
                      border-radius: 10px;
                      font-weight: 400;
-                     transition: .3s ease;
+                     transition: 255ms ease;
                      overflow: auto; 
                      display: block;
                     
@@ -314,32 +163,32 @@ select:required:valid {
                          color: var(--blackColor);
                      }
 
-                     .icon{
+                     .register-icon{
                         font-size: 25px;
-                        transition: .3s ease;
+                        transition: 255ms ease;
                     } 
                     }
                 }
          
 
             }
-            .obligatorioText {
+            .register-obligatorioText {
                 font-size: 0.9rem;
                 color: #ff0000; 
                 margin-top: 1rem;
                 margin-left: 2rem;
                 text-align: left;
             }
-        .formR {
+        .register-formR {
             display: grid;
             grid-template-columns: repeat(2, 1fr);                
             gap: 0.7rem;
             padding: 1rem;
-                .inputDiv{
+                .register-inputDiv{
                     width: 100%; /* Mantén el ancho de los inputs dentro de su contenedor */
                     padding: 0.5rem;
                     box-sizing: border-box;
-                       .icon{
+                       .register-icon{
                             color: var(--greyText);
                         }
                         input{
@@ -357,19 +206,19 @@ select:required:valid {
                             display: block;
                         }
 
-                        .asterisk {
+                        .register-asterisk {
                             color: red;
                                                   }
                           
-                        .input{
-                            gap: 0.3rem;
+                        .register-input{
+                            gap: .3rem;
                             padding: 0.5rem;
                             background: var(--inputColor);
                             border-radius: 10px;
                         }
 
                     }
-                    .btn{
+                    .register-btn{
                         grid-column: span 2; /* Mantiene el botón en la parte inferior */
                         padding: .8rem;
                         background: var(--primary-color);
@@ -381,17 +230,17 @@ select:required:valid {
                         font-size: 16px;
                         width: 100%; 
                         margin-bottom: 0;
-                        transition: .3s ease;                       
+                        transition: 255ms ease;                       
 
-                        .icon{
+                        .register-icon{
                             font-size: 25px;
-                            transition: .3s ease;
+                            transition: 255ms ease;
                         }
 
                         &:hover{
                             background: var(--hoverColor);
                             color: var(--blackColor);
-                            .icon{
+                            .register-icon{
                                 color: var(--blackColor);
                                 transform: translateX(5px);
                             }
