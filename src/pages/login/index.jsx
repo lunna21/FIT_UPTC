@@ -9,9 +9,9 @@ import logo from '@/assets/logo.png'
 function LoginPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="h-[80vh] w-[60%] min-w-[320px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
+        <div className="login-container h-[80vh] w-[60%] min-w-[320px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
             
-            <div className="relative flex-1 flex flex-col justify-center items-center p-6 text-center rounded-lg overflow-hidden">
+            <div className="login-info relative flex-1 flex flex-col justify-center items-center p-6 text-center rounded-lg overflow-hidden">
                     <video
                             src='/video.mp4'
                             type='video/mp4' 
@@ -22,11 +22,11 @@ function LoginPage() {
                     />
                     
                     <div className="relative z-10">
-                            <h1 className="text-[85px] font-extrabold text-neutral-white drop-shadow-lg">
-                                    GYM
+                            <h1 className="text-[85px] font-extrabold text-white drop-shadow-lg">
+                                    UPTC
                             </h1>
                             <h1 className="text-[65px] font-extrabold text-neutral-white drop-shadow-lg">
-                                    FITUPTC
+                                    FIT
                             </h1>
                             <p className="text-xl font-normal text-neutral-white p-4 drop-shadow-lg">
                                     ¡Lleva tu entrenamiento al siguiente nivel con nosotros!
