@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
-import '../../global.css'
-// import image from "../../../assets/LOGO UPTC.png";
+import ButtonPrimary from '@/components/buttons/ButtonPrimary'
+
+import logo from '@/assets/logo.png'
 import './register.css'
 
 
@@ -17,8 +20,6 @@ import { FaFilePdf } from "react-icons/fa6";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { FaAddressCard } from "react-icons/fa";
 import { FaFileArrowUp } from "react-icons/fa6";
-
-
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -130,33 +131,34 @@ const Register = () => {
     }
 
     return (
-        <div className="registerPage flex">
-             <div className="containerR flex">
-                <div className="formDiv flex">
-                    <div className="headerDiv">
-                            {/* <img src={logo} alt="Logo" /> */}
+        <div className="register-registerPage register-flex">
+             <div className="register-containerR register-flex">
+                <div className="register-formDiv register-flex">
+                    <div className="register-headerDiv">
+                            <Image priority src={logo} alt="Logo" className='register-image'/>
                             <h3>¡Dejános conocerte!</h3>
-                            <div className="footerDiv flex">
+                            <div className="register-footerDiv register-flex">
                             
-                            <a href='/login'>
-                            <span className="text">¿Ya tienes una cuenta?</span>
-                                <button className="btn">
-                                <span>Ingresar</span>
-                                <AiOutlineSwapLeft className="icon" />
-                                </button>
-                            </a>
+                            <Link href='/login' className='register-a'>
+                                <span className="text">¿Ya tienes una cuenta?</span>
+                                <ButtonPrimary 
+                                    buttonText="Ingresar" 
+                                    IconButton={AiOutlineSwapLeft} 
+                                    reverse
+                                />
+                            </Link>
                             </div>
                     </div>
-                    <p className="obligatorioText">
+                    <p className="register-obligatorioText">
                         Los campos con (*) son campos obligatorios.
                     </p>
             
-                    <form className="formR grid registerForm" onSubmit={handleSubmit}>
+                    <form className="register-formR register-grid register-registerForm" onSubmit={handleSubmit}>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="tipo_documento">Tipo de Documento (*)</label>
-                            <div className="input flex">
-                                <FaAddressCard className="icon" />
+                            <div className="register-input register-flex">
+                                <FaAddressCard className="register-icon" />
                                 <select id="tipo_documento" required value={formData.tipo_documento} onChange={handleChange}   >
                                     <option value="">Selecciona un tipo de documento</option>
                                     <option value="CC">Cédula de Ciudadanía</option>
@@ -165,67 +167,66 @@ const Register = () => {
                                 </select>
                             </div>
                         </div>    
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="numdoc">Número de documento (*)</label>
-                            <div className="input flex"> 
-                                <MdOutlinePermIdentity className="icon" />
+                            <div className="register-input register-flex"> 
+                                <MdOutlinePermIdentity className="register-icon" />
                                <input type="number" name="numberDocument" placeholder="Ingresa tu número de documento" value={formData.numberDocument} onChange={handleChange} required  maxLength={50}/>
                             </div>
                         </div>
                         
-                        <button type="button" className="btn flex" onClick={checkUserExists}>Verificar Existencia</button> 
-
+                        <button type="button" className="register-btn register-flex" onClick={checkUserExists}>Verificar Existencia</button> 
 
                         {/*Other information */}
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="nombre">Nombre Completo *</label>
-                            <div className="input flex">
-                            <IoInformationCircleSharp className="icon" />   
+                            <div className="register-input register-flex">
+                            <IoInformationCircleSharp className="register-icon" />   
                              <input type="text" name="fullName" placeholder="Ingresa tu nombre completo" value={formData.fullName} onChange={handleChange} required/>
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Código Estudiantil (*)</label>
-                            <div className="input flex">
-                                <MdOutlinePermIdentity className="icon" /> 
+                            <div className="register-input register-flex">
+                                <MdOutlinePermIdentity className="register-icon" /> 
                                 <input type="number" name="studentCode" placeholder="Ingresa tu código estudiantil" value={formData.studentCode} onChange={handleChange} required className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Número de telefono (*)</label>
-                            <div className="input flex">
-                                <BsFillTelephoneFill className="icon" />    
+                            <div className="register-input register-flex">
+                                <BsFillTelephoneFill className="register-icon" />    
                                 <input type="tel" name="phoneNumber" placeholder="Ingresa tu número de teléfono" value={formData.phoneNumber} onChange={handleChange} required className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Email (*)</label>
-                            <div className="input flex">
-                                <MdEmail className="icon" />
+                            <div className="register-input register-flex">
+                                <MdEmail className="register-icon" />
                                 <input type="email" name="email" placeholder="Ingresa tu dirección de email"value={formData.email} onChange={handleChange} required className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Fecha de Nacimiento (*)</label>
-                            <div className="input flex">
+                            <div className="register-input register-flex">
                             <input type="date" name="birthDate" placeholder="Ingresa tu fecha de nacimiento" value={formData.birthDate} onChange={handleChange} required className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Eps (*)</label>
-                            <div className="input flex">
+                            <div className="register-input register-flex">
                                 <input type="text" name="eps"  placeholder="Ingresa el nombre de tu Eps" value={formData.eps} onChange={handleChange} required className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Tipo de Sangre (*)</label>
-                            <div className="input flex">
+                            <div className="register-input register-flex">
                             <select name="bloodType" value={formData.bloodType} onChange={handleChange} required className="w-full px-3 py-2 border rounded">
                                 <option value="">Selecciona tu tipo de sangre</option>
                                 <option value="A+">A+</option>
@@ -240,19 +241,19 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Alergías</label>
-                            <div className="input flex" >
-                            <LiaAllergiesSolid className="icon"/>
+                            <div className="register-input register-flex" >
+                            <LiaAllergiesSolid className="register-icon"/>
                             <input type="text" name="allergies" placeholder="Ingresa tus alegías si aplica" value={formData.allergies} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
                             </div>
                         </div>
 
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                         <div className="mb-4">
                        
                             <label htmlFor="block text-gray-700">Medicamentos Preescritos</label>
-                            <div className="input" >
+                            <div className="register-input" >
                             {formData.medications.map((medication, index) => (
                                 <div key={index} className="mb-2">
                                     <input type="text" name="name" placeholder="Nombre del medicamento" value={medication.name} onChange={(e) => handleMedicationChange(index, e)} className="w-full px-3 py-2 border rounded mb-2" />
@@ -262,31 +263,31 @@ const Register = () => {
                             ))}
                             </div>
                             </div>
-                            <button type="button" onClick={addMedication} className="btn flex"> Agregar Medicamento
-                            <GiMedicines className="icon" color='#ffff'/>
+                            <button type="button" onClick={addMedication} className="register-btn register-flex"> Agregar Medicamento
+                            <GiMedicines className="register-icon" color='#ffff'/>
                             </button>
                             
                         </div>
-                        <div className="inputDiv">
+                        <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Contacto en Caso de Emergencia (*)</label>
-                                <div className="input flex">
+                                <div className="register-input register-flex">
                                     <input type="text" name="fullName" placeholder="Nombre Completo" value={formData.emergencyContact.fullName} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded mb-2" />
                                 </div>
-                                <div className="input flex">
+                                <div className="register-input register-flex">
                                     <input type="text" name="relationship" placeholder="Parentesco" value={formData.emergencyContact.relationship} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded mb-2" />
                                 </div>
-                                <div className="input flex">
+                                <div className="register-input register-flex">
                                     <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')} required className="w-full px-3 py-2 border rounded" />
                                 </div>
                         </div>
                         
                         {/* Consentimiento Informado */}
                         <div className="col-span-full">
-                            <label htmlFor="consentimiento-informado" className="text-gray-700 flex items-center space-x-2">
-                                <a target="_blank" className ="hover:text-yellow-600" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</a>
-                                <a href="../../../assets/CONSENTIMIENTOINFORMADO.pdf"><FaFilePdf className="h-8 w-8 text-yellow-500 hover:text-yellow-600" /></a>
+                            <label htmlFor="consentimiento-informado" className="text-gray-700 register-flex items-center space-x-2">
+                                <Link target="_blank" className ="hover:text-yellow-600 register-a" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</Link>
+                                <Link href="../../../assets/CONSENTIMIENTOINFORMADO.pdf"><FaFilePdf className="h-8 w-8 text-yellow-500 hover:text-yellow-600 register-a" /></Link>
                             </label>
-                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
+                            <div className="mt-2 register-flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
                                 <div className="text-center">
                                     <label htmlFor="informedConsent" className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
                                         <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500" />
@@ -295,7 +296,7 @@ const Register = () => {
                                     </label>
                                     {/* <p className="pl-1">o arrastra el archivo</p> */}
                                     <p className="text-xs leading-5 text-gray-600">PDF hasta 5 MB</p>
-                                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+                                    {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
                                 </div>
                             </div>
                         </div>
@@ -305,8 +306,8 @@ const Register = () => {
                             <input type="file" name="parentalAuthorization" onChange={handleFileChange} className="w-full px-3 py-2 border rounded" />
                         </div>
                        
-                        <button type="submit" className="btn flex">Register
-                        <IoPersonAddSharp className="icon" />
+                        <button type="submit" className="register-btn register-flex">Register
+                        <IoPersonAddSharp className="register-icon" />
                         </button>
                     </form>
         </div>
