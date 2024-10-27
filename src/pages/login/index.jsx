@@ -6,10 +6,12 @@ import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 
 import logo from '@/assets/logo.png'
 
+import './login.css'
+
 function LoginPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="login-container h-[80vh] w-[60%] min-w-[320px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
+        <div className="login-container h-[80vh] w-[60%] min-w-[660px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
             
             <div className="login-info relative flex-1 flex flex-col justify-center items-center p-6 text-center rounded-lg overflow-hidden">
                     <video
