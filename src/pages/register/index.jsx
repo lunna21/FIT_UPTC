@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -9,7 +9,7 @@ import './register.css'
 
 
 //Import Icons
-import { MdOutlinePermIdentity, MdEmail, MdVerified,MdDriveFileRenameOutline,MdBloodtype, MdFamilyRestroom  } from "react-icons/md";
+import { MdOutlinePermIdentity, MdEmail, MdVerified, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom } from "react-icons/md";
 import { RiFileAddFill } from "react-icons/ri";
 import { TbFileSmile } from "react-icons/tb";
 import { BsFillTelephoneFill } from "react-icons/bs";
@@ -17,12 +17,12 @@ import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
 import { AiOutlineSwapLeft } from "react-icons/ai";
 import { LiaAllergiesSolid } from "react-icons/lia";
 import { GiMedicines } from "react-icons/gi";
-import { FaFilePdf, FaAddressCard, FaFileArrowUp,FaHouseChimneyMedical } from "react-icons/fa6";
+import { FaFilePdf, FaAddressCard, FaFileArrowUp, FaHouseChimneyMedical } from "react-icons/fa6";
 
 const Register = () => {
     const [formData, setFormData] = useState({
-        typeDocument:'',
-        numberDocument:'',
+        typeDocument: '',
+        numberDocument: '',
         fullName: '',
         studentCode: '',
         phoneNumber: '',
@@ -33,8 +33,8 @@ const Register = () => {
         allergies: '',
         medication: {
             nameMedication: '',
-            dosage:'',
-            reason:'',
+            dosage: '',
+            reason: '',
         },
         emergencyContact: {
             emergencyfullName: '',
@@ -48,7 +48,7 @@ const Register = () => {
 
     const [errorMessage, setErrorMessage] = useState("");
     const maxFileSize = 5 * 1024 * 1024; // Tamaño máximo 5 MB
-    
+
     //Verification userexistence 
     const checkUserExists = async (e) => {
         e.preventDefault();
@@ -67,7 +67,7 @@ const Register = () => {
             // } else {
             //     alert('Usuario ya registrado');
             // }
-            
+
             // Por ahora, simulamos la validación:
             setIsValidated(true);
         } catch (error) {
@@ -140,17 +140,42 @@ const Register = () => {
         })
     }
 
-    const selects = document.querySelectorAll('#typeDocument, #bloodType');
+    // const selects = document.querySelectorAll('#typeDocument, #bloodType');
 
+    // selects.forEach(select => {
+    //     select.addEventListener('change', () => {
+    //         if (select.value) {
+    //             select.classList.add('filled');
+    //         } else {
+    //             select.classList.remove('filled');
+    //         }
+    //     });
+    // });
+    // Add 'filled' class to select elements when they have a value
+    const handleSelectChange = (e) => {
+        const { id, value } = e.target;
+        const selectElement = document.getElementById(id);
+        if (value) {
+            selectElement.classList.add('filled');
+        } else {
+            selectElement.classList.remove('filled');
+        }
+    };
+
+    // Attach event listeners to select elements
+    useEffect(() => {
+        const selects = document.querySelectorAll('#typeDocument, #bloodType');
         selects.forEach(select => {
-            select.addEventListener('change', () => {
-                if (select.value) {
-                    select.classList.add('filled');
-                } else {
-                    select.classList.remove('filled');
-                }
+            select.addEventListener('change', handleSelectChange);
+        });
+
+        // Cleanup event listeners on component unmount
+        return () => {
+            selects.forEach(select => {
+                select.removeEventListener('change', handleSelectChange);
             });
-    });
+        };
+    }, []);
 
 
     const handleSubmit = (e) => {
@@ -160,27 +185,27 @@ const Register = () => {
 
     return (
         <div className="register-registerPage register-flex">
-             <div className="register-containerR register-flex">
+            <div className="register-containerR register-flex">
                 <div className="register-formDiv register-flex">
                     <div className="register-headerDiv">
-                            <Image priority src={logo} alt="Logo" className='register-image'/>
-                            <h3>¡Dejános conocerte!</h3>
-                            <div className="register-footerDiv register-flex">
-                            
+                        <Image priority src={logo} alt="Logo" className='register-image' />
+                        <h3>¡Dejános conocerte!</h3>
+                        <div className="register-footerDiv register-flex">
+
                             <Link href='/login' className='register-a'>
                                 <span className="text-gray-dark">¿Ya tienes una cuenta?</span>
-                                <ButtonPrimary 
-                                    buttonText="Ingresar" 
-                                    IconButton={AiOutlineSwapLeft} 
+                                <ButtonPrimary
+                                    buttonText="Ingresar"
+                                    IconButton={AiOutlineSwapLeft}
                                     reverse
                                 />
                             </Link>
-                            </div>
+                        </div>
                     </div>
                     <p className="register-obligatorioText">
                         Los campos con (*) son campos obligatorios.
                     </p>
-            
+
                     <form className="register-formR register-grid register-registerForm" onSubmit={handleSubmit}>
 
                         <div className="register-inputDiv" style={{ padding: '0.5rem' }}>
@@ -194,44 +219,44 @@ const Register = () => {
                                     <option value="CE">Cédula de Extranjería</option>
                                 </select>
                             </div>
-                        </div>    
+                        </div>
                         <div className="register-inputDiv">
                             <label htmlFor="numdoc">Número de documento (*)</label>
-                            <div className="register-input register-flex"> 
+                            <div className="register-input register-flex">
                                 <MdOutlinePermIdentity className="register-icon" />
-                               <input type="number" name="numberDocument" placeholder="Ingresa tu número de documento" value={formData.numberDocument} onChange={handleChange} required  maxLength={10}/>
+                                <input type="number" name="numberDocument" placeholder="Ingresa tu número de documento" value={formData.numberDocument} onChange={handleChange} required maxLength={10} />
                             </div>
                         </div>
-                        
+
                         <button type="button" className="register-btn flex" onClick={checkUserExists}
-                        disabled={!formData.tipo_documento || !formData.numberDocument}
+                            disabled={!formData.tipo_documento || !formData.numberDocument}
                         >Verificar Existencia
-                        <MdVerified className="register-icon" />
-                        </button> 
+                            <MdVerified className="register-icon" />
+                        </button>
 
 
                         {/*Other information */}
                         <div className="register-inputDiv">
                             <label htmlFor="nombre">Nombre Completo *</label>
                             <div className="register-input register-flex">
-                            <IoInformationCircleSharp className="register-icon" />   
-                             <input type="text" name="fullName" placeholder="Ingresa tu nombre completo" value={formData.fullName} onChange={handleChange} required/>
+                                <IoInformationCircleSharp className="register-icon" />
+                                <input type="text" name="fullName" placeholder="Ingresa tu nombre completo" value={formData.fullName} onChange={handleChange} required />
                             </div>
                         </div>
 
                         <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Código Estudiantil (*)</label>
                             <div className="register-input register-flex">
-                                <MdOutlinePermIdentity className="register-icon" /> 
-                                <input type="number" name="studentCode" placeholder="Ingresa tu código estudiantil" value={formData.studentCode} onChange={handleChange} required  />
+                                <MdOutlinePermIdentity className="register-icon" />
+                                <input type="number" name="studentCode" placeholder="Ingresa tu código estudiantil" value={formData.studentCode} onChange={handleChange} required />
                             </div>
                         </div>
 
                         <div className="register-inputDiv">
                             <label htmlFor="block text-gray-700">Número de telefono (*)</label>
                             <div className="register-input register-flex">
-                                <BsFillTelephoneFill className="register-icon" />    
-                                <input type="tel" name="phoneNumber" placeholder="Ingresa tu número de teléfono" value={formData.phoneNumber} onChange={handleChange} required  />
+                                <BsFillTelephoneFill className="register-icon" />
+                                <input type="tel" name="phoneNumber" placeholder="Ingresa tu número de teléfono" value={formData.phoneNumber} onChange={handleChange} required />
                             </div>
                         </div>
 
@@ -239,7 +264,7 @@ const Register = () => {
                             <label htmlFor="block text-gray-700">Email (*)</label>
                             <div className="register-input register-flex">
                                 <MdEmail className="register-icon" />
-                                <input type="email" name="email" placeholder="Ingresa tu dirección de email"value={formData.email} onChange={handleChange} required />
+                                <input type="email" name="email" placeholder="Ingresa tu dirección de email" value={formData.email} onChange={handleChange} required />
                             </div>
                         </div>
 
@@ -254,7 +279,7 @@ const Register = () => {
                                     value={formData.birthDate}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-3 py-2 border rounded bg-inputColor text-neutral-gray-medium" 
+                                    className="w-full px-3 py-2 border rounded bg-inputColor text-neutral-gray-medium"
                                 />
                             </div>
                         </div>
@@ -262,28 +287,28 @@ const Register = () => {
 
                         <div className="register-inputDiv">
                             <label htmlFor="eps">Eps (*)</label>
-                            
+
                             <div className="register-input register-flex">
-                            <FaHouseChimneyMedical className="register-icon" />
-                                <input type="text" name="eps"  placeholder="Ingresa el nombre de tu Eps" value={formData.eps} onChange={handleChange} required/>
+                                <FaHouseChimneyMedical className="register-icon" />
+                                <input type="text" name="eps" placeholder="Ingresa el nombre de tu Eps" value={formData.eps} onChange={handleChange} required />
                             </div>
                         </div>
 
                         <div className="register-inputDiv">
                             <label htmlFor="blood">Tipo de Sangre (*)</label>
                             <div className="register-input register-flex">
-                            <MdBloodtype className="register-icon" />
-                            <select name="bloodType" value={formData.bloodType} onChange={handleChange} required >
-                                <option value="">Selecciona tu tipo de sangre</option>
-                                <option value="A+">A+</option>
-                                <option value="B+">B+</option>
-                                <option value="AB+">AB+</option>
-                                <option value="O+">O+</option>
-                                <option value="A-">A-</option>
-                                <option value="B-">B-</option>
-                                <option value="AB-">AB-</option>
-                                <option value="O-">O-</option>
-                            </select>
+                                <MdBloodtype className="register-icon" />
+                                <select name="bloodType" value={formData.bloodType} onChange={handleChange} required >
+                                    <option value="">Selecciona tu tipo de sangre</option>
+                                    <option value="A+">A+</option>
+                                    <option value="B+">B+</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="O+">O+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O-">O-</option>
+                                </select>
                             </div>
                         </div>
 
@@ -291,60 +316,60 @@ const Register = () => {
                         <div className="register-inputDiv">
                             <label htmlFor="alergías">Alergías</label>
                             <div className="register-input register-flex">
-                            <LiaAllergiesSolid className="register-icon"/>
-                            <input type="text" name="allergies" placeholder="Ingresa tus alegías" value={formData.allergies} onChange={handleChange}  />
+                                <LiaAllergiesSolid className="register-icon" />
+                                <input type="text" name="allergies" placeholder="Ingresa tus alegías" value={formData.allergies} onChange={handleChange} />
                             </div>
                         </div>
 
-                        
+
                         <div className="register-medication-container">
-                        <label htmlFor="emergencyFullName">Contacto en Caso de Emergencia (*)</label>
-                        <div className="register-inputDiv">
+                            <label htmlFor="emergencyFullName">Contacto en Caso de Emergencia (*)</label>
+                            <div className="register-inputDiv">
                                 <div className="register-input register-flex">
-                                     <MdDriveFileRenameOutline className="register-icon"/> 
+                                    <MdDriveFileRenameOutline className="register-icon" />
                                     <input type="text" name="emergencyfullName" placeholder="Nombre Completo" value={formData.emergencyContact.emergencyfullName} onChange={(e) => handleChange(e, 'emergencyContact')} />
                                 </div>
-                                </div>
-                                <div className="register-inputDiv">
+                            </div>
+                            <div className="register-inputDiv">
                                 <div className="register-input register-flex">
-                                    <MdFamilyRestroom className="register-icon"/> 
+                                    <MdFamilyRestroom className="register-icon" />
                                     <input type="text" name="relationship" placeholder="Parentesco" value={formData.emergencyContact.relationship} onChange={(e) => handleChange(e, 'emergencyContact')} />
                                 </div>
-                                </div>
-                                <div className="register-inputDiv">
+                            </div>
+                            <div className="register-inputDiv">
                                 <div className="register-input register-flex">
-                                <BsFillTelephoneFill className="register-icon" />  
-                                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')}  />
+                                    <BsFillTelephoneFill className="register-icon" />
+                                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')} />
                                 </div>
-                        </div>
+                            </div>
                         </div>
 
                         <div className="register-medication-container">
                             <label htmlFor="Medicamentos">Medicamentos Prescritos </label>
                             <div className="register-inputDiv">
-                                    <div className="register-input register-flex">
-                                        <MdDriveFileRenameOutline className="register-icon"/> 
-                                        <input type="text" name="nameMedication" placeholder="Nombre del medicamento" value={formData.medication.nameMedication} onChange={(e) => handleMedicationChange(e, 'medication')} />
-                                        </div>
-                                    </div>
-                                    <div className="register-inputDiv">
-                                    <div className="register-input register-flex">
-                                        <GiMedicines className="register-icon"/>
-                                        <input type="text" name="dosage" placeholder="Dosis del medicamento" value={formData.medication.dosage} onChange={(e) => handleMedicationChange(e, 'medication')} />
-                                        </div>
-                                    </div>
-                                    <div className="register-inputDiv">
-                                    <div className="register-input register-flex">
-                                    <RiFileAddFill className="register-icon" />  
-                                    <input type="text" name="reason" placeholder="Razón de la prescripción" value={formData.medication.reason} onChange={(e) => handleMedicationChange(e, 'medication')}/>
-                                    </div>
+                                <div className="register-input register-flex">
+                                    <MdDriveFileRenameOutline className="register-icon" />
+                                    <input type="text" name="nameMedication" placeholder="Nombre del medicamento" value={formData.medication.nameMedication} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                </div>
+                            </div>
+                            <div className="register-inputDiv">
+                                <div className="register-input register-flex">
+                                    <GiMedicines className="register-icon" />
+                                    <input type="text" name="dosage" placeholder="Dosis del medicamento" value={formData.medication.dosage} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                </div>
+                            </div>
+                            <div className="register-inputDiv">
+                                <div className="register-input register-flex">
+                                    <RiFileAddFill className="register-icon" />
+                                    <input type="text" name="reason" placeholder="Razón de la prescripción" value={formData.medication.reason} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                </div>
                             </div>
                         </div>
-                        
+
                         {/* Consentimiento Informado */}
                         <div className="col-span-full">
                             <label htmlFor="consentimiento-informado" className="flex items-center space-x-2">
-                                <a target="_blank" className ="hover:text-yellow-600" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</a>
+                                <a target="_blank" className="hover:text-yellow-600" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</a>
                                 <a href="../../../assets/CONSENTIMIENTOINFORMADO.pdf"><FaFilePdf className="h-8 w-8 text-yellow-500 hover:text-yellow-600" /></a>
                             </label>
                             <div className="mt-2 register-flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
@@ -380,11 +405,11 @@ const Register = () => {
                         </div>
 
                         <button type="submit" className="register-btn register-flex">Registrate
-                        <IoPersonAddSharp className="register-icon" />
+                            <IoPersonAddSharp className="register-icon" />
                         </button>
                     </form>
-        </div>
-        </div>
+                </div>
+            </div>
         </div>
     )
 }
