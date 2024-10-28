@@ -7,7 +7,7 @@ const ButtonPrimary = ({ onClick, buttonText, IconButton, reverse=false }) => {
             <button
                 type="button"
                 {...(onClick ? { onClick } : {})}
-                className="flex items-center justify-center gap-20 w-full p-3 bg-primary-medium hover:bg-primary-light text-neutral-white hover:text-neutral-black text-base rounded-lg transition-colors duration-300 h-11"
+                className="flex items-center justify-center gap-20 w-full p-3 bg-primary-medium hover:bg-primary-light text-neutral-gray-dark hover:text-neutral-black text-base rounded-lg transition-colors duration-300 h-11"
             >
                 {
                     IconButton && <IconButton className="text-2xl transition-transform duration-300 group-hover:translate-x-1" />

@@ -12,7 +12,9 @@
     --hoverColor:hsla(46, 93%, 55%, 0.436);
     --paleGreen:hsl(51, 68%, 49%);
     --blackColor:hsl(0,0%,18%);
-    --whiteColor:hsl(0,0%,100%);
+    --grayColor:white;
+    --whiteColor: #313131;
+
     --greyText:hsl(0,0%,75%);
     --bgColor:hsl(113,11%,85%);
     --inputColor:hsl(330,12%,97%);
@@ -79,8 +81,73 @@
 
 .register-btn:hover{
     color: var(--primary-color);
-    background:var(--whiteColor);
+    background:var(--grayColor);
 }
+
+
+select {
+    background: none;
+    outline: none;
+    border: none;
+    padding: 0.3rem;
+    color: var(--greyText);
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23808080' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.2em;
+    padding-right: 2rem;
+}
+
+#typeDocument {
+    width: 320px !important; /* Ancho fijo */
+    max-width: 350px !important; /* Ancho máximo fijo */
+    white-space: nowrap; /* Evita que el texto se desborde */
+    overflow: hidden; /* Oculta el texto que se desborde */
+    text-overflow: ellipsis; /* Muestra ... si el texto es muy largo */
+}
+
+#typeDocument option {
+    width: 300px; /* Mismo ancho que el select */
+    white-space: normal; /* Permite que el texto de las opciones se ajuste */
+
+}
+select[name="typeDocument"]:valid {
+    color: var(--primary-color) !important; /* Color para la opción seleccionada */
+    font-weight: bold;
+}
+
+select[name="bloodType"]:valid {
+    color: var(--primary-color) !important; /* Color para la opción seleccionada */
+    font-weight: bold;
+}
+
+select:hover {
+    background-color: var(--inputColor);
+}
+
+select:focus {
+    border-right: 5px solid var(--primary-color);
+}
+
+option {
+    background-color: var(--grayColor);
+    color: var(--blackColor);
+    padding: 0.5rem;
+}
+
+option:checked {
+    background-color: var(--primary-color);
+    color: var(--blackColor);
+}
+
+
+
+
 
 .register-registerPage{
     height: 100vh;
@@ -150,7 +217,7 @@
         
                      .register-btn{
                     background-color: var(--primary-color);
-                    color: var(--whiteColor);
+                    color: gray-dark;
                      padding: .2rem 4rem;
                      border-radius: 10px;
                      font-weight: 400;
@@ -185,7 +252,7 @@
             gap: 0.7rem;
             padding: 1rem;
                 .register-inputDiv{
-                    width: 100%; /* Mantén el ancho de los inputs dentro de su contenedor */
+                    width: 100%; 
                     padding: 0.5rem;
                     box-sizing: border-box;
                        .register-icon{
@@ -218,6 +285,28 @@
                         }
 
                     }
+
+                    .register-medication-container {
+                        background-color: rgba(49, 49, 49, 0.257); /* Color de fondo */
+                        border-radius: 12px; /* Bordes redondeados */
+                        padding: 16px; /* Espaciado interno */
+                        width: 400px;
+                        max-width: 600px; /* Ancho opcional */
+                        margin: 0 auto; /* Centrado opcional */
+
+                        .register-inputDiv {
+                            margin-bottom: 12px; /* Espacio entre cada input */
+                        }
+                        
+                        .register-input {
+                            display: flex;
+                            align-items: center;
+                            background-color: #fff; /* Fondo blanco para los inputs */
+                            border-radius: 8px; /* Bordes redondeados para cada input */
+                            padding: 8px;
+                        }
+                    }
+
                     .register-btn{
                         grid-column: span 2; /* Mantiene el botón en la parte inferior */
                         padding: .8rem;
