@@ -11,10 +11,12 @@ build/
 
 # Ignore environment variable files
 .env
+.env.local
 
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+sql
 
 # Ignore IDE-specific files
 .vscode/
