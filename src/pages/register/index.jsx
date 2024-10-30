@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-import ButtonPrimary from '@/components/buttons/ButtonPrimary'
+import Button from '@/components/buttons/Button'
+import Loader from '@/components/Loader'
+import Input from '@/components/inputs/Input'
+import PopMessage from '@/components/PopMessage'
+
+import { calculateAge, convertToKB, getToday } from '@/utils'
+
+import { getUserById } from '@/db/user'
 
 import logo from '@/assets/logo.png'
 import './register.css'
@@ -14,27 +21,31 @@ import { RiFileAddFill } from "react-icons/ri";
 import { TbFileSmile } from "react-icons/tb";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
-import { AiOutlineSwapLeft } from "react-icons/ai";
+import { AiOutlineSwapRight } from "react-icons/ai";
 import { LiaAllergiesSolid } from "react-icons/lia";
 import { GiMedicines } from "react-icons/gi";
-import { FaFilePdf, FaAddressCard, FaFileArrowUp, FaHouseChimneyMedical } from "react-icons/fa6";
+import { FaAddressCard, FaFileArrowUp, FaHouseChimneyMedical, FaDownload } from "react-icons/fa6";
+import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
     const [formData, setFormData] = useState({
         typeDocument: '',
         numberDocument: '',
-        fullName: '',
+        firstName: '',
+        lastName: '',
         studentCode: '',
         phoneNumber: '',
         email: '',
         birthDate: '',
         eps: '',
         bloodType: '',
+        programType: '',
         allergies: '',
+        medications: [],
         medication: {
             nameMedication: '',
             dosage: '',
-            reason: '',
+            reason: ''
         },
         emergencyContact: {
             emergencyfullName: '',
@@ -42,43 +53,83 @@ const Register = () => {
             contactNumber: ''
         },
         informedConsent: null,
-        parentalAuthorization: null
+        parentalAuthorization: null,
+        terms: false
     })
+    const [isValidated, setIsValidated] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [age, setAge] = useState(0);
+    const [error, setError] = useState('');
+    const [countFillObligatory, setCountFillObligatory] = useState(1);
+    const [lineWidth, setLineWidth] = useState(0);
+    const containerRef = useRef(null);
 
 
     const [errorMessage, setErrorMessage] = useState("");
-    const maxFileSize = 5 * 1024 * 1024; // Tamaño máximo 5 MB
+    const maxFileSize = 3 * 1024 * 1024; // Tamaño máximo 5 MB
+    const today = getToday();
+    const obligatoryFields = ['numberDocument', 'firstName', 'lastName', 'email'];
+
+    const obligatoryFieldsCheck = obligatoryFields.some(field => !formData[field]);
+
+    useEffect(() => {
+        setCountFillObligatory(obligatoryFields.filter(field => formData[field]).length);
+    }, [formData]);
+
+    useEffect(() => {
+        if (containerRef.current) {
+          const containerWidth = containerRef.current.clientWidth - 20; // Obtiene el ancho del contenedor
+          const newWidth = (containerWidth / obligatoryFields.length) * countFillObligatory; // Calcula el nuevo ancho de la línea
+          setLineWidth(newWidth); // Actualiza el ancho de la línea
+        }
+      }, [countFillObligatory, obligatoryFields.length]); // Actualiza el ancho de la línea cuando cambia el contador o el número de pasos
+
 
     //Verification userexistence 
     const checkUserExists = async (e) => {
         e.preventDefault();
-        try {
-            // Aquí deberías hacer la llamada a tu API para verificar si el usuario existe
-            // const response = await fetch('/api/check-user', {
-            //     method: 'POST',
-            //     body: JSON.stringify({
-            //         tipo_documento: formData.tipo_documento,
-            //         numberDocument: formData.numberDocument
-            //     })
-            // });
-            // const data = await response.json();
-            // if (!data.exists) {
-            //     setIsValidated(true);
-            // } else {
-            //     alert('Usuario ya registrado');
-            // }
 
-            // Por ahora, simulamos la validación:
-            setIsValidated(true);
+        setIsLoading(true);
+
+        try {
+            const user = await getUserById(formData.numberDocument);
+
+            if (user?.id === formData?.numberDocument) {
+                setIsValidated(false);
+                setError("El usuario ya existe, no es necesario registrarse");
+                setIsLoading(false);
+            } else {
+                setIsLoading(false);
+                setIsValidated(true);
+                setError('');
+                return null;
+            }
+
         } catch (error) {
+            setIsLoading(false);
+            setError('Error al verificar el usuario');
+            setIsValidated(false);
             console.error("Error al verificar el usuario", error);
             alert("Error al verificar el usuario: " + error);
+            return null;
         }
+
     };
 
+    console.log(formData)
 
     const handleChange = (e, section) => {
         const { name, value } = e.target
+        if (name === 'numberDocument')
+            setError('');
+        if (name === 'birthDate') {
+            setAge(calculateAge(value));
+        }
+
+        if (name === 'typeDocument' || name === 'numberDocument') {
+            setIsValidated(false);
+        }
+
         if (section === 'emergencyContact') {
             setFormData({
                 ...formData,
@@ -97,21 +148,14 @@ const Register = () => {
 
     const handleMedicationChange = (e, section) => {
         const { name, value } = e.target
-        if (section === 'medication') {
-            setFormData({
-                ...formData,
-                medication: {
-                    ...formData.medication,
-                    [name]: value
-                }
-            });
-        } else {
-            setFormData({
-                ...formData,
+        setFormData({
+            ...formData,
+            medication: {
+                ...formData.medication,
                 [name]: value
-            });
-        }
-    };
+            }
+        });
+    }
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
@@ -122,7 +166,7 @@ const Register = () => {
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessage("El archivo no debe superar los 5 MB.");
+                setErrorMessage("El archivo no debe superar los 3 MB.");
                 return;
             }
             setErrorMessage("");
@@ -134,24 +178,23 @@ const Register = () => {
     };
 
     const addMedication = () => {
+        if (!formData.medication.nameMedication) {
+            return;
+        }
+
         setFormData({
             ...formData,
-            medications: [...formData.medications, { name: '', dosage: '', reason: '' }]
+            medications: [
+                ...formData.medications,
+                {
+                    nameMedication: formData.medication.nameMedication,
+                    dosage: formData.medication.dosage,
+                    reason: formData.medication.reason
+                }
+            ]
         })
     }
 
-    // const selects = document.querySelectorAll('#typeDocument, #bloodType');
-
-    // selects.forEach(select => {
-    //     select.addEventListener('change', () => {
-    //         if (select.value) {
-    //             select.classList.add('filled');
-    //         } else {
-    //             select.classList.remove('filled');
-    //         }
-    //     });
-    // });
-    // Add 'filled' class to select elements when they have a value
     const handleSelectChange = (e) => {
         const { id, value } = e.target;
         const selectElement = document.getElementById(id);
@@ -186,18 +229,23 @@ const Register = () => {
     return (
         <div className="register-registerPage register-flex">
             <div className="register-containerR register-flex">
-                <div className="register-formDiv register-flex">
+                <div ref={containerRef} className="register-formDiv register-flex relative">
+                    <div
+                        className={`bg-primary-dark h-2 transition-all duration-500 ease-in-out sticky top-0 left-0`}
+                        style={{ width: `${lineWidth}px` }} // Cambia el ancho según el contador
+                    ></div>
                     <div className="register-headerDiv">
                         <Image priority src={logo} alt="Logo" className='register-image' />
-                        <h3>¡Dejános conocerte!</h3>
+                        <h3 className='hidden-responsive'>¡Dejános conocerte!</h3>
                         <div className="register-footerDiv register-flex">
 
                             <Link href='/login' className='register-a'>
                                 <span className="text-gray-dark">¿Ya tienes una cuenta?</span>
-                                <ButtonPrimary
+                                <Button
                                     buttonText="Ingresar"
-                                    IconButton={AiOutlineSwapLeft}
-                                    reverse
+                                    Icon={AiOutlineSwapRight}
+                                    sizeHeight='h-10'
+                                    justify='between'
                                 />
                             </Link>
                         </div>
@@ -206,7 +254,7 @@ const Register = () => {
                         Los campos con (*) son campos obligatorios.
                     </p>
 
-                    <form className="register-formR register-grid register-registerForm" onSubmit={handleSubmit}>
+                    <form className="register-formR register-grid" onSubmit={handleSubmit}>
 
                         <div className="register-inputDiv" style={{ padding: '0.5rem' }}>
                             <label htmlFor="typeDocument">Tipo de Documento (*)</label>
@@ -228,185 +276,300 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <button type="button" className="register-btn flex" onClick={checkUserExists}
-                            disabled={!formData.tipo_documento || !formData.numberDocument}
-                        >Verificar Existencia
-                            <MdVerified className="register-icon" />
-                        </button>
-
-
-                        {/*Other information */}
-                        <div className="register-inputDiv">
-                            <label htmlFor="nombre">Nombre Completo *</label>
-                            <div className="register-input register-flex">
-                                <IoInformationCircleSharp className="register-icon" />
-                                <input type="text" name="fullName" placeholder="Ingresa tu nombre completo" value={formData.fullName} onChange={handleChange} required />
-                            </div>
+                        <div style={{ gridColumn: 'span 2' }}>
+                            <Button
+                                buttonText="Siguiente"
+                                colSpan={2}
+                                onClick={checkUserExists}
+                                Icon={MdVerified}
+                                disabled={!formData.typeDocument || !formData.numberDocument}
+                            />
                         </div>
 
-                        <div className="register-inputDiv">
-                            <label htmlFor="block text-gray-700">Código Estudiantil (*)</label>
-                            <div className="register-input register-flex">
-                                <MdOutlinePermIdentity className="register-icon" />
-                                <input type="number" name="studentCode" placeholder="Ingresa tu código estudiantil" value={formData.studentCode} onChange={handleChange} required />
-                            </div>
-                        </div>
+                        {isLoading && (
+                            <div
+                                className='w-full h-80px bg-transparent flex justify-center'
+                                style={{ gridColumn: 'span 2' }}
+                            >
+                                <Loader />
 
-                        <div className="register-inputDiv">
-                            <label htmlFor="block text-gray-700">Número de telefono (*)</label>
-                            <div className="register-input register-flex">
-                                <BsFillTelephoneFill className="register-icon" />
-                                <input type="tel" name="phoneNumber" placeholder="Ingresa tu número de teléfono" value={formData.phoneNumber} onChange={handleChange} required />
                             </div>
-                        </div>
+                        )}
+                        {
+                            error && (
+                                <Link href="/login" style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
+                                    {error}
+                                </Link>
+                            )
+                        }
 
-                        <div className="register-inputDiv">
-                            <label htmlFor="block text-gray-700">Email (*)</label>
-                            <div className="register-input register-flex">
-                                <MdEmail className="register-icon" />
-                                <input type="email" name="email" placeholder="Ingresa tu dirección de email" value={formData.email} onChange={handleChange} required />
-                            </div>
-                        </div>
+                        {isValidated && (
+                            <>
+                                {/*Other information */}
+                                <Input
+                                    label="Nombres (*)"
+                                    placeholder="Ingresa tus nombres"
+                                    required
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    Icon={IoInformationCircleSharp}
+                                    id="firstName"
+                                    name="firstName"
+                                />
 
-                        <div className="register-inputDiv">
-                            <label htmlFor="birthDate" className="block text-neutral-grey">Fecha de Nacimiento (*)</label>
-                            <div className="register-input register-flex">
-                                <input
+                                <Input
+                                    label="Apellidos (*)"
+                                    placeholder="Ingresa tus apellidos"
+                                    required
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    Icon={IoInformationCircleSharp}
+                                    id="lastName"
+                                    name="lastName"
+                                />
+
+                                <Input
+                                    label="Código Estudiantil (*)"
+                                    type='number'
+                                    placeholder="Ingresa tu código estudiantil"
+                                    required
+                                    value={formData.studentCode}
+                                    onChange={handleChange}
+                                    Icon={MdOutlinePermIdentity}
+                                    id="studentCode"
+                                    name="studentCode"
+                                />
+
+                                <Input
+                                    label="Número de telefono (*)"
+                                    type='number'
+                                    placeholder="Ingresa tu número de teléfono"
+                                    required
+                                    value={formData.phoneNumber}
+                                    onChange={handleChange}
+                                    Icon={BsFillTelephoneFill}
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    max={10}
+                                />
+
+                                <Input
+                                    label="Email (*)"
+                                    type="email"
+                                    placeholder="Ingresa tu dirección de email"
+                                    required
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    Icon={MdEmail}
+                                    id="email"
+                                    name="email"
+                                />
+
+                                <Input
+                                    label="Fecha de Nacimiento (*)"
                                     type="date"
-                                    id="birthDate"
-                                    name="birthDate"
+                                    max={today}
                                     placeholder="Ingresa tu fecha de nacimiento"
+                                    required
                                     value={formData.birthDate}
                                     onChange={handleChange}
-                                    required
-                                    className="w-full px-3 py-2 border rounded bg-inputColor text-neutral-gray-medium"
+                                    id="birthDate"
+                                    name="birthDate"
                                 />
-                            </div>
-                        </div>
 
+                                <Input
+                                    label="Eps (*)"
+                                    placeholder="Ingresa el nombre de tu Eps"
+                                    required
+                                    value={formData.eps}
+                                    onChange={handleChange}
+                                    Icon={FaHouseChimneyMedical}
+                                    id="eps"
+                                    name="eps"
+                                />
 
-                        <div className="register-inputDiv">
-                            <label htmlFor="eps">Eps (*)</label>
-
-                            <div className="register-input register-flex">
-                                <FaHouseChimneyMedical className="register-icon" />
-                                <input type="text" name="eps" placeholder="Ingresa el nombre de tu Eps" value={formData.eps} onChange={handleChange} required />
-                            </div>
-                        </div>
-
-                        <div className="register-inputDiv">
-                            <label htmlFor="blood">Tipo de Sangre (*)</label>
-                            <div className="register-input register-flex">
-                                <MdBloodtype className="register-icon" />
-                                <select name="bloodType" value={formData.bloodType} onChange={handleChange} required >
-                                    <option value="">Selecciona tu tipo de sangre</option>
-                                    <option value="A+">A+</option>
-                                    <option value="B+">B+</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="O+">O+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B-">B-</option>
-                                    <option value="AB-">AB-</option>
-                                    <option value="O-">O-</option>
-                                </select>
-                            </div>
-                        </div>
-
-
-                        <div className="register-inputDiv">
-                            <label htmlFor="alergías">Alergías</label>
-                            <div className="register-input register-flex">
-                                <LiaAllergiesSolid className="register-icon" />
-                                <input type="text" name="allergies" placeholder="Ingresa tus alegías" value={formData.allergies} onChange={handleChange} />
-                            </div>
-                        </div>
-
-
-                        <div className="register-medication-container">
-                            <label htmlFor="emergencyFullName">Contacto en Caso de Emergencia (*)</label>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <MdDriveFileRenameOutline className="register-icon" />
-                                    <input type="text" name="emergencyfullName" placeholder="Nombre Completo" value={formData.emergencyContact.emergencyfullName} onChange={(e) => handleChange(e, 'emergencyContact')} />
+                                <div className="register-inputDiv">
+                                    <label htmlFor="blood">Tipo de Sangre (*)</label>
+                                    <div className="register-input register-flex">
+                                        <MdBloodtype className="register-icon" />
+                                        <select name="bloodType" value={formData.bloodType} onChange={handleChange} required >
+                                            <option value="">Selecciona tu tipo de sangre</option>
+                                            <option value="A+">A+</option>
+                                            <option value="B+">B+</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="O+">O+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <MdFamilyRestroom className="register-icon" />
-                                    <input type="text" name="relationship" placeholder="Parentesco" value={formData.emergencyContact.relationship} onChange={(e) => handleChange(e, 'emergencyContact')} />
-                                </div>
-                            </div>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <BsFillTelephoneFill className="register-icon" />
-                                    <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')} />
-                                </div>
-                            </div>
-                        </div>
 
-                        <div className="register-medication-container">
-                            <label htmlFor="Medicamentos">Medicamentos Prescritos </label>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <MdDriveFileRenameOutline className="register-icon" />
-                                    <input type="text" name="nameMedication" placeholder="Nombre del medicamento" value={formData.medication.nameMedication} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                <div className="register-inputDiv">
+                                    <label htmlFor="programType">Tipo de programa (*)</label>
+                                    <div className="register-input register-flex">
+                                        <MdOutlineRealEstateAgent className="register-icon" />
+                                        <select className={`${formData.programType && "text-primary-medium font-semibold"}`} name="programType" value={formData.programType} onChange={handleChange} required >
+                                            <option value="">Selecciona tu estamento</option>
+                                            <option value="Pregrado">Pregrado</option>
+                                            <option value="Prosgrado">Posgrado</option>
+                                            <option value="Fesad">Fesad</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <GiMedicines className="register-icon" />
-                                    <input type="text" name="dosage" placeholder="Dosis del medicamento" value={formData.medication.dosage} onChange={(e) => handleMedicationChange(e, 'medication')} />
-                                </div>
-                            </div>
-                            <div className="register-inputDiv">
-                                <div className="register-input register-flex">
-                                    <RiFileAddFill className="register-icon" />
-                                    <input type="text" name="reason" placeholder="Razón de la prescripción" value={formData.medication.reason} onChange={(e) => handleMedicationChange(e, 'medication')} />
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Consentimiento Informado */}
-                        <div className="col-span-full">
-                            <label htmlFor="consentimiento-informado" className="flex items-center space-x-2">
-                                <a target="_blank" className="hover:text-yellow-600" href="../../../assets/CONSENTIMIENTOINFORMADO.pdf">Consentimiento informado</a>
-                                <a href="../../../assets/CONSENTIMIENTOINFORMADO.pdf"><FaFilePdf className="h-8 w-8 text-yellow-500 hover:text-yellow-600" /></a>
-                            </label>
-                            <div className="mt-2 register-flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
-                                <div className="text-center">
-                                    <label htmlFor="informedConsent" className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
-                                        <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500 hover:text-yellow-600" />
-                                        <span>Sube tu Consentimiento informado debidamente diligenciado</span>
-                                        <input id="informedConsent" type="file" name="informedConsent" onChange={handleFileChange} className="sr-only" />
+                                <Input
+                                    label="Alergías"
+                                    placeholder="Ingresa tus alegías"
+                                    value={formData.allergies}
+                                    onChange={handleChange}
+                                    Icon={LiaAllergiesSolid}
+                                    id="allergies"
+                                    name="allergies"
+                                />
+
+                                <div className="register-medication-container relative">
+                                    <label htmlFor="emergencyFullName">Contacto en Caso de Emergencia (*)</label>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <MdDriveFileRenameOutline className="register-icon" />
+                                            <input type="text" name="emergencyfullName" placeholder="Nombre Completo" value={formData.emergencyContact.emergencyfullName} onChange={(e) => handleChange(e, 'emergencyContact')} />
+                                        </div>
+                                    </div>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <MdFamilyRestroom className="register-icon" />
+                                            <input type="text" name="relationship" placeholder="Parentesco" value={formData.emergencyContact.relationship} onChange={(e) => handleChange(e, 'emergencyContact')} />
+                                        </div>
+                                    </div>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <BsFillTelephoneFill className="register-icon" />
+                                            <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.emergencyContact.contactNumber} onChange={(e) => handleChange(e, 'emergencyContact')} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="register-medication-container">
+                                    <label htmlFor="Medicamentos">Medicamentos Prescritos </label>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <MdDriveFileRenameOutline className="register-icon" />
+                                            <input type="text" name="nameMedication" placeholder="Nombre del medicamento" value={formData.medication.nameMedication} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                        </div>
+                                    </div>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <GiMedicines className="register-icon" />
+                                            <input type="text" name="dosage" placeholder="Dosis del medicamento" value={formData.medication.dosage} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                        </div>
+                                    </div>
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex">
+                                            <RiFileAddFill className="register-icon" />
+                                            <input type="text" name="reason" placeholder="Razón de la prescripción" value={formData.medication.reason} onChange={(e) => handleMedicationChange(e, 'medication')} />
+                                        </div>
+                                    </div>
+
+                                    <div className='flex gap-2 items-center'>
+                                        <Button
+                                            buttonText="Agregar"
+                                            Icon={GiMedicines}
+                                            onClick={addMedication}
+                                            sizeHeight='h-10'
+                                        />
+                                        <div className='flex items-center justify-center right-1 bottom-1 w-[32px] h-[32px] bg-neutral-gray-dark text-white rounded-full'>
+                                            {formData.medications.length}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {
+                                    age !== 0 && (
+                                        age < 18 ? (
+                                            <div className="col-span-full">
+                                                <label htmlFor="parental-authorization" className="flex items-center space-x-2">
+                                                    Autorización de padre o madre (para menores de 18 años)
+                                                    <TbFileSmile className="h-8 w-8 text-neutral-gray-dark" />
+                                                </label>
+
+                                                <label htmlFor="parentalAuthorization" className="group cursor-pointer hover:text-yellow-600 mt-2 register-flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank" >
+                                                    <div className="text-center">
+                                                        <div className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
+                                                            <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500 group-hover:text-yellow-600 transition-all ease-in-out duration-255" />
+                                                            <span className='group-hover:text-yellow-600 transition-all ease-in-out duration-255'>
+                                                                {formData.parentalAuthorization ? formData.parentalAuthorization.name : 'Sube la autorización de tus padres'}
+                                                            </span>
+                                                            <input id="parentalAuthorization" type="file" name="parentalAuthorization" onChange={handleFileChange} className="sr-only" accept="application/pdf" />
+                                                        </div>
+                                                        {/* <p className="pl-1">o arrastra el archivo</p> */}
+                                                        <p className="text-xs leading-5 text-gray-600">
+                                                            {formData.parentalAuthorization ? (
+                                                                `Tamaño PDF: ${parseInt(convertToKB(formData.parentalAuthorization.size))} KB`
+                                                            ) : 'PDF hasta 3 MB'}
+                                                        </p>
+                                                        {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className='w-full flex justify-center' style={{ gridColumn: "span 2" }}>
+                                                    <Link target='_blanck' href="https://drive.google.com/file/d/1vY3vnB_I79746xxRKkvVGl2rzcKigdoo/view?usp=sharing" className="group flex items-center justify-center space-x-2 relative px-4 py-2 border border-primary after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-primary-medium hover:after:w-full after:transition-all after:duration-300" >
+                                                        <p className="text-neutral-gray-dark font-montserrat font-semibold">Descarga Consentimiento</p>
+                                                        <FaDownload className="h-6 w-6 text-primary group-hover:text-primary-medium" />
+                                                    </Link>
+                                                </div>
+
+                                                <div className="col-span-full">
+                                                    <label htmlFor="informedConsent" className="group cursor-pointer hover:text-yellow-600 mt-2 register-flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank" >
+                                                        <div className="text-center">
+                                                            <div className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
+                                                                <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500 group-hover:text-yellow-600 transition-all ease-in-out duration-255" />
+                                                                <span className='group-hover:text-yellow-600 transition-all ease-in-out duration-255'>
+                                                                    {formData.informedConsent ? formData.informedConsent.name : 'Sube tu consentimiento informado'}
+                                                                </span>
+                                                                <input id="informedConsent" type="file" name="informedConsent" onChange={handleFileChange} className="sr-only" accept="application/pdf" />
+                                                            </div>
+                                                            {/* <p className="pl-1">o arrastra el archivo</p> */}
+                                                            <p className="text-xs leading-5 text-gray-600">
+                                                                {formData.informedConsent ? (
+                                                                    `Tamaño PDF: ${parseInt(convertToKB(formData.informedConsent.size))} KB`
+                                                                ) : 'PDF hasta 3 MB'}
+                                                            </p>
+                                                            {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </>
+                                        )
+                                    )
+                                }
+
+                                {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}
+                                <div className="flex gap-2 items-center">
+                                    <input type="checkbox" id="terms" name="terms" className='text-primary' onChange={handleChange} required value={formData.terms} />
+                                    <label htmlFor="terms" className="register-checkboxLabel">
+                                        Acepto los términos y condiciones
                                     </label>
-                                    {/* <p className="pl-1">o arrastra el archivo</p> */}
-                                    <p className="text-xs leading-5 text-gray-600">PDF hasta 5 MB</p>
-                                    {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className="col-span-full">
-                            <label htmlFor="parental-authorization" className="flex items-center space-x-2">
-                                Autorización de padre o madre (para menores de 18 años)
-                                <TbFileSmile className="h-8 w-8 text-neutral-gray-dark" />
-                            </label>
-                            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 bg-blank">
-                                <div className="text-center">
-                                    <label htmlFor="parentalAuthorization" className="relative cursor-pointer rounded-md bg-gray font-semibold text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-yellow-600 focus-within:ring-offset-2 hover:text-yellow-600">
-                                        <FaFileArrowUp className="mx-auto h-12 w-12 text-gray-500 hover:text-yellow-600" />
-                                        <span>Sube la Autorización debidamente diligenciada</span>
-                                        <input id="parentalAuthorization" type="file" name="parentalAuthorization" onChange={handleFileChange} className="sr-only" />
-                                    </label>
-                                    <p className="text-xs leading-5 text-gray-600">PDF hasta 5 MB</p>
-                                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+                                <div className='mt-4' style={{ gridColumn: "span 2" }}>
+                                    <Button
+                                        buttonText='Registrate'
+                                        Icon={IoPersonAddSharp}
+                                        disabled={obligatoryFieldsCheck}
+                                    />
+                                    {!obligatoryFieldsCheck && (
+                                        // Hay datos obligatorios aún sin diligenciar
+                                        <p className='text-red-500 text-sm mt-2 register-message'>Por favor, completa todos los campos obligatorios.</p>
+                                    )}
                                 </div>
-                            </div>
-                        </div>
 
-                        <button type="submit" className="register-btn register-flex">Registrate
-                            <IoPersonAddSharp className="register-icon" />
-                        </button>
+                            </>
+                        )}
+
                     </form>
                 </div>
             </div>

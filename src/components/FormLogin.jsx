@@ -4,8 +4,8 @@ import { useRouter } from "next/router";
 
 import Link from "next/link";
 
-import InputAuth from "./inputs/InputAuth";
-import ButtonPrimary from "./buttons/ButtonPrimary";
+import Input from "./inputs/Input";
+import Button from "./buttons/Button";
 
 // Import Icons
 import { FaUserShield } from "react-icons/fa";
@@ -68,33 +68,34 @@ function FormLogin() {
       </div>
 
       <div className="space-y-2">
-        <InputAuth
+        <Input
           label="Nombre de Usuario"
           id="username"
           placeholder="Ingresa tu usuario"
           required={true}
           onChange={(e) => setLoginUsername(e.target.value.trim())}
-          IconAuth={FaUserShield}
+          Icon={FaUserShield}
         />
       </div>
 
       <div className="space-y-2">
-        <InputAuth
+        <Input
           label="Contraseña"
           id="password"
           placeholder="Ingresa tu contraseña"
           required={true}
           type="password"
           onChange={(e) => setPassword(e.target.value.trim())}
-          IconAuth={BsFillShieldLockFill}
+          Icon={BsFillShieldLockFill}
         />
       </div>
 
-        <ButtonPrimary
+        <Button
           type="submit"
           onClick={handleLogin}
           buttonText="Ingresar"
-          IconButton={AiOutlineSwapRight}
+          justify="between"
+          Icon={AiOutlineSwapRight}
         />
 
       <span className="text-sm text-neutral-gray-medium text-center">

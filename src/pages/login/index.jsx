@@ -5,10 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 
 import FormLogin from "@/components/FormLogin";
-import ButtonPrimary from "@/components/buttons/ButtonPrimary";
+import Button from "@/components/buttons/Button";
 import Loader from "@/components/Loader";
 
 import logo from '@/assets/logo.png';
+import gym from '@/assets/gym.jpeg';
 
 import './login.css';
 
@@ -37,14 +38,14 @@ function LoginPage() {
             <div className="login-container h-[80vh] w-[60%] min-w-[660px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
 
                 <div className="login-info relative flex-1 flex flex-col justify-center items-center p-6 text-center rounded-lg overflow-hidden">
-                    <video
-                        src='/video.mp4'
-                        type='video/mp4'
-                        autoPlay
-                        muted
-                        loop
-                        className="absolute inset-0 w-full h-full object-cover"
+                    <Image 
+                        src={gym}
+                        alt="Gym"
+                        layout="fill"
+                        objectFit="cover"
+                        className="absolute inset-0 w-full h-full object-cover filter brightness-50"
                     />
+
 
                     <div className="relative z-10">
                         <h1 className="text-[85px] font-extrabold text-white drop-shadow-lg">
@@ -61,7 +62,11 @@ function LoginPage() {
                     <div className="absolute bottom-4 left-4 right-4 h-[60px] flex justify-between items-center px-4 bg-black/30 backdrop-blur rounded-lg">
                         <span className="text-neutral-white">¿No tienes una cuenta?</span>
                         <Link href="/register">
-                            <ButtonPrimary buttonText="Regístrate" />
+                            <Button 
+                                buttonText="Regístrate" 
+                                sizeHeight="h-10"
+                                sizeWidth="w-32"
+                            />
                         </Link>
                     </div>
                 </div>

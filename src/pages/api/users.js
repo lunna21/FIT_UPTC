@@ -4,18 +4,28 @@ const prisma = new PrismaClient();
 
 // Función para manejar el método POST
 export async function POST(req, res) {
-    const { username, password, role, personId, id } = req.body;
+    const {
+        id,
+        nombre_usuario,
+        email,
+        password,
+        role,
+    } = req.body;
+
     try {
-        const user = await prisma.uSER.create({
+        const user = await prisma.user.create({
             data: {
-                username,
+                id: BigInt(id), // Convert id to BigInt
+                nombre_usuario,
+                email,
                 password,
                 role,
-                personId,
-                id,
             },
         });
-        res.status(201).json(user);
+        res.status(201).json({
+            ...user,
+            id: user.id.toString() // Convert id back to string for JSON response
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error creating user" });
@@ -25,8 +35,12 @@ export async function POST(req, res) {
 // Función para manejar el método GET
 export async function GET(req, res) {
     try {
-        const users = await prisma.uSER.findMany();
-        res.status(200).json(users);
+        const users = await prisma.user.findMany();
+        const usersWithStringId = users.map(user => ({
+            ...user,
+            id: user.id.toString() // Convert id to string for JSON response
+        }));
+        res.status(200).json(usersWithStringId);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error retrieving users" });

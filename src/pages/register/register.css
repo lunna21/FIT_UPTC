@@ -1,48 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-*{
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
 
-:root{
+:root {
     --primary-color: hsl(46, 93%, 55%);
-    --hoverColor:hsla(46, 93%, 55%, 0.436);
-    --paleGreen:hsl(51, 68%, 49%);
-    --blackColor:hsl(0,0%,18%);
-    --grayColor:white;
+    --hoverColor: hsla(46, 93%, 55%, 0.436);
+    --paleGreen: hsl(51, 68%, 49%);
+    --blackColor: hsl(0, 0%, 18%);
+    --grayColor: white;
     --whiteColor: #313131;
 
-    --greyText:hsl(0,0%,75%);
-    --bgColor:hsl(113,11%,85%);
-    --inputColor:hsl(330,12%,97%);
-      
+    --greyText: hsl(0, 0%, 75%);
+    --bgColor: hsl(113, 11%, 85%);
+    --inputColor: hsl(330, 12%, 97%);
+
     /* Font ang Typography */
     --biggestFontSize: 2.5rem;
     --h1FontSize: 1.5rem;
     --h2FontSize: 1.25rem;
     --h3FontSize: 1rem;
-    --normalFontSize:.938rem;
+    --normalFontSize: .938rem;
     --smallFontSize: .813rem;
     --smalleestFontSize: .75rem;
 }
 
-.register-flex{
+.register-flex {
     display: flex;
     align-items: center;
 }
-.register-grid{
+
+.register-grid {
     display: grid;
     align-items: center;
-    gap: 1.5rem
+    gap: 1.5rem;
 }
 
-.register-a{ 
-    text-decoration : none;
+.register-a {
+    text-decoration: none;
 }
-.register-icon{
+
+.register-icon {
     font-size: var(--h2FontSize);
     cursor: pointer;
 }
@@ -52,36 +52,35 @@
     width: 100%;
 }
 
-.register-message{
+.register-message {
     display: none;
 }
 
-.register-showMessage{
+.register-showMessage {
     display: block;
-    color:var(--whiteColor);
+    color: var(--whiteColor);
     padding: 10px;
-    background: rgb(255, 0,0);
+    background: rgb(255, 0, 0);
     border-radius: 3px;
-    text-align:  center;
+    text-align: center;
 }
 
-.register-btn{
-    border:none;
-    outline:none;
+.register-btn {
+    border: none;
+    outline: none;
     cursor: pointer;
     border-radius: 8px;
     padding: .8rem 1rem;
     color: var(--greyText);
-    
 }
 
-.register-btn .register-icon{
+.register-btn .register-icon {
     margin-left: .5rem;
 }
 
-.register-btn:hover{
+.register-btn:hover {
     color: var(--primary-color);
-    background:var(--grayColor);
+    background: var(--grayColor);
 }
 
 
@@ -104,25 +103,35 @@ select {
 }
 
 #typeDocument {
-    width: 320px !important; /* Ancho fijo */
-    max-width: 350px !important; /* Ancho máximo fijo */
-    white-space: nowrap; /* Evita que el texto se desborde */
-    overflow: hidden; /* Oculta el texto que se desborde */
-    text-overflow: ellipsis; /* Muestra ... si el texto es muy largo */
+    width: 320px !important;
+    /* Ancho fijo */
+    max-width: 350px !important;
+    /* Ancho máximo fijo */
+    white-space: nowrap;
+    /* Evita que el texto se desborde */
+    overflow: hidden;
+    /* Oculta el texto que se desborde */
+    text-overflow: ellipsis;
+    /* Muestra ... si el texto es muy largo */
 }
 
 #typeDocument option {
-    width: 300px; /* Mismo ancho que el select */
-    white-space: normal; /* Permite que el texto de las opciones se ajuste */
+    width: 300px;
+    /* Mismo ancho que el select */
+    white-space: normal;
+    /* Permite que el texto de las opciones se ajuste */
 
 }
+
 select[name="typeDocument"]:valid {
-    color: var(--primary-color) !important; /* Color para la opción seleccionada */
+    color: var(--primary-color) !important;
+    /* Color para la opción seleccionada */
     font-weight: bold;
 }
 
 select[name="bloodType"]:valid {
-    color: var(--primary-color) !important; /* Color para la opción seleccionada */
+    color: var(--primary-color) !important;
+    /* Color para la opción seleccionada */
     font-weight: bold;
 }
 
@@ -145,198 +154,246 @@ option:checked {
     color: var(--blackColor);
 }
 
-
-
-
-
-.register-registerPage{
+.register-registerPage {
     height: 100vh;
     width: 100%;
-    margin:auto;
+    margin: auto;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 7px 50px rgb(214, 223,213);
-    
-    .register-containerR{
+    box-shadow: 0 7px 50px rgb(214, 223, 213);
+
+    .register-containerR {
         height: 80vh;
-        display: flex; /* Asegúrate de que el contenedor sea un flexbox */
+        display: flex;
+        /* Asegúrate de que el contenedor sea un flexbox */
         flex-direction: column;
-        width: 60%;
+        width: auto;
         margin: auto;
         justify-content: space-between;
         border-radius: 10px;
         overflow: auto;
-        background: hsl(0,0%,91%);
+        overflow-x: hidden;
+        background: hsl(0, 0%, 91%);
 
-        
-    .register-formDiv{
-        display: block;
-        flex-basis: 50%;
-        flex-direction: column;
-        gap: 1.5rem;
-        padding:2rem;
-        justify-content: space-between;
-                .register-headerDiv{
-                    
+
+        .register-formDiv {
+            display: block;
+            flex-basis: 50%;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 12px;
+            justify-content: space-between;
+
+            .register-headerDiv {
                 display: flex;
-                gap: 1rem; 
+                gap: 1rem;
                 padding: 1.3rem 0 0.3rem;
                 margin-bottom: 0;
                 align-items: center;
                 justify-content: space-around;
 
-                img{
+                img {
                     width: 150px;
                     padding-bottom: 0;
-                    margin-bottom: 0.3rem; 
+                    margin-bottom: 0.3rem;
                 }
-      
-                h3{
+
+                h3 {
                     font-size: 25px;
                     color: var(--blackColor);
-                    font-family: 'Montserrat', sans-serif; 
-                    font-weight: 700; 
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 700;
                     margin-top: 0.5rem;
                 }
 
-                .register-footerDiv{
+                .register-footerDiv {
                     padding: 1rem;
-                     justify-content: space-between;
-                     backdrop-filter: blur(1px);
-                     border-radius: 10px;
-                     position: relative;
-                     display: flex;
-                     align-items: center;
-        
-                     .register-text{
-                         color: var(--blackColor);
-                         margin-right: 1rem;
-                         text-align: center;
-                         text-decoration: underline;
-                     }   
-        
-                     .register-btn{
-                    background-color: var(--primary-color);
-                    color: gray-dark;
-                     padding: .2rem 4rem;
-                     border-radius: 10px;
-                     font-weight: 400;
-                     transition: 255ms ease;
-                     overflow: auto; 
-                     display: block;
-                    
-                     &:hover{
-                         background: var(--hoverColor);
-                         color: var(--blackColor);
-                     }
+                    justify-content: space-between;
+                    backdrop-filter: blur(1px);
+                    border-radius: 10px;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
 
-                     .register-icon{
-                        font-size: 25px;
+                    .register-text {
+                        color: var(--blackColor);
+                        margin-right: 1rem;
+                        text-align: center;
+                        text-decoration: underline;
+                    }
+
+                    .register-btn {
+                        background-color: var(--primary-color);
+                        color: gray-dark;
+                        padding: .2rem 4rem;
+                        border-radius: 10px;
+                        font-weight: 400;
                         transition: 255ms ease;
-                    } 
+                        overflow: auto;
+                        display: block;
+
+                        &:hover {
+                            background: var(--hoverColor);
+                            color: var(--blackColor);
+                        }
+
+                        .register-icon {
+                            font-size: 25px;
+                            transition: 255ms ease;
+                        }
                     }
                 }
-         
+
 
             }
+
             .register-obligatorioText {
                 font-size: 0.9rem;
-                color: #ff0000; 
+                color: #ff0000;
                 margin-top: 1rem;
                 margin-left: 2rem;
                 text-align: left;
             }
-        .register-formR {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);                
-            gap: 0.7rem;
-            padding: 1rem;
-                .register-inputDiv{
-                    width: 100%; 
+
+            .register-formR {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.7rem;
+                padding: 1rem;
+
+                .register-inputDiv {
+                    width: 100%;
                     padding: 0.5rem;
                     box-sizing: border-box;
-                       .register-icon{
-                            color: var(--greyText);
-                        }
-                        input{
-                            background: none;
-                            outline: none;
-                            border: none;
-                            width: 100%;
-                            padding: 0.3rem; 
-                        }
-                        label{
-                            color: var(--blackColor);
-                            font-weight: 400;
-                            font-size: 14px;
-                            padding: .5rem 0;
-                            display: block;
-                        }
 
-                        .register-asterisk {
-                            color: red;
-                                                  }
-                          
-                        .register-input{
-                            gap: .3rem;
-                            padding: 0.5rem;
-                            background: var(--inputColor);
-                            border-radius: 10px;
-                        }
-
+                    .register-icon {
+                        color: var(--greyText);
                     }
 
-                    .register-medication-container {
-                        background-color: rgba(49, 49, 49, 0.257); /* Color de fondo */
-                        border-radius: 12px; /* Bordes redondeados */
-                        padding: 16px; /* Espaciado interno */
-                        width: 400px;
-                        max-width: 600px; /* Ancho opcional */
-                        margin: 0 auto; /* Centrado opcional */
-
-                        .register-inputDiv {
-                            margin-bottom: 12px; /* Espacio entre cada input */
-                        }
-                        
-                        .register-input {
-                            display: flex;
-                            align-items: center;
-                            background-color: #fff; /* Fondo blanco para los inputs */
-                            border-radius: 8px; /* Bordes redondeados para cada input */
-                            padding: 8px;
-                        }
+                    input {
+                        background: none;
+                        outline: none;
+                        border: none;
+                        width: 100%;
+                        padding: 0.3rem;
                     }
 
-                    .register-btn{
-                        grid-column: span 2; /* Mantiene el botón en la parte inferior */
-                        padding: .8rem;
-                        background: var(--primary-color);
+                    label {
+                        color: var(--blackColor);
+                        font-weight: 400;
+                        font-size: 14px;
+                        padding: .5rem 0;
+                        display: block;
+                    }
+
+                    .register-asterisk {
+                        color: red;
+                    }
+
+                    .register-input {
+                        gap: .3rem;
+                        padding: 0.5rem;
+                        background: var(--inputColor);
                         border-radius: 10px;
-                        color: var(--whiteColor);
+                    }
+
+                }
+
+                .register-medication-container {
+                    background-color: rgba(49, 49, 49, 0.257);
+                    /* Color de fondo */
+                    border-radius: 12px;
+                    /* Bordes redondeados */
+                    padding: 16px;
+                    /* Espaciado interno */
+                    width: 400px;
+                    max-width: 600px;
+                    /* Ancho opcional */
+                    margin: 0 auto;
+                    /* Centrado opcional */
+
+                    .register-inputDiv {
+                        margin-bottom: 12px;
+                        /* Espacio entre cada input */
+                    }
+
+                    .register-input {
                         display: flex;
                         align-items: center;
-                        justify-content: center;
-                        font-size: 16px;
-                        width: 100%; 
-                        margin-bottom: 0;
-                        transition: 255ms ease;                       
+                        background-color: #fff;
+                        /* Fondo blanco para los inputs */
+                        border-radius: 8px;
+                        /* Bordes redondeados para cada input */
+                        padding: 8px;
+                    }
+                }
 
-                        .register-icon{
-                            font-size: 25px;
-                            transition: 255ms ease;
-                        }
+                .register-btn {
+                    grid-column: span 2;
+                    /* Mantiene el botón en la parte inferior */
+                    padding: .8rem;
+                    background: var(--primary-color);
+                    border-radius: 10px;
+                    color: var(--whiteColor);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 16px;
+                    width: 100%;
+                    margin-bottom: 0;
+                    transition: 255ms ease;
 
-                        &:hover{
-                            background: var(--hoverColor);
-                            color: var(--blackColor);
-                            .register-icon{
-                                color: var(--blackColor);
-                                transform: translateX(5px);
-                            }
-                        }
+                    .register-icon {
+                        font-size: 25px;
+                        transition: 255ms ease;
                     }
 
-             }
-               }
+                    &:hover {
+                        background: var(--hoverColor);
+                        color: var(--blackColor);
+
+                        .register-icon {
+                            color: var(--blackColor);
+                            transform: translateX(5px);
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+@media (max-width: 840px) {
+    .register-registerPage .register-containerR {
+        height: 100vh;
+        width: 100%;
+        margin: auto;
+    }
+}
+
+@media (max-width: 780px) {
+    .hidden-responsive {
+        display: none;
+    }
+    .register-registerPage .register-containerR {
+        height: 100vh;
+        width: 100%;
+        margin: auto;
+        overflow-x: hidden;
+    }
+
+    
+    .register-formR {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .register-headerDiv {
+        flex-direction: column;
     }
 }
