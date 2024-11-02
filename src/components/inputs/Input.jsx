@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Input = ({ label, type, name, id, placeholder, value, onChange, required, Icon, max }) => {
+const Input = ({ label, type, name, id, placeholder, value, onChange, required, Icon, max, min, onKeyDown }) => {
     return (
         <div className="w-full box-border">
             <label className='text-black font-normal text-sm py-2 block' htmlFor={id}>{label}</label>
@@ -16,6 +16,11 @@ const Input = ({ label, type, name, id, placeholder, value, onChange, required, 
                     onChange={onChange}
                     required={required}
                     className='bg-transparent outline-none border-none w-full p-1'
+                    inputMode={type === 'number' ? 'numeric' : undefined}
+                    max={type !== 'number' ? max : undefined}
+                    min={min}
+                    onKeyDown={onKeyDown}
+                    {...min && { minLength: min }}
                     {...max && { maxLength: max }}
                 />
             </div>
@@ -38,8 +43,12 @@ Input.propTypes = {
 Input.defaultProps = {
     type: 'text',
     placeholder: '',
+    value: '',
     required: false,
     icon: null,
+    max: null,
+    min: 0,
+    onkeydown: () => { },
 };
 
 export default Input;

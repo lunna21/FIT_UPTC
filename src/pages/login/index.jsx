@@ -15,17 +15,17 @@ import './login.css';
 
 function LoginPage() {
     const { isLoaded, isSignedIn } = useAuth(); // Obtener los estados aquí
-    const router = useRouter();
-    const redirectPage = "/dout";
+    // const router = useRouter();
+    // const redirectPage = "/dashboard";
 
-    // Redirige al usuario al dashboard si ya está autenticado
-    useEffect(() => {
-        if (isLoaded && isSignedIn) {
-            router.push(redirectPage);
-        }
-    }, [isLoaded, isSignedIn, router]); // Dependencias adecuadas
+    // // Redirige al usuario al dashboard si ya está autenticado
+    // useEffect(() => {
+    //     if (isLoaded && isSignedIn) {
+    //         router.push(redirectPage);
+    //     }
+    // }, [isLoaded, isSignedIn, router]); // Dependencias adecuadas
 
-    if (!isLoaded || isSignedIn) {
+    if (!isLoaded) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader />
