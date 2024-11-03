@@ -17,6 +17,7 @@ import { validateEmailInput, validateNumberInput, validateTextInput, validatePho
 import { getUserById } from '@/db/user'
 
 import './register.css'
+import Modal from './Modal';
 
 //Import Icons
 import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom } from "react-icons/md";
@@ -298,7 +299,10 @@ const Register = () => {
             console.log(String(err))
         }
     }
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const handleAcceptTerms = () => {
+        setFormData((prevData) => ({ ...prevData, terms: true }));
+      };
     return (
         <div className="register-registerPage register-flex">
             <div className="register-containerR register-flex">
@@ -314,7 +318,7 @@ const Register = () => {
                         Los campos con (*) son campos obligatorios.
                     </p>
 
-                    <form className="register-formR register-grid" onSubmit={handleSubmit}>
+                  <form className="register-formR register-grid" onSubmit={handleSubmit}>
 
                         <CheckUserRegister
                             valueTypeDocument={formData.typeDocument}
@@ -568,16 +572,36 @@ const Register = () => {
                                 />
 
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}
+                                <div>
                                 <div className="flex gap-2 items-center" style={{ gridColumn: "span 2" }}>
-                                    <input type="checkbox" id="terms" name="terms" className='text-primary' onChange={handleChange} required value={formData.terms} />
+                                    <input 
+                                    type="checkbox" 
+                                    id="terms" 
+                                    name="terms" 
+                                    className='text-primary' 
+                                    onChange={handleChange} 
+                                    required 
+                                    checked={formData.terms} 
+                                    />
                                     <label htmlFor="terms" className="register-checkboxLabel">
                                         He leido y aceptado los terminos y condiciones
                                     </label>
-                                    <Link href="/terms" className='text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255'>
-                                        TERMINOS Y CONDICIONES
-                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255"
+                                    >
+                                        Términos y condiciones
+                                    </button>
                                 </div>
-
+                                {/* Modal Component */}
+                                    <Modal
+                                        isOpen={isModalOpen}
+                                        onClose={() => setIsModalOpen(false)}
+                                        onAccept={handleAcceptTerms}
+                                    />
+                                </div>
+                                
                                 <div className='mt-4' style={{ gridColumn: "span 2" }}>
                                     <Button
                                         buttonText='Registrate'
