@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 
-
 const Button = ({ 
     buttonText,
     onClick = () => { },
     Icon,
+    type = "button",
     disabled = false,
     justify = "center",
     sizeHeight = "h-12", // tailwindcss class
@@ -17,7 +17,7 @@ const Button = ({
     return (
         <div className={`group w-full `}>
             <button
-                type="button"
+                type={type}
                 className={tailwindClassButton}
                 {...(onClick ? { onClick } : {})}
                 disabled={disabled}

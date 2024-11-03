@@ -179,7 +179,6 @@ option:checked {
         .register-formDiv {
             display: block;
             flex-basis: 50%;
-            flex-direction: column;
             gap: 1.5rem;
             padding: 12px;
             justify-content: space-between;
@@ -395,5 +394,8 @@ option:checked {
 @media (max-width: 560px) {
     .register-headerDiv {
         flex-direction: column;
+    }
+    .container-form-valit {
+        padding: 0 8px;   
     }
 }
