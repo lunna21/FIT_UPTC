@@ -1,31 +1,99 @@
-// depends on the register.css stylesheet
-
-import Button from '@/components/buttons/Button'
-
-import { FaAddressCard } from 'react-icons/fa'
-import { MdOutlinePermIdentity, MdVerified } from 'react-icons/md'
+import React, { useState } from 'react';
+import Button from '@/components/buttons/Button';
+import { FaAddressCard } from 'react-icons/fa';
+import { MdOutlinePermIdentity, MdVerified, MdError } from 'react-icons/md';
 
 function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChange, checkUserExists }) {
+    const [errors, setErrors] = useState({ typeDocument: '', numberDocument: '' });
+
+    const handleNumberChange = (e) => {
+        const value = e.target.value;
+        if (/^\d{0,10}$/.test(value)) {
+            handleChange(e);
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                numberDocument: value.length < 8 ? 'El número de documento debe tener al menos 8 dígitos.' : ''
+            }));
+        }
+    };
+
+    const handleTypeDocumentChange = (e) => {
+        handleChange(e);
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            typeDocument: e.target.value ? '' : 'Debe seleccionar un tipo de documento.'
+        }));
+    };
+
+    const errorStyle = {
+        color: '#FF1302',
+        fontSize: '0.875rem',
+        fontWeight: 'bold',
+        marginTop: '0.5rem',
+        display: 'flex',
+        alignItems: 'center'
+    };
+
+    const inputContainerStyle = {
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center'
+    };
+
+    const errorIconStyle = {
+        position: 'absolute',
+        right: '10px',
+        fontSize: '1.5rem', 
+        color: '#FF1302'
+    };
+
     return (
         <>
             <div className="register-inputDiv" style={{ padding: '0.5rem' }}>
                 <label htmlFor="typeDocument">Tipo de Documento (*)</label>
-                <div className="register-input register-flex">
+                <div className="register-input register-flex" style={inputContainerStyle}>
                     <FaAddressCard className="register-icon" />
-                    <select id="typeDocument" name='typeDocument' required value={valueTypeDocument} onChange={handleChange} className={`select-input ${valueTypeDocument ? 'filled' : ''}`}  >
+                    <select
+                        id="typeDocument"
+                        name="typeDocument"
+                        required
+                        value={valueTypeDocument}
+                        onChange={handleTypeDocumentChange}
+                        className={`select-input ${valueTypeDocument ? 'filled' : ''}`}
+                    >
                         <option value="">Selecciona un tipo de documento</option>
                         <option value="CC">Cédula de Ciudadanía</option>
                         <option value="TI">Tarjeta de Identidad</option>
                         <option value="CE">Cédula de Extranjería</option>
                     </select>
+                    {errors.typeDocument && <MdError style={errorIconStyle} />}
                 </div>
+                {errors.typeDocument && (
+                    <p style={errorStyle}>
+                        {errors.typeDocument}
+                    </p>
+                )}
             </div>
             <div className="register-inputDiv">
                 <label htmlFor="numdoc">Número de documento (*)</label>
-                <div className="register-input register-flex">
+                <div className="register-input register-flex" style={inputContainerStyle}>
                     <MdOutlinePermIdentity className="register-icon" />
-                    <input type="number" name="numberDocument" placeholder="Ingresa tu número de documento" value={valueNumberDocument} onChange={handleChange} required maxLength={10} />
+                    <input
+                        type="text"
+                        name="numberDocument"
+                        placeholder="Ingresa tu número de documento"
+                        value={valueNumberDocument}
+                        onChange={handleNumberChange}
+                        required
+                        maxLength={10}
+                    />
+                    {errors.numberDocument && <MdError style={errorIconStyle} />}
                 </div>
+                {errors.numberDocument && (
+                    <p style={errorStyle}>
+                        {errors.numberDocument}
+                    </p>
+                )}
             </div>
 
             <div style={{ gridColumn: 'span 2' }}>
@@ -34,11 +102,11 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                     colSpan={2}
                     onClick={checkUserExists}
                     Icon={MdVerified}
-                    disabled={!valueTypeDocument || !valueNumberDocument}
+                    disabled={!valueTypeDocument || valueNumberDocument.length < 8}
                 />
             </div>
         </>
-    )
+    );
 }
 
 export default CheckUserRegister;

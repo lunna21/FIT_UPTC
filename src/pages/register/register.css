@@ -364,6 +364,12 @@ option:checked {
     }
 }
 
+.error-message {
+    color: #FF1302 ;
+    font-size: 0.875rem;
+    font-weight: bold;
+    margin-top: 0.25rem; 
+}
 
 @media (max-width: 840px) {
     .register-registerPage .register-containerR {
