@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
