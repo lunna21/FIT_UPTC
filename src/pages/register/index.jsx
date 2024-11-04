@@ -215,7 +215,7 @@ const Register = () => {
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 5 MB.');
+                setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
                 return;
             }
             setErrorMessage("");
@@ -226,47 +226,6 @@ const Register = () => {
             setSelectedFile(file)
         }
     }
-
-// function handleFileChange(event) {
-//     const file = event.target.files[0];
-//     if (file) {
-//         // Verificar el formato del archivo (por ejemplo, PDF)
-//         const allowedTypes = ['application/pdf'];
-//         if (!allowedTypes.includes(file.type)) {
-//             alert('Por favor, sube un archivo PDF.');
-//             return;
-//         }
-
-//         // Verificar el tamaño del archivo (por ejemplo, máximo 5 MB)
-//         const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
-//         if (file.size > maxSizeInBytes) {
-//             alert('El archivo es demasiado grande. El tamaño máximo permitido es de 5 MB.');
-//             return;
-//         }
-
-//         const reader = new FileReader();
-//         reader.onloadend = () => {
-//             const base64File = reader.result;
-
-//             // Enviar el archivo al servidor
-//             fetch('/api/upload', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ file: base64File }),
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log(data.message);
-//             })
-//             .catch(error => {
-//                 console.error('Error al subir el archivo:', error);
-//                                 });
-//         };
-//         reader.readAsDataURL(file);
-//     }
-// }
 
     const addMedication = () => {
         if (!formData.medication.nameMedication) {
@@ -316,70 +275,105 @@ const Register = () => {
         };
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!isLoaded) return;
+     const handleSubmit = async (e) => {
+         e.preventDefault();
 
-        try {
-            // Subir el archivo después de completar el registro
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64File = reader.result;
+         if (!selectedFile) {
+             setUploadError('Por favor, selecciona un archivo.');
+             return;
+         }
 
-                    // Obtener el código del estudiante y la fecha actual
-                    const studentCode = formData.studentCode;
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toISOString().slice(0, 10).replace(/-/g, '');
+         const reader = new FileReader();
+         reader.readAsDataURL(selectedFile);
+         reader.onloadend = async () => {
+             const base64File = reader.result.split(',')[1];
+             const studentCode = formData.studentCode; 
+             const formattedDate = new Date().toISOString();
 
-                    // Enviar el archivo al servidor con el código del estudiante y la fecha
-                    fetch('/api/upload', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ 
-                            file: base64File,
-                            studentCode: studentCode,
-                            uploadDate: formattedDate
-                        }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data.message);
-                    })
-                    .catch(error => {
-                        setUploadError('Error al subir el archivo.'); // Actualiza el estado con el mensaje de error
-                    });
-                };
-                reader.readAsDataURL(selectedFile);
-            }
-            // Inicia el proceso de registro
-            const email = formData.email;
-            const password = generatePassword(); 
-            const username = generateUsername(formData.firstName, formData.lastName, 2);
+             try {
+                 const response = await fetch('/api/upload', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({ 
+                         file: base64File,
+                         studentCode: studentCode,
+                         uploadDate: formattedDate
+                     }),
+                 });
 
-            await signUp.create({
-                emailAddress: email,
-                password: password,
-                username: username,
-            });
+                 if (!response.ok) {
+                     throw new Error('Error en la carga del archivo: ${response.statusText}');
+                 }
 
-            // Envía el enlace de verificación de email
-            await signUp.prepareEmailAddressVerification({
-                strategy: "email_link",
-                redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
-            });
-            
-            // Redirecciona a la página de espera para que el usuario confirme el email
-            router.push("/verification");
-        } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error(JSON.stringify(err, null, 2))
-          }
-    };
+                 const data = await response.json();
+                 console.log(data.message);
+                 console.log(data.fileId); //Si la carga es exitosa, proceder con el registro
+                 try {
+                    //         Inicia el proceso de registro
+                               const email = formData.email;
+                               const password = generatePassword(); 
+                               const username = generateUsername(formData.firstName, formData.lastName, 2);
+                
+                               await signUp.create({
+                                   emailAddress: email,
+                                   password: password,
+                                   username: username,
+                               });
+                
+                               // Envía el enlace de verificación de email
+                               await signUp.prepareEmailAddressVerification({
+                                   strategy: "email_link",
+                                   redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
+                               });
+                
+                                 // Redirecciona a la página de espera para que el usuario confirme el email
+                               router.push("/verification");
+                           } catch (err) {
+                                 // See https:  clerk.com/docs/custom-flows/error-handling
+                                  //for more info on error handling
+                               console.error(JSON.stringify(err, null, 2))
+                          }
+                 router.push('/verification');
+             } catch (error) {
+                 setUploadError('Error al subir el archivo ');
+                 console.error(error);
+             }
+         };
+     };
 
+     //Código antes de agregar la función de subida de archivo
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     if (!isLoaded) return;
+
+    //     try {
+    //         // Inicia el proceso de registro
+    //         const email = formData.email;
+    //         const password = generatePassword(); 
+    //         const username = generateUsername(formData.firstName, formData.lastName, 2);
+
+    //         await signUp.create({
+    //             emailAddress: email,
+    //             password: password,
+    //             username: username,
+    //         });
+
+    //         // Envía el enlace de verificación de email
+    //         await signUp.prepareEmailAddressVerification({
+    //             strategy: "email_link",
+    //             redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
+    //         });
+
+    //         // Redirecciona a la página de espera para que el usuario confirme el email
+    //         router.push("/verification");
+    //     } catch (err) {
+    //         // See https://clerk.com/docs/custom-flows/error-handling
+    //         // for more info on error handling
+    //         console.error(JSON.stringify(err, null, 2))
+    //       }
+    // };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleAcceptTerms = () => {
