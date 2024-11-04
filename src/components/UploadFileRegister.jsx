@@ -30,7 +30,7 @@ function UploadFileRegister({ age = 0, parentalAuthorization, informedConsent, h
                                     `Tamaño PDF: ${parseInt(convertToKB(parentalAuthorization.size))} KB`
                                 ) : 'PDF hasta 3 MB'}
                             </p>
-                            {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
+                            {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
                         </div>
                     </label>
                 </div>
@@ -59,7 +59,7 @@ function UploadFileRegister({ age = 0, parentalAuthorization, informedConsent, h
                                         `Tamaño PDF: ${parseInt(convertToKB(informedConsent.size))} KB`
                                     ) : 'PDF hasta 3 MB'}
                                 </p>
-                                {errorMessage && <p className="text-red-500 text-sm mt-2 register-message">{errorMessage}</p>}
+                                {errorMessage && <p className="text-red-500 font-bold text-2xl mt-2 ">{errorMessage}</p>}
                             </div>
                         </label>
                     </div>
