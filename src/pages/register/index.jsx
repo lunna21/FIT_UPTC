@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useClerk } from '@clerk/nextjs';
+import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import Link from 'next/link'
 
@@ -30,11 +30,7 @@ import { FaHouseChimneyMedical } from "react-icons/fa6";
 import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
-    const clerk = useClerk();
-    const { signUp } = clerk;
-
-    console.log(clerk);
-    console.log(signUp)
+    const { isLoaded, signUp } = useSignUp();
 
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -278,27 +274,36 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!isLoaded) return;
+
         try {
-            // Creación del usuario con Clerk, incluyendo el nombre de usuario
-            const newUser = await signUp.create({
-                emailAddress: formData.email,
-                password: generatePassword(),
-                username: generateUsername(formData.firstName, formData.lastName),
-                publicMetadata: {
-                    role: 'student',
-                },
-            })
+            // Inicia el proceso de registro
+            const email = formData.email;
+            const password = generatePassword(); 
+            const username = generateUsername(formData.firstName, formData.lastName, 2);
 
-            console.log(newUser)
+            await signUp.create({
+                emailAddress: email,
+                password: password,
+                username: username,
+            });
 
-            // Envío del código de confirmación
-            await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-            router.push('/verify');
+            // Envía el enlace de verificación de email
+            await signUp.prepareEmailAddressVerification({
+                strategy: "email_link",
+                redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
+            });
+
+            // Redirecciona a la página de espera para que el usuario confirme el email
+            router.push("/verification");
         } catch (err) {
-            setError(String(err));
-            console.log(String(err))
-        }
-    }
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            console.error(JSON.stringify(err, null, 2))
+          }
+    };
+
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleAcceptTerms = () => {
         setFormData((prevData) => ({ ...prevData, terms: true }));
@@ -507,16 +512,34 @@ const Register = () => {
                                         max={10}
                                         onKeyDown={validatePhoneNumberInput}
                                     />
-                                    <Input
-                                        placeholder="Ingresa tu parentesco"
-                                        Icon={MdFamilyRestroom}
-                                        required
-                                        onChange={handleEmergencyContactChange}
-                                        value={formData.emergencyContact.relationship}
-                                        id="relationship"
-                                        name="relationship"
-                                        onKeyDown={validateTextInput}
-                                    />
+
+                                    <div className="register-inputDiv">
+                                        <div className="register-input register-flex mt-2">
+                                            <MdFamilyRestroom className="register-icon" />
+                                            <select className={`w-full ${formData.emergencyContact.relationship && "text-primary-medium font-semibold "}`} name="relationship" value={formData.emergencyContact.relationship} onChange={handleEmergencyContactChange} required >
+                                                <option value="">Selecciona el parentesco</option>
+                                                <option value="PADRE">Padre</option>
+                                                <option value="MADRE">Madre</option>
+                                                <option value="HERMANO">Hermano</option>
+                                                <option value="HERMANA">Hermana</option>
+                                                <option value="ESPOSO">Esposo</option>
+                                                <option value="ESPOSA">Esposa</option>
+                                                <option value="HIJO">Hijo</option>
+                                                <option value="HIJA">Hija</option>
+                                                <option value="ABUELO">Abuelo</option>
+                                                <option value="ABUELA">Abuela</option>
+                                                <option value="TIO">Tío</option>
+                                                <option value="TIA">Tía</option>
+                                                <option value="PRIMO">Primo</option>
+                                                <option value="PRIMA">Prima</option>
+                                                <option value="TUTOR">Tutor</option>
+                                                <option value="AMIGO">Amigo</option>
+                                                <option value="COLEGA">Colega</option>
+                                                <option value="VECINO">Vecino</option>
+                                                <option value="OTRO">Otro</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="register-medication-container">

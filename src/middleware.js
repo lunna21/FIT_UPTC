@@ -9,7 +9,15 @@ const rolePermissions = {
 };
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/', '/login', '/register', '/terms'];
+const publicRoutes = [
+  '/', 
+  '/login', 
+  '/register', 
+  '/terms', 
+  '/verification',
+  '/pending',
+  /^\/api\/.*/ // Permitir acceso a todas las rutas de la API
+];
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
@@ -17,10 +25,11 @@ export default clerkMiddleware(async (auth, req) => {
   const url = new URL(req.url);
 
   // Check if the route is public
-  if (publicRoutes.includes(url.pathname)) {
+  if (publicRoutes.some(route => typeof route === 'string' ? url.pathname === route : route.test(url.pathname))) {
     return NextResponse.next();
   }
 
+  // Permitir el acceso a la ruta específica de registro en la API
   if (url.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/register')) {
     return NextResponse.next();
   }
@@ -48,13 +57,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     // Check if the route is allowed for the user's role
     const allowedRoutes = rolePermissions[role] || [];
-    let isAllowed;
-    allowedRoutes.forEach(route => {
+    let isAllowed = allowedRoutes.some(route => {
       url.pathname = route;
-
-      isAllowed = url.toString() === req.url ? true : false;
-
-      if (isAllowed) return;
+      return url.toString() === req.url;
     });
 
     if (!isAllowed) {

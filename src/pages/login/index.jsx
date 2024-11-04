@@ -14,16 +14,7 @@ import gym from '@/assets/gym.jpeg';
 import './login.css';
 
 function LoginPage() {
-    const { isLoaded, isSignedIn } = useAuth(); // Obtener los estados aquí
-    // const router = useRouter();
-    // const redirectPage = "/dashboard";
-
-    // // Redirige al usuario al dashboard si ya está autenticado
-    // useEffect(() => {
-    //     if (isLoaded && isSignedIn) {
-    //         router.push(redirectPage);
-    //     }
-    // }, [isLoaded, isSignedIn, router]); // Dependencias adecuadas
+    const { isLoaded } = useAuth(); // Obtener los estados aquí
 
     if (!isLoaded) {
         return (
