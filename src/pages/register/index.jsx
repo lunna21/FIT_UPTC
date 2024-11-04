@@ -70,6 +70,7 @@ const Register = () => {
     const [obligatoryFieldsCheck, setObligatoryFieldsCheck] = useState(false);
     const containerRef = useRef(null);
     const [errorMessage, setErrorMessage] = useState("");
+    const [uploadError, setUploadError] = useState("");
     const maxFileSize = 3 * 1024 * 1024; // Tamaño máximo 5 MB
     const today = getToday(14);
 
@@ -202,18 +203,19 @@ const Register = () => {
             }
         });
     }
-
+    const [selectedFile, setSelectedFile] = useState(null);
+    
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         const file = files[0];
 
         if (file) {
             if (file.type !== "application/pdf") {
-                setErrorMessage("Solo se permiten archivos PDF.");
+                setErrorMessage('Por favor, sube un archivo PDF.');
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessage("El archivo no debe superar los 3 MB.");
+                setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 5 MB.');
                 return;
             }
             setErrorMessage("");
@@ -221,8 +223,50 @@ const Register = () => {
                 ...formData,
                 [name]: file
             });
+            setSelectedFile(file)
         }
     }
+
+// function handleFileChange(event) {
+//     const file = event.target.files[0];
+//     if (file) {
+//         // Verificar el formato del archivo (por ejemplo, PDF)
+//         const allowedTypes = ['application/pdf'];
+//         if (!allowedTypes.includes(file.type)) {
+//             alert('Por favor, sube un archivo PDF.');
+//             return;
+//         }
+
+//         // Verificar el tamaño del archivo (por ejemplo, máximo 5 MB)
+//         const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+//         if (file.size > maxSizeInBytes) {
+//             alert('El archivo es demasiado grande. El tamaño máximo permitido es de 5 MB.');
+//             return;
+//         }
+
+//         const reader = new FileReader();
+//         reader.onloadend = () => {
+//             const base64File = reader.result;
+
+//             // Enviar el archivo al servidor
+//             fetch('/api/upload', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify({ file: base64File }),
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 console.log(data.message);
+//             })
+//             .catch(error => {
+//                 console.error('Error al subir el archivo:', error);
+//                                 });
+//         };
+//         reader.readAsDataURL(file);
+//     }
+// }
 
     const addMedication = () => {
         if (!formData.medication.nameMedication) {
@@ -277,6 +321,39 @@ const Register = () => {
         if (!isLoaded) return;
 
         try {
+            // Subir el archivo después de completar el registro
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64File = reader.result;
+
+                    // Obtener el código del estudiante y la fecha actual
+                    const studentCode = formData.studentCode;
+                    const currentDate = new Date();
+                    const formattedDate = currentDate.toISOString().slice(0, 10).replace(/-/g, '');
+
+                    // Enviar el archivo al servidor con el código del estudiante y la fecha
+                    fetch('/api/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            file: base64File,
+                            studentCode: studentCode,
+                            uploadDate: formattedDate
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.message);
+                    })
+                    .catch(error => {
+                        setUploadError('Error al subir el archivo.'); // Actualiza el estado con el mensaje de error
+                    });
+                };
+                reader.readAsDataURL(selectedFile);
+            }
             // Inicia el proceso de registro
             const email = formData.email;
             const password = generatePassword(); 
@@ -293,7 +370,7 @@ const Register = () => {
                 strategy: "email_link",
                 redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
             });
-
+            
             // Redirecciona a la página de espera para que el usuario confirme el email
             router.push("/verification");
         } catch (err) {
@@ -387,7 +464,7 @@ const Register = () => {
                                     id="studentCode"
                                     name="studentCode"
                                     max={10}
-                                    min={10}
+                                    min={9}
                                     onKeyDown={validateNumberInput}
                                 />
 
@@ -510,6 +587,7 @@ const Register = () => {
                                         id="contactNumber"
                                         name="contactNumber"
                                         max={10}
+                                        min={10}
                                         onKeyDown={validatePhoneNumberInput}
                                     />
 
@@ -597,7 +675,9 @@ const Register = () => {
                                     handleFileChange={handleFileChange}
                                     errorMessage={errorMessage}
                                 />
-
+                                {uploadError && (
+                                    <p className='text-red-500 text-sm mt-2'>{uploadError}</p>
+                                )}
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}
                                 <div>
                                 <div className="flex gap-2 items-center" style={{ gridColumn: "span 2" }}>
