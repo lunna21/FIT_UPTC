@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { useSignUp } from '@clerk/nextjs';
-import { useRouter } from 'next/router';
 import Link from 'next/link'
 
 import Button from '@/components/buttons/Button'
@@ -11,10 +9,12 @@ import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
 import UploadFileRegister from '@/components/UploadFileRegister'
 
-import { calculateAge, getToday, generatePassword, generateUsername } from '@/utils/utils'
+import useCustomSignUp from '@/hooks/useCustomSignUp'
+
+import { calculateAge, getToday } from '@/utils/utils'
 import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
 
-import { getUserById } from '@/db/user'
+import { getUserById } from '@/api/user'
 
 import './register.css'
 import Modal from './Modal';
@@ -30,9 +30,8 @@ import { FaHouseChimneyMedical } from "react-icons/fa6";
 import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
-    const { isLoaded, signUp } = useSignUp();
+    const { signUp } = useCustomSignUp();
 
-    const router = useRouter();
     const [formData, setFormData] = useState({
         typeDocument: '',
         numberDocument: '',
@@ -142,7 +141,6 @@ const Register = () => {
             setError('Error al verificar el usuario');
             setIsValidated(false);
             console.error("Error al verificar el usuario", error);
-            alert("Error al verificar el usuario: " + error);
             return null;
         }
     };
@@ -203,6 +201,9 @@ const Register = () => {
             }
         });
     }
+
+    console.log(formData)
+
     const [selectedFile, setSelectedFile] = useState(null);
     
     const handleFileChange = (e) => {
@@ -378,7 +379,7 @@ const Register = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleAcceptTerms = () => {
         setFormData((prevData) => ({ ...prevData, terms: true }));
-      };
+    };
     return (
         <div className="register-registerPage register-flex">
             <div className="register-containerR register-flex">
@@ -394,7 +395,7 @@ const Register = () => {
                         Los campos con (*) son campos obligatorios.
                     </p>
 
-                  <form className="register-formR register-grid" onSubmit={handleSubmit}>
+                    <form className="register-formR register-grid" onSubmit={handleSubmit}>
 
                         <CheckUserRegister
                             valueTypeDocument={formData.typeDocument}
@@ -541,9 +542,9 @@ const Register = () => {
                                         <MdOutlineRealEstateAgent className="register-icon" />
                                         <select className={`w-full ${formData.programType && "text-primary-medium font-semibold "}`} name="programType" value={formData.programType} onChange={handleChange} required >
                                             <option value="">Selecciona tu estamento</option>
-                                            <option value="Pregrado">Pregrado</option>
-                                            <option value="Prosgrado">Posgrado</option>
-                                            <option value="Fesad">Fesad</option>
+                                            <option value="PREGR">Pregrado</option>
+                                            <option value="POSTG">Posgrado</option>
+                                            <option value="FESAD">Fesad</option>
                                         </select>
                                     </div>
                                 </div>
@@ -673,36 +674,36 @@ const Register = () => {
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>
                                 )}
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}
-                                <div>
-                                <div className="flex gap-2 items-center" style={{ gridColumn: "span 2" }}>
-                                    <input 
-                                    type="checkbox" 
-                                    id="terms" 
-                                    name="terms" 
-                                    className='text-primary' 
-                                    onChange={handleChange} 
-                                    required 
-                                    checked={formData.terms} 
-                                    />
-                                    <label htmlFor="terms" className="register-checkboxLabel">
-                                        He leido y aceptado los terminos y condiciones
-                                    </label>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255"
-                                    >
-                                        Términos y condiciones
-                                    </button>
-                                </div>
-                                {/* Modal Component */}
+                                <div style={{ gridColumn: "span 2" }}>
+                                    <div className="flex gap-2 items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="terms"
+                                            name="terms"
+                                            className='text-primary'
+                                            onChange={handleChange}
+                                            required
+                                            checked={formData.terms}
+                                        />
+                                        <label htmlFor="terms" className="register-checkboxLabel">
+                                            He leido y aceptado los terminos y condiciones
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsModalOpen(true)}
+                                            className="text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255"
+                                        >
+                                            Términos y condiciones
+                                        </button>
+                                    </div>
+                                    {/* Modal Component */}
                                     <Modal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onAccept={handleAcceptTerms}
                                     />
                                 </div>
-                                
+
                                 <div className='mt-4' style={{ gridColumn: "span 2" }}>
                                     <Button
                                         buttonText='Registrate'

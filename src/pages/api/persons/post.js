@@ -73,6 +73,25 @@ export default async function postHandler(req, res) {
     return res.status(201).json(newPerson);
   } catch (error) {
     console.error('Error creating person:', error);
+
+    if (error.code === 'P2002') {
+      // Prisma unique constraint error
+      const uniqueField = error.meta.target[0];
+      let errorMessage = 'Error al crear la persona';
+
+      switch (uniqueField) {
+        case 'email_person':
+          errorMessage = 'El correo electrónico ya está registrado';
+          break;
+        case 'document_number_person':
+          errorMessage = 'El número de documento ya está registrado';
+          break;
+        // Add more cases if there are other unique fields
+      }
+
+      return res.status(400).json({ error: errorMessage });
+    }
+
     return res.status(500).json({ error: 'Error al crear la persona' });
   }
 }

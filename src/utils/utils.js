@@ -51,6 +51,11 @@ export function generateUsername(name, lastName, number) {
     return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${number}`;
 }
 
+/* 
+  This function generates a random password with 12 characters
+  and at least one uppercase letter, one lowercase letter,
+  one number, and one special character.
+*/
 export function generatePassword() {
   const length = 12;
   const charset =

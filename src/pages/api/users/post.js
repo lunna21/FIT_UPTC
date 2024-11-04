@@ -96,6 +96,7 @@ export default async function postHandler(req, res) {
                 user_status = 'PEN';
                 const inscriptionDetailValidation = validateInscriptionDetail(inscription_detail);
                 if (!inscriptionDetailValidation.isValid) {
+                    console.error(inscriptionDetailValidation.errors)
                     return res.status(400).json(
                         { error: 'Errores de validación en los datos de la inscripción', details: inscriptionDetailValidation.errors }
                     );
