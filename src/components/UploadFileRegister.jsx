@@ -1,3 +1,4 @@
+import {useState} from "react";
 import Link from 'next/link';
 
 import { convertToKB } from '@/utils/utils';
@@ -22,7 +23,7 @@ function UploadFileRegister({ age = 0, parentalAuthorization, informedConsent, h
                                 <span className='group-hover:text-yellow-600 transition-all ease-in-out duration-255'>
                                     {parentalAuthorization ? parentalAuthorization.name : 'Sube la autorización de tus padres'}
                                 </span>
-                                <input id="parentalAuthorization" type="file" name="parentalAuthorization" onChange={handleFileChange} className="sr-only" accept="application/pdf" />
+                                <input id="parentalAuthorization" type="file" name="parentalAuthorization"onChange={handleFileChange} className="sr-only" accept="application/pdf" />
                             </div>
                             {/* <p className="pl-1">o arrastra el archivo</p> */}
                             <p className="text-xs leading-5 text-gray-600">

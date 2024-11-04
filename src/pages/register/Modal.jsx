@@ -77,6 +77,7 @@ const Modal = ({ isOpen, onClose, onAccept }) => {
           </div>
           <div className="items-center">
           <Button
+            color='red'
             buttonText="Cerrar"
             Icon={RiCloseCircleFill}
             onClick={onClose}
