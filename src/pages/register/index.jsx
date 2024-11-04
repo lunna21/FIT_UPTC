@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
-import Input from '@/components/inputs/Input'
+import ValidationInput from '@/components/inputs/InputValidation'
 import HeaderRegister from '@/components/HeaderRegister'
 import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
@@ -352,19 +352,18 @@ const Register = () => {
                         {isValidated && (
                             <>
                                 {/*Other information */}
-                                <Input
+                                <ValidationInput
                                     label="Nombres (*)"
                                     placeholder="Ingresa tus nombres"
                                     required
-                                    value={formData.fullName}
-                                    onChange={handleChange}
+                                    value={formData.firstName}
                                     Icon={IoInformationCircleSharp}
-                                    id="firstName"
                                     name="firstName"
-                                    onKeyDown={validateTextInput}
+                                    onChange={handleChange}
+                                    type="text"
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Apellidos (*)"
                                     placeholder="Ingresa tus apellidos"
                                     required
@@ -374,9 +373,10 @@ const Register = () => {
                                     id="lastName"
                                     name="lastName"
                                     onKeyDown={validateTextInput}
+                                    type="text"
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Código Estudiantil (*)"
                                     type='number'
                                     placeholder="Ingresa tu código estudiantil"
@@ -391,9 +391,9 @@ const Register = () => {
                                     onKeyDown={validateNumberInput}
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Número de telefono (*)"
-                                    type='number'
+                                    type='phoneNumber'
                                     placeholder="Ingresa tu número de teléfono"
                                     required
                                     value={formData.phoneNumber}
@@ -406,7 +406,7 @@ const Register = () => {
                                     onKeyDown={validatePhoneNumberInput}
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Email (*)"
                                     type="email"
                                     placeholder="Ingresa tu dirección de email"
@@ -419,7 +419,7 @@ const Register = () => {
                                     onKeyDown={validateEmailInput}
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Fecha de Nacimiento (*)"
                                     type="date"
                                     max={today}
@@ -432,7 +432,7 @@ const Register = () => {
                                     onKeyDown={validateDateInput}
                                 />
 
-                                <Input
+                                < ValidationInput
                                     label="Eps (*)"
                                     placeholder="Ingresa el nombre de tu Eps"
                                     required
@@ -477,7 +477,7 @@ const Register = () => {
                                     </div>
                                 </div>
 
-                                <Input
+                                < ValidationInput
                                     label="Alergías"
                                     placeholder="Ingresa tus alegías"
                                     value={formData.allergies}
@@ -490,7 +490,7 @@ const Register = () => {
 
                                 <div className="register-medication-container relative h-full">
                                     <label htmlFor="emergencyFullName">Contacto en Caso de Emergencia (*)</label>
-                                    <Input
+                                    < ValidationInput
                                         placeholder="Nombre completo del contacto"
                                         required
                                         onChange={handleEmergencyContactChange}
@@ -500,8 +500,8 @@ const Register = () => {
                                         name="emergencyfullName"
                                         onKeyDown={validateTextInput}
                                     />
-                                    <Input
-                                        type='number'
+                                    < ValidationInput
+                                        type='phoneNumber'
                                         placeholder="Número del contacto"
                                         Icon={BsFillTelephoneFill}
                                         required
@@ -544,34 +544,38 @@ const Register = () => {
 
                                 <div className="register-medication-container">
                                     <label htmlFor="Medicamentos">Medicamentos Prescritos </label>
-                                    <Input
-                                        placeholder="Ingresa la dosis del medicamento"
-                                        value={formData.medication.dosage}
-                                        onChange={handleMedicationChange}
-                                        id="dosage"
-                                        name="dosage"
-                                        onKeyDown={validateTextInput}
-                                        Icon={MdDriveFileRenameOutline}
-                                    />
-
-                                    <Input
-                                        placeholder="Ingresa la razón de la prescripción"
-                                        value={formData.medication.reason}
-                                        onChange={handleMedicationChange}
-                                        id="reason"
-                                        name="reason"
-                                        onKeyDown={validateTextInput}
-                                        Icon={GiMedicines}
-                                    />
-                                    <Input
+                                    < ValidationInput
                                         placeholder="Ingresa el nombre del medicamento"
                                         value={formData.medication.nameMedication}
                                         onChange={handleMedicationChange}
                                         id="nameMedication"
                                         name="nameMedication"
                                         onKeyDown={validateTextInput}
-                                        Icon={RiFileAddFill}
+                                        Icon={MdDriveFileRenameOutline}
+                                        
                                     />
+                                    < ValidationInput
+                                        placeholder="Ingresa la dosis del medicamento"
+                                        value={formData.medication.dosage}
+                                        onChange={handleMedicationChange}
+                                        id="dosage"
+                                        name="dosage"
+                                        onKeyDown={validateTextInput}
+                                        Icon={GiMedicines}
+                                        
+                                    />
+
+                                    < ValidationInput
+                                        placeholder="Ingresa la razón de la prescripción"
+                                        value={formData.medication.reason}
+                                        onChange={handleMedicationChange}
+                                        id="reason"
+                                        name="reason"
+                                        onKeyDown={validateTextInput}
+                                        Icon={RiFileAddFill}
+                                        
+                                    />
+                                  
 
                                     <div className='flex gap-2 items-center'>
                                         <Button
@@ -641,7 +645,6 @@ const Register = () => {
 
                             </>
                         )}
-
                     </form>
                 </div>
             </div>
