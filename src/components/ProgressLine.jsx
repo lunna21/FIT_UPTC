@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-function ProgressLine({ lineColor, step, maxSteps, widthContainer }) {
+function ProgressLine({ step, maxSteps, widthContainer }) {
     const [lineWidth, setLineWidth] = useState(0);
 
     useEffect(() => {
@@ -12,7 +12,7 @@ function ProgressLine({ lineColor, step, maxSteps, widthContainer }) {
 
     return (
         <div
-            className={`bg-${lineColor} h-2 rounded-sm transition-all duration-500 ease-in-out sticky top-0 left-0 z-50`}
+            className={`bg-primary h-2 rounded-sm transition-all duration-500 ease-in-out sticky top-0 left-0 z-50`}
             style={{ width: `${lineWidth}px` }} // Cambia el ancho según el contador
         ></div>
     )
@@ -28,7 +28,6 @@ ProgressLine.propTypes = {
 }
 
 ProgressLine.defaultProps = {
-    lineColor: 'primary',
     step: 0,
     maxSteps: 0,
     widthContainer: 0,

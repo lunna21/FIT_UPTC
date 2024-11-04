@@ -3,28 +3,30 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-    const { id } = req.query;
-
+    const { id } = req.query; // 'id' debería ser el número de documento en este caso
     if (req.method === 'GET') {
         try {
-            const user = await prisma.user.findUnique({
-                where: { id },
+            // Convierte 'id' a un entero, si es necesario
+            const documentNumber = parseInt(id); // Asegúrate de que 'id' es un número entero
+
+            // Realiza la consulta
+            const user = await prisma.user.findFirst({
+                where: {
+                    document_number_person: documentNumber, // Usamos el campo único
+                },
             });
 
-            if (user) {
-                user.id = user.id.toString(); // Convert BigInt to string
+            // Verifica si el usuario fue encontrado
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
             }
 
-            if (user) {
-                res.status(200).json(user);
-            } else {
-                res.status(404).json({ error: 'User not found' });
-            }
+            return res.status(200).json(user);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'Internal server error' });
+            return res.status(500).json({ error: 'Error en la búsqueda del usuario' });
         }
     } else {
-        res.status(405).json({ error: 'Method not allowed' });
+        return res.status(405).json({ error: 'Método no permitido' });
     }
 }

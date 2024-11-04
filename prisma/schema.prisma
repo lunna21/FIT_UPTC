@@ -7,63 +7,241 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model allergy {
+  id_allergy         Int                  @id @default(autoincrement())
+  name_allergy       String               @unique(map: "uk_name_allergy") @db.VarChar(100)
+  inscription_detail inscription_detail[]
+}
+
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model personas {
-  id                       BigInt                    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
-  tipo_documento           String                    @db.VarChar(20)
-  numero_documento         String                    @unique(map: "numero_documento") @db.VarChar(20)
-  nombre_completo          String                    @db.VarChar(100)
-  telefono                 String?                   @db.VarChar(20)
-  correo_electronico       String                    @unique(map: "correo_electronico") @db.VarChar(100)
-  rol                      personas_rol
-  estamento                personas_estamento?
-  codigo_estudiantil       String?                   @unique(map: "codigo_estudiantil") @db.VarChar(20)
-  fecha_nacimiento         DateTime?                 @db.Date
-  eps                      String?                   @db.VarChar(50)
-  grupo_sanguineo          personas_grupo_sanguineo?
-  alergias                 String?                   @db.Text
-  medicamento_nombre       String?                   @db.VarChar(100)
-  medicamento_dosis        String?                   @db.VarChar(50)
-  medicamento_razon        String?                   @db.Text
-  emergencia_nombre        String?                   @db.VarChar(100)
-  emergencia_parentesco    String?                   @db.VarChar(50)
-  emergencia_telefono      String?                   @db.VarChar(20)
-  consentimiento_informado Bytes?
+model document_type {
+  id_document_type   String   @id @db.Char(2)
+  name_document_type String   @unique(map: "doctype_uk_document_type") @db.VarChar(50)
+  person             person[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model emergency_contact {
+  id_emecont           Int                                    @id @default(autoincrement())
+  full_name_emecont    String                                 @db.VarChar(50)
+  relationship_emecont emergency_contact_relationship_emecont
+  phone_number_emecont String                                 @db.VarChar(10)
+  inscription_detail   inscription_detail[]
+}
+
+model eps {
+  id_eps             Int                  @id @default(autoincrement())
+  name_eps           String               @unique(map: "eps_uk_name_eps") @db.VarChar(50)
+  inscription_detail inscription_detail[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model estatement_u {
+  id_estatment_u     String               @id @db.VarChar(5)
+  name_estatment_u   String               @unique(map: "estatemeu_uk_name_userstatus") @db.VarChar(20)
+  inscription_detail inscription_detail[]
+}
+
+model history_user_status {
+  id_history                                             Int          @id @default(autoincrement())
+  id_user_status                                         String?      @db.Char(3)
+  id_user                                                Int?
+  date_hour_userstatus                                   DateTime     @db.Timestamp(0)
+  created_hiuserstatus_by                                Int
+  created_hiuserstatus_at                                DateTime?    @default(now()) @db.Timestamp(0)
+  updated_hiuserstatus_by                                Int?
+  updated_hiuserstatus_at                                DateTime?    @default(now()) @db.Timestamp(0)
+  user_history_user_status_id_userTouser                 user?        @relation("history_user_status_id_userTouser", fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_iduser")
+  user_history_user_status_created_hiuserstatus_byTouser user         @relation("history_user_status_created_hiuserstatus_byTouser", fields: [created_hiuserstatus_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_idusercreated")
+  user_status                                            user_status? @relation(fields: [id_user_status], references: [id_user_status], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_iduserstatus")
+  user_history_user_status_updated_hiuserstatus_byTouser user?        @relation("history_user_status_updated_hiuserstatus_byTouser", fields: [updated_hiuserstatus_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_iduserupdated")
+
+  @@index([id_user], map: "histuserstat_fk_iduser")
+  @@index([created_hiuserstatus_by], map: "histuserstat_fk_idusercreated")
+  @@index([id_user_status], map: "histuserstat_fk_iduserstatus")
+  @@index([updated_hiuserstatus_by], map: "histuserstat_fk_iduserupdated")
+}
+
+model inscripdetail_presmed {
+  id_insdetail            Int
+  id_presmed              Int
+  inscription_detail      inscription_detail      @relation(fields: [id_insdetail], references: [id_insdetail], onDelete: NoAction, onUpdate: NoAction, map: "insdetpresmed_fk_idinsdetail")
+  prescription_medication prescription_medication @relation(fields: [id_presmed], references: [id_presmed], onDelete: NoAction, onUpdate: NoAction, map: "insdetpresmed_fk_idpresmed")
+
+  @@id([id_insdetail, id_presmed])
+  @@index([id_presmed], map: "insdetpresmed_fk_idpresmed")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model inscription_detail {
+  id_insdetail             Int                        @id @default(autoincrement())
+  id_estu                  Int
+  id_estatment_u           String                     @db.VarChar(5)
+  student_code             String                     @unique(map: "insdtail_uk_student_code") @db.VarChar(10)
+  id_emecont               Int
+  id_eps                   Int
+  blood_type               String                     @db.Char(3)
+  id_allergy               Int?
+  url_consent              String                     @unique(map: "insdtail_uk_urlconsent") @db.VarChar(100)
+  created_at_insdetail     DateTime?                  @default(now()) @db.Timestamp(0)
+  inscripdetail_presmed    inscripdetail_presmed[]
+  allergy                  allergy?                   @relation(fields: [id_allergy], references: [id_allergy], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_idallergy")
+  emergency_contact        emergency_contact          @relation(fields: [id_emecont], references: [id_emecont], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_idemergencycont")
+  eps                      eps                        @relation(fields: [id_eps], references: [id_eps], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_ideps")
+  estatement_u             estatement_u               @relation(fields: [id_estatment_u], references: [id_estatment_u], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_idstatmentu")
+  person                   person                     @relation(fields: [id_estu], references: [id_person], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_idstudent")
+  inscription_detail_audit inscription_detail_audit[]
+
+  @@index([id_allergy], map: "insdtail_fk_idallergy")
+  @@index([id_emecont], map: "insdtail_fk_idemergencycont")
+  @@index([id_eps], map: "insdtail_fk_ideps")
+  @@index([id_estatment_u], map: "insdtail_fk_idstatmentu")
+  @@index([id_estu], map: "insdtail_fk_idstudent")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model inscription_detail_audit {
+  audit_id                    Int                                  @id @default(autoincrement())
+  insdetail_id                Int
+  change_type                 inscription_detail_audit_change_type
+  changed_instdetaud_by       Int
+  change_instdetaud_timestamp DateTime?                            @default(now()) @db.Timestamp(0)
+  old_id_estatment_u          Int?
+  new_id_estatment_u          Int?
+  old_student_code            String?                              @db.VarChar(10)
+  new_student_code            String?                              @db.VarChar(10)
+  old_id_emecont              Int?
+  new_id_emecont              Int?
+  old_id_eps                  Int?
+  new_id_eps                  Int?
+  old_blood_type              String?                              @db.Char(3)
+  new_blood_type              String?                              @db.Char(3)
+  old_url_consent             String?                              @db.VarChar(100)
+  new_url_consent             String?                              @db.VarChar(100)
+  inscription_detail          inscription_detail                   @relation(fields: [insdetail_id], references: [id_insdetail], onDelete: NoAction, onUpdate: NoAction, map: "insdetaud_fk_idinsdetail")
+  user                        user                                 @relation(fields: [changed_instdetaud_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "insdetaud_fk_iduserchanged")
+
+  @@index([insdetail_id], map: "insdetaud_fk_idinsdetail")
+  @@index([changed_instdetaud_by], map: "insdetaud_fk_iduserchanged")
+}
+
+model person {
+  id_person                           Int                  @id @default(autoincrement())
+  document_number_person              Int                  @unique(map: "pers_uk_document_person")
+  id_document_type                    String               @db.Char(2)
+  first_name_person                   String               @db.VarChar(50)
+  last_name_person                    String               @db.VarChar(50)
+  phone_number_person                 String?              @db.VarChar(10)
+  email_person                        String               @unique(map: "pers_uk_email_person") @db.VarChar(100)
+  birthdate_person                    DateTime             @db.Date
+  created_person_by                   Int
+  created_person_at                   DateTime?            @default(now()) @db.Timestamp(0)
+  updated_person_by                   Int?
+  updated_person_at                   DateTime?            @default(now()) @db.Timestamp(0)
+  inscription_detail                  inscription_detail[]
+  user_person_created_person_byTouser user                 @relation("person_created_person_byTouser", fields: [created_person_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "pers_fk_idcreatedby")
+  document_type                       document_type        @relation(fields: [id_document_type], references: [id_document_type], onDelete: NoAction, onUpdate: NoAction, map: "pers_fk_idoc")
+  user_person_updated_person_byTouser user?                @relation("person_updated_person_byTouser", fields: [updated_person_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "pers_fk_idupdatedby")
+  user_user_id_personToperson         user[]               @relation("user_id_personToperson")
+
+  @@index([created_person_by], map: "pers_fk_idcreatedby")
+  @@index([id_document_type], map: "pers_fk_idoc")
+  @@index([updated_person_by], map: "pers_fk_idupdatedby")
+}
+
+model prescription_medication {
+  id_presmed            Int                     @id
+  name_presmed          String                  @unique(map: "presmed_uk_name") @db.VarChar(100)
+  dose_persmed          String                  @db.VarChar(50)
+  recipe_reason         String                  @db.VarChar(255)
+  inscripdetail_presmed inscripdetail_presmed[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model role_user {
+  id_role_user                              String    @id @db.Char(3)
+  name_role_user                            String    @db.VarChar(20)
+  created_role_user_by                      Int
+  created_role_user_at                      DateTime? @default(now()) @db.Timestamp(0)
+  user_role_user_created_role_user_byTouser user      @relation("role_user_created_role_user_byTouser", fields: [created_role_user_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "roleuser_fk_idus")
+  user_user_id_role_userTorole_user         user[]    @relation("user_id_role_userTorole_user")
+
+  @@index([created_role_user_by], map: "roleuser_fk_idus")
 }
 
 model user {
-  id             BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
-  nombre_usuario String    @db.VarChar(50)
-  email          String    @unique(map: "email") @db.VarChar(100)
-  password       String    @db.VarChar(255)
-  role           user_role
+  id_user                                                               Int                        @id @default(autoincrement())
+  id_person                                                             Int
+  document_number_person                                                Int
+  id_role_user                                                          String                     @db.Char(3)
+  name_user                                                             String                     @unique(map: "user_uk_name_user") @db.VarChar(50)
+  password_user                                                         String                     @db.VarChar(255)
+  creation_date_user                                                    DateTime                   @db.DateTime(0)
+  history_user_status_history_user_status_id_userTouser                 history_user_status[]      @relation("history_user_status_id_userTouser")
+  history_user_status_history_user_status_created_hiuserstatus_byTouser history_user_status[]      @relation("history_user_status_created_hiuserstatus_byTouser")
+  history_user_status_history_user_status_updated_hiuserstatus_byTouser history_user_status[]      @relation("history_user_status_updated_hiuserstatus_byTouser")
+  inscription_detail_audit                                              inscription_detail_audit[]
+  person_person_created_person_byTouser                                 person[]                   @relation("person_created_person_byTouser")
+  person_person_updated_person_byTouser                                 person[]                   @relation("person_updated_person_byTouser")
+  role_user_role_user_created_role_user_byTouser                        role_user[]                @relation("role_user_created_role_user_byTouser")
+  person_user_id_personToperson                                         person                     @relation("user_id_personToperson", fields: [id_person], references: [id_person], onDelete: NoAction, onUpdate: NoAction, map: "user_fk_idperson")
+  role_user_user_id_role_userTorole_user                                role_user                  @relation("user_id_role_userTorole_user", fields: [id_role_user], references: [id_role_user], onDelete: NoAction, onUpdate: NoAction, map: "user_fk_idroleuser")
+  user_audit_user_audit_change_useraudit_byTouser                       user_audit[]               @relation("user_audit_change_useraudit_byTouser")
+  user_audit_user_audit_id_userTouser                                   user_audit[]               @relation("user_audit_id_userTouser")
+
+  @@index([id_person], map: "user_fk_idperson")
+  @@index([id_role_user], map: "user_fk_idroleuser")
 }
 
-enum user_role {
-  empleado
-  administrador
-  estudiante
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model user_audit {
+  id_useraudit                              Int      @id @default(autoincrement())
+  id_user                                   Int
+  type_change_useraudit                     String   @db.Char(6)
+  change_useraudit_by                       Int
+  change_useraudit_timestamp                DateTime @db.Timestamp(0)
+  changed_useraudit_field                   String   @db.VarChar(50)
+  before_value                              String   @db.VarChar(50)
+  new_value                                 String   @db.VarChar(50)
+  user_user_audit_change_useraudit_byTouser user     @relation("user_audit_change_useraudit_byTouser", fields: [change_useraudit_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "useraudit_fk_idchangeby")
+  user_user_audit_id_userTouser             user     @relation("user_audit_id_userTouser", fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "useraudit_fk_iduser")
+
+  @@index([change_useraudit_by], map: "useraudit_fk_idchangeby")
+  @@index([id_user], map: "useraudit_fk_iduser")
 }
 
-enum personas_rol {
-  empleado
-  administrador
-  estudiante
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model user_status {
+  id_user_status         String                @id @db.Char(3)
+  name_userstatus        String                @unique(map: "userstatu_uk_name_userstatus") @db.VarChar(20)
+  description_userstatus String                @db.VarChar(100)
+  history_user_status    history_user_status[]
 }
 
-enum personas_estamento {
-  pregrado_presencial
-  postgrado
-  FESAD
+enum inscription_detail_audit_change_type {
+  INSERT
+  UPDATE
+  DELETE
 }
 
-enum personas_grupo_sanguineo {
-  A_  @map("A+")
-  B_  @map("B+")
-  AB_ @map("AB+")
-  O_  @map("O+")
-  A_neg  @map("A-")
-  B_neg  @map("B-")
-  AB_neg @map("AB-")
-  O_neg  @map("O-")
+enum emergency_contact_relationship_emecont {
+  PADRE
+  MADRE
+  HERMANO
+  HERMANA
+  ESPOSO
+  ESPOSA
+  HIJO
+  HIJA
+  ABUELO
+  ABUELA
+  TIO
+  TIA
+  PRIMO
+  PRIMA
+  TUTOR
+  AMIGO
+  COLEGA
+  VECINO
+  OTRO
 }
