@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -14,9 +13,10 @@ import gym from '@/assets/gym.jpeg';
 import './login.css';
 
 function LoginPage() {
+    const [isLoading, setIsLoading] = useState(false);
     const { isLoaded } = useAuth(); // Obtener los estados aquí
 
-    if (!isLoaded) {
+    if (!isLoaded || isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader />

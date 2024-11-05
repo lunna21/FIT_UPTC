@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { addPerson, deletePerson } from '@/api/person';
-import { addUserStudent, deleteUser } from '@/api/user';
+import { addPerson, deletePerson } from '@/db/person';
+import { addUserStudent, deleteUser } from '@/db/user';
 import useClerkSignUp from '@/hooks/useClerkSignUp';
 
 import { generatePassword } from '@/utils/utils';

@@ -1,8 +1,7 @@
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+// its really by document_number_person
 export async function getUserById(id, url) {
-    console.log('getUserById', id, BASE_URL + url);
-
     try {
         const response = await fetch(`/api/users/${id}`, {
             method: 'GET',

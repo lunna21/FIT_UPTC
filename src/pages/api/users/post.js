@@ -102,6 +102,17 @@ export default async function postHandler(req, res) {
                     );
                 }
 
+                // Verificar si ya existe un detalle de inscripción con el mismo código de estudiante
+                const existingInscriptionDetail = await prisma.inscription_detail.findFirst({
+                    where: { student_code: inscription_detail.student_code },
+                });
+
+                if (existingInscriptionDetail) {
+                    return res.status(400).json(
+                        { error: 'Ya existe un detalle de inscripción con este código de estudiante' }
+                    );
+                }
+
                 // añadir y validar emergency_contact
                 const { full_name_emecont, relationship_emecont, phone_number_emecont } = inscription_detail.emergency_contact;
 
@@ -202,7 +213,7 @@ export default async function postHandler(req, res) {
                 user: newUser,
                 inscription_detail: newInscriptionDetail
             };
-        }, { timeout: 20000 });
+        }, { timeout: 30000 });
 
         return res.status(201).json(result);
     } catch (error) {

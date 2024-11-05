@@ -29,12 +29,12 @@ export default async function handler(req, res) {
     } else if (req.method === 'DELETE') {
         try {
             // Convierte 'id' a un entero, si es necesario
-            const documentNumber = parseInt(id); // Asegúrate de que 'id' es un número entero
+            const id_user = parseInt(id); // Asegúrate de que 'id' es un número entero
 
             // Encuentra el usuario por el número de documento
             const user = await prisma.user.findUnique({
                 where: {
-                    id_user: id,
+                    id_user,
                 },
                 include: {
                     history_user_status: true,

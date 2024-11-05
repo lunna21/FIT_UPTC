@@ -1,5 +1,23 @@
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+// GET /api/persons?document_number=123456&document_type=CC
+export async function getPersonByDocument(documentNumber) {
+    try {
+        const response = await fetch(`/api/persons?document_number=${documentNumber}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.ok) {
+            return response.json();
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error.error;
+    }
+}
+
 export async function addPerson(formData) {
     try {
         const personData = {
@@ -26,7 +44,7 @@ export async function addPerson(formData) {
             return response.json();
         } else {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Error adding person');
+            throw errorData.error || 'Error adding person';
         }
     } catch (error) {
         console.error('Error adding person:', error);

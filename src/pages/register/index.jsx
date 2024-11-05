@@ -14,8 +14,6 @@ import useCustomSignUp from '@/hooks/useCustomSignUp'
 import { calculateAge, getToday } from '@/utils/utils'
 import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
 
-import { getUserById } from '@/api/user'
-
 import './register.css'
 import Modal from './Modal';
 
@@ -30,7 +28,7 @@ import { FaHouseChimneyMedical } from "react-icons/fa6";
 import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
-    const { signUp } = useCustomSignUp();
+    const { signUp, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
 
     const [formData, setFormData] = useState({
         typeDocument: '',
@@ -60,15 +58,14 @@ const Register = () => {
         parentalAuthorization: null,
         terms: false
     })
-    const [isValidated, setIsValidated] = useState(false);
-    const [isLoadingVerification, setIsLoadingVerification] = useState(false);
+    const [isValidated, setIsValidated] = useState("no");
     const [age, setAge] = useState(0);
     const [error, setError] = useState('');
     const [countFillObligatory, setCountFillObligatory] = useState(1);
     const [obligatoryFields, setObligatoryFields] = useState(['numberDocument', 'typeDocument', 'firstName', 'lastName', 'email', 'studentCode', 'phoneNumber', 'birthDate', 'eps', 'bloodType', 'programType', 'emergencyfullName', 'relationship', 'contactNumber', 'terms'])
     const [obligatoryFieldsCheck, setObligatoryFieldsCheck] = useState(false);
     const containerRef = useRef(null);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessageFile, setErrorMessageFile] = useState("");
     const [uploadError, setUploadError] = useState("");
     const maxFileSize = 3 * 1024 * 1024; // Tamaño máximo 5 MB
     const today = getToday(14);
@@ -116,35 +113,6 @@ const Register = () => {
         }))
     }, [countFillObligatory, obligatoryFields.length]); // Actualiza el ancho de la línea cuando cambia el contador o el número de pasos
 
-    //Verification userexistence 
-    const checkUserExists = async (e) => {
-        e.preventDefault();
-
-        setIsLoadingVerification(true);
-
-        try {
-            const user = await getUserById(formData.numberDocument, '/register');
-
-            if (user?.id === formData?.numberDocument) {
-                setIsValidated(false);
-                setError("El usuario ya existe, no es necesario registrarse");
-                setIsLoadingVerification(false);
-            } else {
-                setIsLoadingVerification(false);
-                setIsValidated(true);
-                setError('');
-                return null;
-            }
-
-        } catch (error) {
-            setIsLoadingVerification(false);
-            setError('Error al verificar el usuario');
-            setIsValidated(false);
-            console.error("Error al verificar el usuario", error);
-            return null;
-        }
-    };
-
     const handleChange = (e, section) => {
         const { name, value } = e.target
 
@@ -155,7 +123,7 @@ const Register = () => {
         }
 
         if (name === 'typeDocument' || name === 'numberDocument') {
-            setIsValidated(false);
+            setIsValidated("no");
         }
 
         if (name == 'terms') {
@@ -219,7 +187,7 @@ const Register = () => {
                 setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
                 return;
             }
-            setErrorMessage("");
+            setErrorMessageFile("");
             setFormData({
                 ...formData,
                 [name]: file
@@ -380,8 +348,24 @@ const Register = () => {
     const handleAcceptTerms = () => {
         setFormData((prevData) => ({ ...prevData, terms: true }));
     };
+
+    if (isLoading || !isLoaded) {
+        return (
+            <div className="w-screen h-screen flex justify-center items-center">
+                <Loader />
+            </div>
+        )
+    }
+
     return (
         <div className="register-registerPage register-flex">
+            {
+                singUpError && (
+                    <div className="w-full h-80px bg-transparent flex justify-center items-center px-8 py-4 absolute top-0">
+                        <p className="text-red-500">{singUpError}</p>
+                    </div>
+                )
+            }
             <div className="register-containerR register-flex">
                 <div ref={containerRef} className="register-formDiv register-flex relative">
                     <ProgressLine
@@ -395,33 +379,15 @@ const Register = () => {
                         Los campos con (*) son campos obligatorios.
                     </p>
 
-                    <form className="register-formR register-grid" onSubmit={handleSubmit}>
+                    <form className="register-formR register-grid max-w-[820px]" onSubmit={handleSubmit}>
 
                         <CheckUserRegister
                             valueTypeDocument={formData.typeDocument}
                             valueNumberDocument={formData.numberDocument}
                             handleChange={handleChange}
-                            checkUserExists={checkUserExists}
+                            setIsValidated={setIsValidated}
                         />
-
-                        {isLoadingVerification && (
-                            <div
-                                className='w-full h-80px bg-transparent flex justify-center'
-                                style={{ gridColumn: 'span 2' }}
-                            >
-                                <Loader />
-
-                            </div>
-                        )}
-                        {
-                            error && (
-                                <Link href="/login" style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
-                                    {error}
-                                </Link>
-                            )
-                        }
-
-                        {isValidated && (
+                        {(isValidated === 'yes') && (
                             <>
                                 {/*Other information */}
                                 <ValidationInput
@@ -625,7 +591,7 @@ const Register = () => {
                                         name="nameMedication"
                                         onKeyDown={validateTextInput}
                                         Icon={MdDriveFileRenameOutline}
-                                        
+
                                     />
                                     < ValidationInput
                                         placeholder="Ingresa la dosis del medicamento"
@@ -635,7 +601,7 @@ const Register = () => {
                                         name="dosage"
                                         onKeyDown={validateTextInput}
                                         Icon={GiMedicines}
-                                        
+
                                     />
 
                                     < ValidationInput
@@ -646,9 +612,9 @@ const Register = () => {
                                         name="reason"
                                         onKeyDown={validateTextInput}
                                         Icon={RiFileAddFill}
-                                        
+
                                     />
-                                  
+
 
                                     <div className='flex gap-2 items-center'>
                                         <Button
@@ -668,7 +634,7 @@ const Register = () => {
                                     parentalAuthorization={formData.parentalAuthorization}
                                     informedConsent={formData.informedConsent}
                                     handleFileChange={handleFileChange}
-                                    errorMessage={errorMessage}
+                                    errorMessageFile={errorMessageFile}
                                 />
                                 {uploadError && (
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>

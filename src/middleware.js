@@ -5,35 +5,47 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // Define access permissions based on roles
 const rolePermissions = {
-  adm: ['/', '/admin/dashboard'],
+  adm: ['/', '/admin/dashboard', '/admin/users', '/admin/create-user'], // Define as needed
   stu: ['/', '/dashboard'],
   emp: ['/', '/employee/dashboard'], // Define as needed
 };
 
 // Define public routes that don't require authentication
 const publicRoutes = [
-  '/',
   '/login',
   '/register',
   '/terms',
   '/verification',
+  '/pending',
 ];
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const actualUrl = new URL(req.url);
 
-  if (userId) {
-    const { role, username, status } = sessionClaims?.metadata;
+  console.log(userId)
 
+  if (userId) {
+    const { role, status } = sessionClaims?.metadata;
+    const username = sessionClaims?.username;
+    
     if (role && rolePermissions[role.toLowerCase()] && status === 'ACT') {
 
       if (actualUrl.pathname === '/') {
-        const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard'));
-
+        const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
         const redirectUrl = new URL(BASE_URL + dashboardRoute);
         return NextResponse.redirect(redirectUrl.toString());
       }
+
+      const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
+      let isAllowed = allowedRoutes.some(route => {
+        return route === actualUrl.pathname;
+      });
+
+      if (!isAllowed)
+        return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+
+      return NextResponse.next();
     }
 
     // For this sprint manage this way
@@ -56,34 +68,11 @@ export default clerkMiddleware(async (auth, req) => {
     if (actualUrl.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/pending')) {
       return NextResponse.next();
     }
-
-    // Check if the route is allowed for the user's role
-    // const allowedRoutes = rolePermissions[role] || [];
-    // let isAllowed = allowedRoutes.some(route => {
-    //   url.pathname = route;
-    //   return url.toString() === req.url;
-    // });
-
-    // if (!isAllowed) {
-    //   url.pathname = '/';
-    //   return NextResponse.redirect(url.toString());
-    // }
   } else {
     // Permitir el acceso a la API
-    console.log(actualUrl.pathname);
     if (actualUrl.pathname.startsWith('/api')) {
       return NextResponse.next();
     }
-    // Permitir el acceso a la ruta específica de registro en la API
-
-
-    // // Check if the user is authenticated
-    // if (!userId) {
-    //   // Avoid redirect loop if already on the sign-in page
-    //   if (!req.url.includes('/login')) {
-    //     return redirectToSignIn();
-    //   }
-    // }
   }
 
   if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {

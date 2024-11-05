@@ -4,6 +4,7 @@ node_modules/
 
 # Ignore log files
 *.log
+package-lock.json
 
 # Ignore build directories
 dist/

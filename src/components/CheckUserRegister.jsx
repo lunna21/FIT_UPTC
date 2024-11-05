@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import Loader from '@/components/Loader';
+
+import useCheckUserExist from '@/hooks/useCheckUserExist';
+
 import Button from '@/components/buttons/Button';
 import { FaAddressCard } from 'react-icons/fa';
 import { MdOutlinePermIdentity, MdVerified, MdError } from 'react-icons/md';
 
-function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChange, checkUserExists }) {
+function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChange, setIsValidated }) {
+    const { isLoadingVerification, errorCheck, checkPersonByDocument } = useCheckUserExist();
     const [errors, setErrors] = useState({ typeDocument: '', numberDocument: '' });
+
+    const checkUserExists = async (e) => {
+        e.preventDefault();
+
+        try {
+            console.log(valueNumberDocument);
+            await checkPersonByDocument({
+                documentNumber: valueNumberDocument,
+                setIsValidated: setIsValidated
+            }) 
+        } catch(error) {
+            console.error('Error al verificar el usuario', error);
+        }
+
+    };
 
     const handleNumberChange = (e) => {
         const value = e.target.value;
@@ -43,13 +64,13 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
     const errorIconStyle = {
         position: 'absolute',
         right: '10px',
-        fontSize: '1.5rem', 
+        fontSize: '1.5rem',
         color: '#FF1302'
     };
 
     return (
         <>
-            <div className="register-inputDiv" style={{ padding: '0.5rem' }}>
+            <div className="register-inputDiv">
                 <label htmlFor="typeDocument">Tipo de Documento (*)</label>
                 <div className="register-input register-flex" style={inputContainerStyle}>
                     <FaAddressCard className="register-icon" />
@@ -69,7 +90,7 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                     {errors.typeDocument && <MdError style={errorIconStyle} />}
                 </div>
                 {errors.typeDocument && (
-                    <p style={errorStyle}>
+                    <p className="error-message">
                         {errors.typeDocument}
                     </p>
                 )}
@@ -90,7 +111,7 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                     {errors.numberDocument && <MdError style={errorIconStyle} />}
                 </div>
                 {errors.numberDocument && (
-                    <p style={errorStyle}>
+                    <p className="error-message">
                         {errors.numberDocument}
                     </p>
                 )}
@@ -105,6 +126,23 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                     disabled={!valueTypeDocument || valueNumberDocument.length < 8}
                 />
             </div>
+
+            {isLoadingVerification && (
+                <div
+                    className='w-full h-80px bg-transparent flex justify-center'
+                    style={{ gridColumn: 'span 2' }}
+                >
+                    <Loader />
+
+                </div>
+            )}
+            {
+                errorCheck && (
+                    <p style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
+                        {errorCheck}
+                    </p>
+                )
+            }
         </>
     );
 }

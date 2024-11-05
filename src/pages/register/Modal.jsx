@@ -10,13 +10,15 @@ const Modal = ({ isOpen, onClose, onAccept }) => {
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-4xl h-[80vh] overflow-y-auto mt-8 relative z-50">
         {/* Close Button */}
-        <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-accent-red z-50"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <RiCloseCircleFill size={40} />
-        </button>
+        <div className='w-full flex justify-end sticky top-0 transparent'>
+          <button
+            className="text-gray-500 hover:text-accent-red z-50"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <RiCloseCircleFill size={40} />
+          </button>
+        </div>
         <h1 className="text-primary text-center text-3xl font-bold mb-4">Términos y Condiciones</h1>
         <div className="mb-4 text-gray-700 leading-relaxed space-y-4">
           <section>
@@ -64,16 +66,16 @@ const Modal = ({ isOpen, onClose, onAccept }) => {
 
         <div className="flex justify-center w-full gap-4 mt-4">
           <div className="items-center">
-          <Button
-            buttonText="Aceptar"
-            Icon={IoIosCheckmarkCircle}
-            onClick={() => {
-              onAccept();
-              onClose();
-            }}
-            sizeHeight="py-3"
-            sizeWidth="px-6"
-          />
+            <Button
+              buttonText="Aceptar"
+              Icon={IoIosCheckmarkCircle}
+              onClick={() => {
+                onAccept();
+                onClose();
+              }}
+              sizeHeight="py-3"
+              sizeWidth="px-6"
+            />
           </div>
           <div className="items-center">
           <Button

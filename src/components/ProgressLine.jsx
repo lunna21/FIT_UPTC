@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 
-function ProgressLine({ step, maxSteps, widthContainer }) {
+function ProgressLine({ step = 0, maxSteps = 0, widthContainer = 0 }) {
     const [lineWidth, setLineWidth] = useState(0);
 
     useEffect(() => {
@@ -19,16 +18,3 @@ function ProgressLine({ step, maxSteps, widthContainer }) {
 }
 
 export default ProgressLine;
-
-ProgressLine.propTypes = {
-    lineColor: PropTypes.string.isRequired,
-    step: PropTypes.number.isRequired,
-    maxSteps: PropTypes.number.isRequired,
-    widthContainer: PropTypes.number.isRequired,
-}
-
-ProgressLine.defaultProps = {
-    step: 0,
-    maxSteps: 0,
-    widthContainer: 0,
-}

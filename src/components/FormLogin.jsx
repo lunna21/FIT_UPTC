@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 
 import Link from "next/link";
 
-import Input from "./inputs/Input";
+import ValidationInput from "./inputs/InputValidation";
 import Button from "./buttons/Button";
 import Loader from "./Loader";
 
@@ -75,24 +75,25 @@ function FormLogin() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-70 flex flex-col gap-2 mx-auto overflow-y-hidden">
+    <form onSubmit={onSubmit} className="max-w-72 min-w-72 flex flex-col gap-2 mx-auto overflow-y-hidden">
       <div className={`${statusHolder} text-neutral-white p-2.5 mt-[-44px] bg-accent-red text-sm rounded text-center h-10`}>
         {loginStatus}
       </div>
 
-      <div className="space-y-2">
-        <Input
+        <ValidationInput
+          className="mt-2"
           label="Nombre de Usuario"
           id="username"
           placeholder="Ingresa tu usuario"
           required={true}
           onChange={(e) => setLoginUsername(e.target.value.trim())}
           Icon={FaUserShield}
+          name="username"
+          value={loginUsername}
         />
-      </div>
 
-      <div className="space-y-2">
-        <Input
+        <ValidationInput
+          className="mt-2"
           label="Contraseña"
           id="password"
           placeholder="Ingresa tu contraseña"
@@ -101,8 +102,10 @@ function FormLogin() {
           autocomplete="current-password"
           onChange={(e) => setPassword(e.target.value.trim())}
           Icon={BsFillShieldLockFill}
+          name="password"
+          value={password}
         />
-      </div>
+
 
       <Button
         type="submit"
@@ -115,7 +118,7 @@ function FormLogin() {
       <span className="text-sm text-neutral-gray-medium text-center">
         ¿Olvidó su contraseña?{" "}
         <Link href="/forgot-password" className="underline cursor-pointer opacity-100">
-          Click aquí
+          Presiona aquí
         </Link>
       </span>
     </form>

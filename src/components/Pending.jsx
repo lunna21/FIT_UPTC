@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { updateMetadataUser } from "@/api/user";
+import { updateMetadataUser } from "@/db/user";
 import Link from 'next/link';
 
 import Loader from '@/components/Loader';
