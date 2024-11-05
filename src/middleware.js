@@ -12,7 +12,6 @@ const rolePermissions = {
 
 // Define public routes that don't require authentication
 const publicRoutes = [
-  '/',
   '/login',
   '/register',
   '/terms',
