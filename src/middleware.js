@@ -28,6 +28,11 @@ export default clerkMiddleware(async (auth, req) => {
   if (userId) {
     const { role, status } = sessionClaims?.metadata;
     const username = sessionClaims?.username;
+
+    // Permitir el acceso a la API
+    if (actualUrl.pathname.startsWith('/api')) {
+      return NextResponse.next();
+    }
     
     if (role && rolePermissions[role.toLowerCase()] && status === 'ACT') {
 
@@ -65,14 +70,9 @@ export default clerkMiddleware(async (auth, req) => {
       }
     }
 
-    if (actualUrl.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/pending')) {
-      return NextResponse.next();
-    }
-  } else {
-    // Permitir el acceso a la API
-    if (actualUrl.pathname.startsWith('/api')) {
-      return NextResponse.next();
-    }
+    // if (actualUrl.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/pending')) {
+    //   return NextResponse.next();
+    // }
   }
 
   if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {

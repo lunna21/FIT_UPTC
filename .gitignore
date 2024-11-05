@@ -26,3 +26,6 @@ sql
 *.ntvs*
 *.njsproj
 *.sln
+
+# Ignore pdf files
+*.pdf

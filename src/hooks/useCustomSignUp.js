@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { addPerson, deletePerson } from '@/db/person';
 import { addUserStudent, deleteUser } from '@/db/user';
+import { uploadPdf } from '@/db/upload';
+
 import useClerkSignUp from '@/hooks/useClerkSignUp';
 
 import { generatePassword } from '@/utils/utils';
@@ -10,7 +12,7 @@ const useCustomSignUp = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const signUp = async (formData) => {
+    const signUp = async ({ formData, file64Consent }) => {
         setIsLoading(true);
         setError(null);
         let person;
@@ -21,17 +23,31 @@ const useCustomSignUp = () => {
             person = await addPerson(formData);
             console.log(person);
 
+            // Step 2: Upload File
+            const base64Data = file64Consent;
+            const studentCode = formData.studentCode;
+            const formattedDate = new Date().toISOString();
+
+            const { filePath } = await uploadPdf({
+                base64File: base64Data,
+                studentCode: studentCode,
+                formattedDate: formattedDate,
+            });
+
+            formData.parentalAuthorization.name = filePath;
+            formData.informedConsent.name = filePath;
+
             // Step 0.2: add password_user to formData
             formData.password_user = generatePassword();
 
-            // Step 2: Create the user
+            // Step 3: Create the user
             user = await addUserStudent({
                 ...formData,
                 id_person: person.id_person,
             });
             console.log(user);
 
-            // Step 3: Use Clerk to sign up
+            // Step 4: Use Clerk to sign up
             await handleSignUp({
                 email: person.email_person,
                 password: formData.password_user, // Assuming password is part of formData
@@ -51,7 +67,7 @@ const useCustomSignUp = () => {
             }
 
             console.error('Error during signup process:', err);
-            setError('Error durante el proceso de registro. Por favor, inténtelo de nuevo.');
+            setError(err);
             setIsLoading(false);
         }
     }

@@ -28,10 +28,8 @@ const useClerkSignUp = () => {
 
             // Redirecciona a la página de espera para que el usuario confirme el email
             router.push("/verification");
-        } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error(JSON.stringify(err, null, 2))
+        } catch (error) {
+            throw new Error('Error during sign up process: ' + error.message);
         }
     }
 

@@ -2,6 +2,7 @@ import HeaderMenu from "@/components/HeaderMenu";
 
 const Users = () => {
     const menu = [
+        { name: 'Usuarios', href: '/admin/users' },
         { name: 'Crear usuario', href: '/admin/create-user' },
     ]
 

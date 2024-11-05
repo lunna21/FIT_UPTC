@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
@@ -67,7 +67,7 @@ const Register = () => {
     const containerRef = useRef(null);
     const [errorMessageFile, setErrorMessageFile] = useState("");
     const [uploadError, setUploadError] = useState("");
-    const maxFileSize = 3 * 1024 * 1024; // Tamaño máximo 5 MB
+    const maxFileSize = 1 * 1024 * 1024; // Tamaño máximo 1 MB
     const today = getToday(14);
 
     useEffect(() => {
@@ -173,18 +173,21 @@ const Register = () => {
     console.log(formData)
 
     const [selectedFile, setSelectedFile] = useState(null);
-    
+
+    console.log(errorMessageFile)
+
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         const file = files[0];
+        setErrorMessageFile("");
 
         if (file) {
             if (file.type !== "application/pdf") {
-                setErrorMessage('Por favor, sube un archivo PDF.');
+                setErrorMessageFile('Por favor, sube un archivo PDF.');
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
+                setErrorMessageFile('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
                 return;
             }
             setErrorMessageFile("");
@@ -244,105 +247,29 @@ const Register = () => {
         };
     }, []);
 
-     const handleSubmit = async (e) => {
-         e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-         if (!selectedFile) {
-             setUploadError('Por favor, selecciona un archivo.');
-             return;
-         }
+        if (!selectedFile) {
+            setUploadError('Por favor, selecciona un archivo.');
+            return;
+        }
 
-         const reader = new FileReader();
-         reader.readAsDataURL(selectedFile);
-         reader.onloadend = async () => {
-             const base64File = reader.result.split(',')[1];
-             const studentCode = formData.studentCode; 
-             const formattedDate = new Date().toISOString();
-
-             try {
-                 const response = await fetch('/api/upload', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({ 
-                         file: base64File,
-                         studentCode: studentCode,
-                         uploadDate: formattedDate
-                     }),
-                 });
-
-                 if (!response.ok) {
-                     throw new Error('Error en la carga del archivo: ${response.statusText}');
-                 }
-
-                 const data = await response.json();
-                 console.log(data.message);
-                 console.log(data.fileId); //Si la carga es exitosa, proceder con el registro
-                 try {
-                    //         Inicia el proceso de registro
-                               const email = formData.email;
-                               const password = generatePassword(); 
-                               const username = generateUsername(formData.firstName, formData.lastName, 2);
-                
-                               await signUp.create({
-                                   emailAddress: email,
-                                   password: password,
-                                   username: username,
-                               });
-                
-                               // Envía el enlace de verificación de email
-                               await signUp.prepareEmailAddressVerification({
-                                   strategy: "email_link",
-                                   redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
-                               });
-                
-                                 // Redirecciona a la página de espera para que el usuario confirme el email
-                               router.push("/verification");
-                           } catch (err) {
-                                 // See https:  clerk.com/docs/custom-flows/error-handling
-                                  //for more info on error handling
-                               console.error(JSON.stringify(err, null, 2))
-                          }
-                 router.push('/verification');
-             } catch (error) {
-                 setUploadError('Error al subir el archivo ');
-                 console.error(error);
-             }
-         };
-     };
-
-     //Código antes de agregar la función de subida de archivo
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     if (!isLoaded) return;
-
-    //     try {
-    //         // Inicia el proceso de registro
-    //         const email = formData.email;
-    //         const password = generatePassword(); 
-    //         const username = generateUsername(formData.firstName, formData.lastName, 2);
-
-    //         await signUp.create({
-    //             emailAddress: email,
-    //             password: password,
-    //             username: username,
-    //         });
-
-    //         // Envía el enlace de verificación de email
-    //         await signUp.prepareEmailAddressVerification({
-    //             strategy: "email_link",
-    //             redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
-    //         });
-
-    //         // Redirecciona a la página de espera para que el usuario confirme el email
-    //         router.push("/verification");
-    //     } catch (err) {
-    //         // See https://clerk.com/docs/custom-flows/error-handling
-    //         // for more info on error handling
-    //         console.error(JSON.stringify(err, null, 2))
-    //       }
-    // };
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onloadend = async () => {
+            const base64File = reader.result.split(',')[1];
+            try {
+                await signUp({
+                    formData,
+                    file64Consent: base64File
+                });
+            } catch (err) {
+                console.log(err)
+                console.error(err);
+            }
+        };
+    };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleAcceptTerms = () => {
@@ -634,7 +561,7 @@ const Register = () => {
                                     parentalAuthorization={formData.parentalAuthorization}
                                     informedConsent={formData.informedConsent}
                                     handleFileChange={handleFileChange}
-                                    errorMessageFile={errorMessageFile}
+                                    errorMessage={errorMessageFile}
                                 />
                                 {uploadError && (
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>

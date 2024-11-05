@@ -3,24 +3,26 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import logo from '@/assets/logo.png';
+import logoUptc from '@/assets/logoUPTC24.svg';
 
 const HeaderMenu = ({ menu }) => {
   return (
-    <header className="flex justify-between items-center p-4 bg-gray-100">
-      <figure className='w-18 h-16 mx-auto flex items-center'>
-        <Image src={logo} alt="Logo" className="h-10 w-full" />
+    <header className="flex h-[72px] justify-between items-center p-4 bg-neutral-gray-dark pattern-diagonal-lines pattern-white-500 pattern-bg-white 
+  pattern-size-8 pattern-opacity-80 relative">
+
+      <figure className="flex-shrink-0 mt-8">
+        <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" />
       </figure>
 
-      <ul className="flex-1 flex justify-around items-center list-none p-0 m-0">
+      <ul className="flex-1 flex justify-start gap-2 items-center list-none p-0 m-0 z-50 w-3/4">
         {Array.isArray(menu) && menu.map((item, index) => (
-          <li key={index}>
+          <li key={index} className="transition duration-255 ease-in-out transform hover:scale-105 hover:text-primary-medium">
             {item.href ? (
-              <Link href={item.href}>
+              <Link href={item.href} className="text-white hover:text-primary-medium">
                 {item.name}
               </Link>
             ) : (
-              <span>
+              <span className="text-red-500">
                 Require href
               </span>
             )}
