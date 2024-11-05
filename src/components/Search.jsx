@@ -1,17 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Search() {
+const Input = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Aquí puedes manejar la lógica de búsqueda
+    console.log('Búsqueda realizada');
+  };
+
   return (
     <StyledWrapper>
-      <form className="form">
-        <button>
+      <form className="form" onSubmit={handleSubmit}>
+        <button type="submit" aria-label="Buscar">
           <svg width={17} height={16} fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
             <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" strokeWidth="1.333" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <input className="input" placeholder="Type your text" required type="text" />
-        <button className="reset" type="reset">
+        <input className="input" placeholder="Realiza tu búsqueda" required type="text" />
+        <button className="reset" type="reset" aria-label="Restablecer">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -19,7 +25,7 @@ function Search() {
       </form>
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   /* From uiverse.io by @satyamchaudharydev */
@@ -33,11 +39,11 @@ const StyledWrapper = styled.div`
   /* styling of whole input container */
   .form {
     --timing: 0.3s;
-    --width-of-input: 200px;
+    --width-of-input: 400px;
     --height-of-input: 40px;
     --border-height: 2px;
     --input-bg: #fff;
-    --border-color: #FFCC00;
+    --border-color: #2f2ee9;
     --border-radius: 30px;
     --after-border-radius: 1px;
     position: relative;
@@ -64,7 +70,7 @@ const StyledWrapper = styled.div`
   .form:before {
     content: "";
     position: absolute;
-    background: var(--border-color);
+    background: #FFCC00;
     transform: scaleX(0);
     transform-origin: center;
     width: 100%;
@@ -105,4 +111,4 @@ const StyledWrapper = styled.div`
     margin-top: 3px;
   }`;
 
-export default Search;
+export default Input;
