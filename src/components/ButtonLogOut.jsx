@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Button() {
+const Button = () => {
   return (
     <StyledWrapper>
       <button className="Btn">
