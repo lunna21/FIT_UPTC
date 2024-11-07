@@ -34,14 +34,8 @@ export default async function handler(req, res) {
             // Encuentra el usuario por el número de documento
             const user = await prisma.user.findUnique({
                 where: {
-                    id_user,
-                },
-                include: {
-                    history_user_status: true,
-                    inscription_detail_audit: true,
-                    user_audit_user_audit_change_useraudit_byTouser: true,
-                    user_audit_user_audit_id_userTouser: true,
-                },
+                    id_user: id_user,
+                }
             });
 
             if (!user) {

@@ -38,7 +38,7 @@ export async function updateMetadataUser({ username, rol, status }) {
     }
 }
 
-export async function addUserStudent(formData) {
+export async function addUserStudent(formData, url_consent) {
     try {
         let age = 0;
         if (formData.birthDate) {
@@ -65,7 +65,7 @@ export async function addUserStudent(formData) {
                 },
                 eps: formData.eps,
                 blood_type: formData.bloodType,
-                url_consent: age < 18 ? formData.parentalAuthorization.name : formData.informedConsent.name, 
+                url_consent: url_consent, 
                 allergy: formData.allergies ? { name_allergy: formData.allergies } : null,
                 medications: formData.medications.map(med => ({
                     name_presmed: med.nameMedication,

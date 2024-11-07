@@ -14,7 +14,7 @@ const HeaderMenu = ({ menu }) => {
         <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" />
       </figure>
 
-      <ul className="flex-1 flex justify-start gap-2 items-center list-none p-0 m-0 z-50 w-3/4">
+      <ul className="ml-8 flex-1 flex justify-start gap-10 items-center list-none p-0 m-0 z-50 w-3/4">
         {Array.isArray(menu) && menu.map((item, index) => (
           <li key={index} className="transition duration-255 ease-in-out transform hover:scale-105 hover:text-primary-medium">
             {item.href ? (

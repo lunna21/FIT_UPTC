@@ -7,7 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const rolePermissions = {
   adm: ['/', '/admin/dashboard', '/admin/users', '/admin/create-user'], // Define as needed
   stu: ['/', '/dashboard'],
-  emp: ['/', '/employee/dashboard'], // Define as needed
+  emp: ['/', '/employees/dashboard', '/employees'], // Define as needed
 };
 
 // Define public routes that don't require authentication
@@ -25,15 +25,18 @@ export default clerkMiddleware(async (auth, req) => {
 
   console.log(userId)
 
+  
+    // Permitir el acceso a la API
+    if (actualUrl.pathname.startsWith('/api')) {
+      console.log('API request');
+      return NextResponse.next();
+    }
+    
+
   if (userId) {
     const { role, status } = sessionClaims?.metadata;
     const username = sessionClaims?.username;
 
-    // Permitir el acceso a la API
-    if (actualUrl.pathname.startsWith('/api')) {
-      return NextResponse.next();
-    }
-    
     if (role && rolePermissions[role.toLowerCase()] && status === 'ACT') {
 
       if (actualUrl.pathname === '/') {

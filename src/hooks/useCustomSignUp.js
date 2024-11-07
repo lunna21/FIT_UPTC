@@ -34,9 +34,6 @@ const useCustomSignUp = () => {
                 formattedDate: formattedDate,
             });
 
-            formData.parentalAuthorization.name = filePath;
-            formData.informedConsent.name = filePath;
-
             // Step 0.2: add password_user to formData
             formData.password_user = generatePassword();
 
@@ -44,13 +41,13 @@ const useCustomSignUp = () => {
             user = await addUserStudent({
                 ...formData,
                 id_person: person.id_person,
-            });
+            }, filePath);
             console.log(user);
 
             // Step 4: Use Clerk to sign up
             await handleSignUp({
                 email: person.email_person,
-                password: formData.password_user, // Assuming password is part of formData
+                password: formData.password_user,
                 username: user.name_user,
             });
 

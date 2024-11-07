@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     // Obtener los estudiantes con sus detalles
-    const students = await prisma.inscriptionDetail.findMany({
+    const students = await prisma.inscription_detail.findMany({
       select: {
         student_code: true,
         person: {
