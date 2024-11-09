@@ -15,26 +15,13 @@ const publicRoutes = [
   '/login',
   '/register',
   '/verification',
+  '/recover',
 ];
 
 // actions when the user's status is ACT
-function statusActiveActions(path) {
-  if (path === '/') {
-    const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
-    const redirectUrl = new URL(BASE_URL + dashboardRoute);
-    return NextResponse.redirect(redirectUrl.toString());
-  }
+// function statusActiveActions(path) {
 
-  const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
-  let isAllowed = allowedRoutes.some(route => {
-    return route === path;
-  });
-
-  if (!isAllowed)
-    return NextResponse.redirect(new URL(BASE_URL + '/').toString());
-
-  return NextResponse.next();
-}
+// }
 
 function statusPendingActions(path) {
   if (path === '/pending') {
@@ -48,6 +35,7 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const actualUrl = new URL(req.url);
 
+  console.log(actualUrl.pathname)
   console.log(userId)
 
   // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
@@ -62,7 +50,21 @@ export default clerkMiddleware(async (auth, req) => {
     if (role && rolePermissions[role.toLowerCase()] && status) {
       switch (status) {
         case 'ACT':
-          return statusActiveActions(actualUrl.pathname);
+          if (actualUrl.pathname === '/') {
+            const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
+            const redirectUrl = new URL(BASE_URL + dashboardRoute);
+            return NextResponse.redirect(redirectUrl.toString());
+          }
+
+          const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
+          let isAllowed = allowedRoutes.some(route => {
+            return route === actualUrl.pathname;
+          });
+
+          if (!isAllowed)
+            return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+
+          return NextResponse.next();
       }
     }
 
@@ -70,9 +72,9 @@ export default clerkMiddleware(async (auth, req) => {
 
   }
 
-
   // public routes
   if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {
+    console.log("entro")
     return NextResponse.next();
   } else {
     return redirectToSignIn();

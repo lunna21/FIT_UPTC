@@ -13,10 +13,9 @@ import gym from '@/assets/gym.jpeg';
 import './login.css';
 
 function LoginPage() {
-    const [isLoading, setIsLoading] = useState(false);
     const { isLoaded } = useAuth(); // Obtener los estados aquí
 
-    if (!isLoaded || isLoading) {
+    if (!isLoaded) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <Loader />

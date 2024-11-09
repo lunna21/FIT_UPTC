@@ -3,15 +3,14 @@ import { SignOutButton, useUser } from '@clerk/nextjs';
 import { updateMetadataUserStudent } from "@/db/user";
 
 import Loader from '@/components/Loader';
+import ButtonLogOut from '@/components/buttons/ButtonLogOut'
 
 const Pending = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const { user } = useUser();
-
-    console.log(user)
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
-        if(!user?.publicMetadata?.role && !user?.publicMetadata?.status) {
+        if (!user?.publicMetadata?.role && !user?.publicMetadata?.status) {
             const updateMetadata = async () => {
                 setIsLoading(true);
                 try {
@@ -29,7 +28,7 @@ const Pending = () => {
         }
     }, [user]);
 
-    if (isLoading) {
+    if (isLoading || !isLoaded) {
         return (
             <div className='w-screen h-screen flex justify-center items-center'>
                 <Loader />
@@ -38,23 +37,15 @@ const Pending = () => {
     }
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full text-center">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">El personal del gimnasio ha recibido tu solicitud satisfactoriamente</h1>
-                <h2 className="text-xl text-gray-700 mb-2">Por favor, espera a que el personal del gimnasio confirme tu solicitud</h2>
-                <h3 className="text-lg text-gray-600 mb-6">Te enviaremos un correo cuando tu solicitud sea confirmada</h3>
-                {/* <Link href="/login">
-                    <Button
-                        Icon={FaSignInAlt}
-                        buttonText='Iniciar sesión'
-                    />
-                </Link> */}
+            <div className="relative bg-white shadow-md rounded-lg max-w-md w-full text-center px-10 py-20">
+                <h2 className="text-2xl text-gray-700 mb-2">Por favor, espera a que el personal del gimnasio confirme tu solicitud</h2>
+                <h3 className="text-xl text-gray-600 mb-6">Te enviaremos un correo cuando tu solicitud sea confirmada</h3>
 
                 <SignOutButton redirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}>
-                    <button className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
-                        Cerrar Sesión
-                    </button>
+                    <div className="absolute top-4 right-4">
+                        <ButtonLogOut />
+                    </div>
                 </SignOutButton>
-
             </div>
         </div>
     )

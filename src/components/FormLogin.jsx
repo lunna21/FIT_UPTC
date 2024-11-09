@@ -117,7 +117,7 @@ function FormLogin() {
 
       <span className="text-sm text-neutral-gray-medium text-center">
         ¿Olvidó su contraseña?{" "}
-        <Link href="/forgot-password" className="underline cursor-pointer opacity-100">
+        <Link href="/recover" className="underline cursor-pointer opacity-100">
           Presiona aquí
         </Link>
       </span>
