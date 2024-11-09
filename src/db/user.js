@@ -19,15 +19,13 @@ export async function getUserById(id, url) {
     }
 } 
 
-export async function updateMetadataUser({ username, rol, status }) {
+export async function updateMetadataUserStudent() {
     try {
         const response = await fetch('/api/users/clerk', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Referer': BASE_URL + '/pending', // change logic after 
-            },
-            body: JSON.stringify({ username, rol, status }),
+            }
         });
         if (response.ok) {
             return response.json();

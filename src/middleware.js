@@ -14,10 +14,35 @@ const rolePermissions = {
 const publicRoutes = [
   '/login',
   '/register',
-  '/terms',
   '/verification',
-  '/pending',
 ];
+
+// actions when the user's status is ACT
+function statusActiveActions(path) {
+  if (path === '/') {
+    const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
+    const redirectUrl = new URL(BASE_URL + dashboardRoute);
+    return NextResponse.redirect(redirectUrl.toString());
+  }
+
+  const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
+  let isAllowed = allowedRoutes.some(route => {
+    return route === path;
+  });
+
+  if (!isAllowed)
+    return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+
+  return NextResponse.next();
+}
+
+function statusPendingActions(path) {
+  if (path === '/pending') {
+    return NextResponse.next();
+  } else {
+    return NextResponse.redirect(new URL(BASE_URL + '/pending').toString());
+  }
+}
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
@@ -25,59 +50,28 @@ export default clerkMiddleware(async (auth, req) => {
 
   console.log(userId)
 
-  
-    // Permitir el acceso a la API
-    if (actualUrl.pathname.startsWith('/api')) {
-      console.log('API request');
-      return NextResponse.next();
-    }
-    
+  // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
+  if (actualUrl.pathname.startsWith('/api')) {
+    console.log('API request');
+    return NextResponse.next();
+  }
 
   if (userId) {
     const { role, status } = sessionClaims?.metadata;
-    const username = sessionClaims?.username;
 
-    if (role && rolePermissions[role.toLowerCase()] && status === 'ACT') {
-
-      if (actualUrl.pathname === '/') {
-        const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
-        const redirectUrl = new URL(BASE_URL + dashboardRoute);
-        return NextResponse.redirect(redirectUrl.toString());
-      }
-
-      const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
-      let isAllowed = allowedRoutes.some(route => {
-        return route === actualUrl.pathname;
-      });
-
-      if (!isAllowed)
-        return NextResponse.redirect(new URL(BASE_URL + '/').toString());
-
-      return NextResponse.next();
-    }
-
-    // For this sprint manage this way
-    if (actualUrl.pathname === '/dashboard') {
-      return NextResponse.next();
-    }
-
-    if (actualUrl.pathname === '/login' || actualUrl.pathname === '/register') {
-      return NextResponse.redirect(new URL(BASE_URL + '/dashboard').toString());
-    }
-
-    if (actualUrl.pathname === '/pending') {
-      if (!role && !username && !status) {
-        return NextResponse.next();
-      } else {
-        return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+    if (role && rolePermissions[role.toLowerCase()] && status) {
+      switch (status) {
+        case 'ACT':
+          return statusActiveActions(actualUrl.pathname);
       }
     }
 
-    // if (actualUrl.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/pending')) {
-    //   return NextResponse.next();
-    // }
+    return statusPendingActions(actualUrl.pathname);
+
   }
 
+
+  // public routes
   if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {
     return NextResponse.next();
   } else {

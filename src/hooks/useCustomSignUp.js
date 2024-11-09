@@ -21,7 +21,6 @@ const useCustomSignUp = () => {
         try {
             // Step 1: Create the person
             person = await addPerson(formData);
-            console.log(person);
 
             // Step 2: Upload File
             const base64Data = file64Consent;
@@ -35,20 +34,22 @@ const useCustomSignUp = () => {
             });
 
             // Step 0.2: add password_user to formData
-            formData.password_user = generatePassword();
+            const newPassword = generatePassword();
+            formData.password_user = newPassword;
 
             // Step 3: Create the user
             user = await addUserStudent({
                 ...formData,
                 id_person: person.id_person,
             }, filePath);
-            console.log(user);
 
-            // Step 4: Use Clerk to sign up
+            const username = user.user.name_user;
+
+            // Step 4: Use Clerk to sign up the user
             await handleSignUp({
-                email: person.email_person,
-                password: formData.password_user,
-                username: user.name_user,
+                email: formData.email,
+                password: newPassword,
+                username: username,
             });
 
             setIsLoading(false);

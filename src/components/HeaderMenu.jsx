@@ -2,10 +2,13 @@ import { UserButton } from '@clerk/nextjs';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import logoUptc from '@/assets/logoUPTC24.svg';
 
 const HeaderMenu = ({ menu }) => {
+  const router = useRouter();
+
   return (
     <header className="flex h-[72px] justify-between items-center p-4 bg-neutral-gray-dark pattern-diagonal-lines pattern-white-500 pattern-bg-white 
   pattern-size-8 pattern-opacity-80 relative">

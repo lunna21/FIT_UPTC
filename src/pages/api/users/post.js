@@ -53,11 +53,11 @@ export default async function postHandler(req, res) {
             );
         }
 
-        const name_user = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, numberUsername+1);
+        const username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, numberUsername+1);
 
         // Verificar si ya existe un usuario con el mismo name_user
         const existingUser = await prisma.user.findFirst({
-            where: { name_user: name_user },
+            where: { name_user: username },
         });
 
         if (existingUser) {
@@ -84,7 +84,7 @@ export default async function postHandler(req, res) {
                     id_person: existingPerson.id_person,
                     document_number_person: parseInt(document_number_person),
                     id_role_user,
-                    name_user,
+                    name_user: username,
                     password_user: await hashPassword(password_user),
                     creation_date_user: new Date(),
                 }
@@ -213,7 +213,7 @@ export default async function postHandler(req, res) {
                 user: newUser,
                 inscription_detail: newInscriptionDetail
             };
-        }, { timeout: 30000 });
+        }, { maxWait: 5000, timeout: 30000 });
 
         return res.status(201).json(result);
     } catch (error) {

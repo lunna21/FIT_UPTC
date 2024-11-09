@@ -11,8 +11,6 @@ const handlerClerk = async (req, res) => {
             return res.status(401).json({ message: 'No Logged In User' });
         }
 
-        const { username, role, status } = req.body;
-
         try {
             // Await the resolution of clerkClient
             const client = await clerkClient();
@@ -25,9 +23,8 @@ const handlerClerk = async (req, res) => {
             // Actualiza los metadatos del usuario
             const result = await client.users.updateUser(userId, {
                 publicMetadata: {
-                    username,
-                    role,
-                    status,
+                    role: "STU",
+                    status: "PEN",
                 },
             });
 

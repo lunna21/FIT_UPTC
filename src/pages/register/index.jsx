@@ -170,11 +170,7 @@ const Register = () => {
         });
     }
 
-    console.log(formData)
-
     const [selectedFile, setSelectedFile] = useState(null);
-
-    console.log(errorMessageFile)
 
     const handleFileChange = (e) => {
         const { name, files } = e.target;
@@ -187,7 +183,7 @@ const Register = () => {
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessageFile('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
+                setErrorMessageFile('El archivo es demasiado grande. El tamaño máximo permitido es de 1 MB.');
                 return;
             }
             setErrorMessageFile("");

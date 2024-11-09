@@ -67,7 +67,7 @@ export default async function handler(req, res) {
             // Elimina el usuario
             await prisma.user.delete({
                 where: {
-                    document_number_person: documentNumber,
+                    id_user: id_user,
                 },
             });
 
