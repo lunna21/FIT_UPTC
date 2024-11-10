@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 

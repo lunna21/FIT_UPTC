@@ -23,7 +23,9 @@ const UserProfilePage = () => {
     return (
         <div>
             <h1>Perfil del Usuario</h1>
-            <UserProfile />
+            <UserProfile 
+                only={['seguridad']}
+            />
             <SignOutButton redirectUrl={process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL}/>
         </div>
     );

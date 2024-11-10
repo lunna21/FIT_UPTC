@@ -127,7 +127,7 @@ model inscription_detail_audit {
 
 model person {
   id_person                           Int                  @id @default(autoincrement())
-  document_number_person              Int                  @unique(map: "pers_uk_document_person")
+  document_number_person              String?              @unique(map: "pers_uk_document_person") @db.VarChar(20)
   id_document_type                    String               @db.Char(2)
   first_name_person                   String               @db.VarChar(50)
   last_name_person                    String               @db.VarChar(50)
@@ -150,7 +150,7 @@ model person {
 }
 
 model prescription_medication {
-  id_presmed            Int                     @id
+  id_presmed            Int                     @id @default(autoincrement())
   name_presmed          String                  @unique(map: "presmed_uk_name") @db.VarChar(100)
   dose_persmed          String                  @db.VarChar(50)
   recipe_reason         String                  @db.VarChar(255)
@@ -172,7 +172,7 @@ model role_user {
 model user {
   id_user                                                               Int                        @id @default(autoincrement())
   id_person                                                             Int
-  document_number_person                                                Int
+  document_number_person                                                String?                    @db.VarChar(20)
   id_role_user                                                          String                     @db.Char(3)
   name_user                                                             String                     @unique(map: "user_uk_name_user") @db.VarChar(50)
   password_user                                                         String                     @db.VarChar(255)

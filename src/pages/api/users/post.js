@@ -30,7 +30,7 @@ export default async function postHandler(req, res) {
 
         // Verificar si en verdad hay una persona con el mismo documento
         const existingPerson = await prisma.person.findUnique({
-            where: { document_number_person: parseInt(document_number_person) },
+            where: { document_number_person: document_number_person },
         });
 
         const personForUsername = await prisma.person.findFirst({
@@ -53,11 +53,11 @@ export default async function postHandler(req, res) {
             );
         }
 
-        const name_user = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, numberUsername+1);
+        const username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, numberUsername+1);
 
         // Verificar si ya existe un usuario con el mismo name_user
         const existingUser = await prisma.user.findFirst({
-            where: { name_user: name_user },
+            where: { name_user: username },
         });
 
         if (existingUser) {
@@ -82,9 +82,9 @@ export default async function postHandler(req, res) {
             const newUser = await prisma.user.create({
                 data: {
                     id_person: existingPerson.id_person,
-                    document_number_person: parseInt(document_number_person),
+                    document_number_person: document_number_person,
                     id_role_user,
-                    name_user,
+                    name_user: username,
                     password_user: await hashPassword(password_user),
                     creation_date_user: new Date(),
                 }
@@ -96,8 +96,20 @@ export default async function postHandler(req, res) {
                 user_status = 'PEN';
                 const inscriptionDetailValidation = validateInscriptionDetail(inscription_detail);
                 if (!inscriptionDetailValidation.isValid) {
+                    console.error(inscriptionDetailValidation.errors)
                     return res.status(400).json(
                         { error: 'Errores de validación en los datos de la inscripción', details: inscriptionDetailValidation.errors }
+                    );
+                }
+
+                // Verificar si ya existe un detalle de inscripción con el mismo código de estudiante
+                const existingInscriptionDetail = await prisma.inscription_detail.findFirst({
+                    where: { student_code: inscription_detail.student_code },
+                });
+
+                if (existingInscriptionDetail) {
+                    return res.status(400).json(
+                        { error: 'Ya existe un detalle de inscripción con este código de estudiante' }
                     );
                 }
 
@@ -169,19 +181,27 @@ export default async function postHandler(req, res) {
                 // Si hay medicamentos, crearlos y asociarlos
                 if (inscription_detail.medications && inscription_detail.medications.length > 0) {
                     for (const med of inscription_detail.medications) {
-                        const medication = await prisma.prescription_medication.create({
-                            data: {
+                        let medication = await prisma.prescription_medication.findUnique({
+                            where: {
                                 name_presmed: med.name_presmed,
-                                dose_persmed: med.dose_persmed,
-                                recipe_reason: med.recipe_reason
-                            }
+                            },
                         });
+
+                        if (!medication) {
+                            medication = await prisma.prescription_medication.create({
+                                data: {
+                                    name_presmed: med.name_presmed,
+                                    dose_persmed: med.dose_persmed,
+                                    recipe_reason: med.recipe_reason,
+                                },
+                            });
+                        }
 
                         await prisma.inscripdetail_presmed.create({
                             data: {
                                 id_insdetail: newInscriptionDetail.id_insdetail,
-                                id_presmed: medication.id_presmed
-                            }
+                                id_presmed: medication.id_presmed,
+                            },
                         });
                     }
                 }
@@ -201,7 +221,7 @@ export default async function postHandler(req, res) {
                 user: newUser,
                 inscription_detail: newInscriptionDetail
             };
-        }, { timeout: 20000 });
+        }, { maxWait: 5000, timeout: 30000 });
 
         return res.status(201).json(result);
     } catch (error) {
