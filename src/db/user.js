@@ -17,7 +17,7 @@ export async function getUserById(id, url) {
         console.error('Error fetching user:', error);
         throw error;
     }
-} 
+}
 
 export async function updateMetadataUserStudent() {
     try {
@@ -63,7 +63,7 @@ export async function addUserStudent(formData, url_consent) {
                 },
                 eps: formData.eps,
                 blood_type: formData.bloodType,
-                url_consent: url_consent, 
+                url_consent: url_consent,
                 allergy: formData.allergies ? { name_allergy: formData.allergies } : null,
                 medications: formData.medications.map(med => ({
                     name_presmed: med.nameMedication,
@@ -85,12 +85,8 @@ export async function addUserStudent(formData, url_consent) {
         if (response.ok) {
             return response.json();
         } else {
-            const errorData = await response.json();
-            if (errorData.errors) {
-                throw new Error('Validation errors: ' + JSON.stringify(errorData.errors));
-            } else {
-                throw new Error(errorData.error || 'Error adding user');
-            }
+            console.error('Error adding user:', response);
+            throw "Error al añadir el usuario, comprueba la información enviada";
         }
     } catch (error) {
         console.error('Error adding user:', error);

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export default async function deleteHandler(req, res) {
     const { document_number } = req.query;
 
-    const documentNumber = parseInt(document_number);
+    const documentNumber = document_number;
 
     if (req.method === 'DELETE') {
         try {

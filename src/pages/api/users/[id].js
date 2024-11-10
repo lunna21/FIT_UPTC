@@ -4,15 +4,16 @@ const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
     const { id } = req.query; // 'id' debería ser el número de documento en este caso
+    const id_user = parseInt(id); // Asegúrate de que 'id' es un número entero
+
     if (req.method === 'GET') {
         try {
             // Convierte 'id' a un entero, si es necesario
-            const documentNumber = parseInt(id); // Asegúrate de que 'id' es un número entero
 
             // Realiza la consulta
             const user = await prisma.user.findFirst({
                 where: {
-                    document_number_person: documentNumber, // Usamos el campo único
+                    id_user: id_user, // Usamos el campo único
                 },
             });
 
@@ -29,9 +30,7 @@ export default async function handler(req, res) {
     } else if (req.method === 'DELETE') {
         try {
             // Convierte 'id' a un entero, si es necesario
-            const id_user = parseInt(id); // Asegúrate de que 'id' es un número entero
 
-            // Encuentra el usuario por el número de documento
             const user = await prisma.user.findUnique({
                 where: {
                     id_user: id_user,

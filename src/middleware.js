@@ -74,7 +74,6 @@ export default clerkMiddleware(async (auth, req) => {
 
   // public routes
   if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {
-    console.log("entro")
     return NextResponse.next();
   } else {
     return redirectToSignIn();

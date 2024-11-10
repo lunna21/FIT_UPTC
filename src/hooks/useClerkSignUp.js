@@ -27,7 +27,7 @@ const useClerkSignUp = () => {
             });
 
             // Redirecciona a la página de espera para que el usuario confirme el email
-            // router.push("/verification");
+            router.push("/verification");
         } catch (error) {
             throw new Error('Error during sign up process: ' + error.message);
         }

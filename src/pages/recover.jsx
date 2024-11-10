@@ -18,13 +18,13 @@ const ForgotPasswordPage = () => {
     const [error, setError] = useState('')
 
     const router = useRouter()
-    const { isLoaded, signIn, setActive } = useSignIn()
+    const { isLoaded, signIn } = useSignIn()
 
     if (!isLoaded) {
         return null
     }
 
-    // Send the password reset code to the user's email
+    // Enviar el código de restablecimiento al correo
     async function create(e) {
         e.preventDefault()
         await signIn
@@ -42,11 +42,11 @@ const ForgotPasswordPage = () => {
             })
     }
 
-    // Reset the user's password
+    // Restablecer la contraseña del usuario
     async function reset(e) {
         e.preventDefault()
 
-        // Validate the reset code and update password
+        // Validar el código de restablecimiento y actualizar la contraseña
         await signIn
             ?.attemptFirstFactor({
                 strategy: 'reset_password_email_code',
@@ -55,12 +55,8 @@ const ForgotPasswordPage = () => {
             })
             .then((result) => {
                 if (result.status === 'complete') {
-                    // Set the active session to
-                    // the newly created session (user is now signed in)
-                    setActive({ session: result.createdSessionId })
-                    setError('')
-                    // Redirigir al usuario a la página de inicio o dashboard
-                    router.push('/')
+                    // Redirigir al usuario a la página de inicio después del restablecimiento
+                    router.push('/') // Redirigir al login o al dashboard
                 } else {
                     console.log(result)
                 }

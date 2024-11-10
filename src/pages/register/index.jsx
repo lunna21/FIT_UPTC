@@ -284,7 +284,7 @@ const Register = () => {
         <div className="register-registerPage register-flex">
             {
                 singUpError && (
-                    <div className="w-full h-80px bg-transparent flex justify-center items-center px-8 py-4 absolute top-0">
+                    <div className="z-50 bg-white w-full h-80px bg-transparent flex justify-center items-center px-8 py-4 absolute top-0">
                         <p className="text-red-500">{singUpError}</p>
                     </div>
                 )

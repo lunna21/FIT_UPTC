@@ -14,7 +14,7 @@ export default async function getHandler(req, res) {
         } else {
             persons = await prisma.person.findFirst({
                 where: {
-                    document_number_person: parseInt(document_number),
+                    document_number_person: document_number,
                 }
             });
 

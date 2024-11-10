@@ -30,7 +30,7 @@ export default async function postHandler(req, res) {
 
         // Verificar si en verdad hay una persona con el mismo documento
         const existingPerson = await prisma.person.findUnique({
-            where: { document_number_person: parseInt(document_number_person) },
+            where: { document_number_person: document_number_person },
         });
 
         const personForUsername = await prisma.person.findFirst({
@@ -82,7 +82,7 @@ export default async function postHandler(req, res) {
             const newUser = await prisma.user.create({
                 data: {
                     id_person: existingPerson.id_person,
-                    document_number_person: parseInt(document_number_person),
+                    document_number_person: document_number_person,
                     id_role_user,
                     name_user: username,
                     password_user: await hashPassword(password_user),
@@ -181,19 +181,27 @@ export default async function postHandler(req, res) {
                 // Si hay medicamentos, crearlos y asociarlos
                 if (inscription_detail.medications && inscription_detail.medications.length > 0) {
                     for (const med of inscription_detail.medications) {
-                        const medication = await prisma.prescription_medication.create({
-                            data: {
+                        let medication = await prisma.prescription_medication.findUnique({
+                            where: {
                                 name_presmed: med.name_presmed,
-                                dose_persmed: med.dose_persmed,
-                                recipe_reason: med.recipe_reason
-                            }
+                            },
                         });
+
+                        if (!medication) {
+                            medication = await prisma.prescription_medication.create({
+                                data: {
+                                    name_presmed: med.name_presmed,
+                                    dose_persmed: med.dose_persmed,
+                                    recipe_reason: med.recipe_reason,
+                                },
+                            });
+                        }
 
                         await prisma.inscripdetail_presmed.create({
                             data: {
                                 id_insdetail: newInscriptionDetail.id_insdetail,
-                                id_presmed: medication.id_presmed
-                            }
+                                id_presmed: medication.id_presmed,
+                            },
                         });
                     }
                 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { addPerson, deletePerson } from '@/db/person';
+import { addPerson, deletePersonByDocumentNumber } from '@/db/person';
 import { addUserStudent, deleteUser } from '@/db/user';
 import { uploadPdf } from '@/db/upload';
 
@@ -57,11 +57,11 @@ const useCustomSignUp = () => {
             // Rollback logic
             if (user) {
                 // Delete the user if it was created
-                await deleteUser(user.id_user);
+                await deleteUser(user.user.id_user);
             }
             if (person) {
                 // Delete the person if it was created
-                await deletePerson(person.document_number_person);
+                await deletePersonByDocumentNumber(person.document_number_person);
             }
 
             console.error('Error during signup process:', err);

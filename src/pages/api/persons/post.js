@@ -36,7 +36,7 @@ export default async function postHandler(req, res) {
 
     // Verificar si ya existe una persona con el mismo número de documento
     const existingPerson = await prisma.person.findFirst({
-      where: { document_number_person: parseInt(document_number_person) },
+      where: { document_number_person: document_number_person },
     });
 
     if (existingPerson) {
@@ -68,7 +68,7 @@ export default async function postHandler(req, res) {
     const newPerson = await prisma.$transaction(async (prisma) => {
       return await prisma.person.create({
       data: {
-        document_number_person: parseInt(document_number_person),
+        document_number_person: document_number_person,
         id_document_type,
         first_name_person: first_name_person.toLowerCase().trim(),
         last_name_person: last_name_person.toLowerCase().trim(),

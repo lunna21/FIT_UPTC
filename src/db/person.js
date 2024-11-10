@@ -52,9 +52,9 @@ export async function addPerson(formData) {
     }
 }
 
-export async function deletePerson(id) {
+export async function deletePersonByDocumentNumber(documnetNumber) {
     try {
-        const response = await fetch(`/api/persons/${id}`, {
+        const response = await fetch(`/api/persons?document_number=${documnetNumber}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
