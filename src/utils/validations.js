@@ -305,7 +305,6 @@ export function validatePerson(person) {
     errors.first_name = validatePersonName(person.first_name_person, 'nombre');
     errors.last_name = validatePersonName(person.last_name_person, 'apellido');
     errors.phone = validatePhoneNumber(person.phone_number_person);
-    errors.email = validateEmail(person.email_person);
     errors.birthdate = validateBirthdate(person.birthdate_person);
 
     Object.keys(errors).forEach(key => {
@@ -329,6 +328,7 @@ export function validateUser(user) {
     // errors.username = validateUsername(user.name_user);
     errors.password = validatePassword(user.password_user);
     errors.role = validateUserRole(user.id_role_user);
+    errors.email = validateEmail(user.email_user);
     
     if (user.document_number_person) {
         errors.document_number = validateDocumentNumber(user.document_number_person);

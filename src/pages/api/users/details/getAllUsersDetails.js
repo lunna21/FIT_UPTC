@@ -39,6 +39,7 @@ export default async function getHandler(req, res) {
                 documentNumberPerson: user.document_number_person,
                 idRoleUser: user.id_role_user,
                 nameUser: user.name_user,
+                emailUser: user.email_user,
                 passwordUser: user.password_user,
                 creationDateUser: user.creation_date_user,
                 roleUser: user.role_user_user_id_role_userTorole_user && {
@@ -60,7 +61,6 @@ export default async function getHandler(req, res) {
                     firstNamePerson: person.first_name_person,
                     lastNamePerson: person.last_name_person,
                     phoneNumberPerson: person.phone_number_person,
-                    emailPerson: person.email_person,
                     birthdatePerson: person.birthdate_person,
                     createdPersonBy: person.created_person_by,
                     createdPersonAt: person.created_person_at,

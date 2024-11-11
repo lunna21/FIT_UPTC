@@ -26,7 +26,6 @@ export async function addPerson(formData) {
             first_name_person: formData.firstName,
             last_name_person: formData.lastName,
             phone_number_person: formData.phoneNumber,
-            email_person: formData.email,
             birthdate_person: formData.birthDate,
             created_person_by: 1, // Assuming 'system' or replace with actual user
         };

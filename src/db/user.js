@@ -1,4 +1,3 @@
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // its really by document_number_person
 export async function getUserById(id, url) {
@@ -7,7 +6,6 @@ export async function getUserById(id, url) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Referer': BASE_URL + url,
             },
         });
         if (response.ok) {
@@ -53,6 +51,7 @@ export async function addUserStudent(formData, url_consent) {
             document_number_person: formData.numberDocument,
             id_role_user: 'STU', // Assuming the role is 'STU' for students
             password_user: formData.password_user, // Assuming password is part of formData
+            email_user: formData.email,
             inscription_detail: {
                 id_estatment_u: formData.programType,
                 student_code: formData.studentCode,
@@ -77,7 +76,35 @@ export async function addUserStudent(formData, url_consent) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Referer': BASE_URL + '/register',
+            },
+            body: JSON.stringify(userData),
+        });
+
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error('Error adding user:', response);
+            throw "Error al añadir el usuario, comprueba la información enviada";
+        }
+    } catch (error) {
+        console.error('Error adding user:', error);
+        throw error;
+    }
+}
+
+export async function addUserWithRole(formData, idRole) {
+    try {
+        const userData = {
+            document_number_person: formData.numberDocument,
+            id_role_user: idRole,
+            password_user: formData.password_user,
+            email_user: formData.email,
+        };
+
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(userData),
         });
@@ -100,7 +127,6 @@ export async function deleteUser(id, url) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Referer': BASE_URL + url,
             },
         });
         if (response.ok) {

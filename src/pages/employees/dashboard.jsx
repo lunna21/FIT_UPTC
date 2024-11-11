@@ -1,4 +1,4 @@
-import HeaderMenu from "@/components/HeaderMenu"; 
+import HeaderMenu from "@/components/headers/HeaderMenu"; 
 
 const Dashboard = () => {
     return (

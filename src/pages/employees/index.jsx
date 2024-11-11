@@ -11,7 +11,7 @@
 //   }, []);
 
 import estudiantes from '@/fakeData/estudiantes';
-import HeaderMenu from '@/components/HeaderMenu';
+import HeaderMenu from '@/components/headers/HeaderMenu';
 import TableUser from '@/components/TableUser';
 
 

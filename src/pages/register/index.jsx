@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
 import ValidationInput from '@/components/inputs/InputValidation'
-import HeaderRegister from '@/components/HeaderRegister'
+import HeaderRegister from '@/components/headers/HeaderRegister'
 import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
 import UploadFileRegister from '@/components/UploadFileRegister'

@@ -3,13 +3,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
-    const { id } = req.query; // 'id' debería ser el número de documento en este caso
-    const id_user = parseInt(id); // Asegúrate de que 'id' es un número entero
+    const { id } = req.query; // 'id'
+    const id_user = parseInt(id); // asegurar 'id' es un número entero
 
     if (req.method === 'GET') {
         try {
-            // Convierte 'id' a un entero, si es necesario
-
             // Realiza la consulta
             const user = await prisma.user.findFirst({
                 where: {
