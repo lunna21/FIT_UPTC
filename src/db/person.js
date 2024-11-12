@@ -20,6 +20,7 @@ export async function getPersonByDocument(documentNumber) {
 
 export async function addPerson(formData) {
     try {
+        console.log(formData)
         const personData = {
             document_number_person: formData.numberDocument,
             id_document_type: formData.typeDocument,

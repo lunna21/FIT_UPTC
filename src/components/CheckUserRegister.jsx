@@ -16,7 +16,6 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
         e.preventDefault();
 
         try {
-            console.log(valueNumberDocument);
             await checkPersonByDocument({
                 documentNumber: valueNumberDocument,
                 setIsValidated: setIsValidated
@@ -185,7 +184,7 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                 </div>
             )}
             {
-                errorCheck && (
+                (errorCheck && visibleInRegister)  && (
                     <p style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
                         {errorCheck}
                     </p>

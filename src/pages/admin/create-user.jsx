@@ -12,15 +12,14 @@ import useCustomSignUp from '@/hooks/useCustomSignUp';
 import { calculateAge, getToday } from '@/utils/utils';
 import { validateEmailInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation';
 
-import styles from './admin.module.css';
-
 // Import Icons
-import { MdEmail } from "react-icons/md";
+import { MdEmail, MdError } from "react-icons/md";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
+import { FaAddressCard } from 'react-icons/fa';
 
 const CreateUser = () => {
-    const { signUp, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
+    const { registerUser, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
 
     const [formData, setFormData] = useState({
         typeDocument: '',
@@ -29,36 +28,48 @@ const CreateUser = () => {
         lastName: '',
         phoneNumber: '',
         email: '',
-        birthDate: ''
+        birthDate: '',
+        role: '',
     });
-    const [isValidated, setIsValidated] = useState("no");
-    const [age, setAge] = useState(0);
+    const [isValidated, setIsValidated] = useState("");
     const [error, setError] = useState('');
+    const [errorRole, setErrorRole] = useState('');
     const [countFillObligatory, setCountFillObligatory] = useState(1);
-    const [obligatoryFields, setObligatoryFields] = useState(['numberDocument', 'typeDocument', 'firstName', 'lastName', 'email', 'phoneNumber', 'birthDate']);
+    const [obligatoryFields, setObligatoryFields] = useState(['numberDocument', 'typeDocument']);
     const [obligatoryFieldsCheck, setObligatoryFieldsCheck] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const containerRef = useRef(null);
     const today = getToday(14);
-
-    console.log(formData)
 
     useEffect(() => {
         const countFilledFields = obligatoryFields.filter(field => formData[field]).length;
         setCountFillObligatory(countFilledFields);
         setObligatoryFieldsCheck(obligatoryFields.some(field => !formData[field]));
-    }, [formData]);
+    }, [formData, obligatoryFields]);
+
+    useEffect(() => {
+        if (isValidated === 'yes') {
+            setObligatoryFields(['numberDocument', 'typeDocument', 'firstName', 'lastName', 'email', 'phoneNumber', 'birthDate', 'role']);
+        } else if (isValidated === 'no') {
+            setObligatoryFields(['numberDocument', 'typeDocument', 'email', 'role']);
+        } else if (isValidated === '') {
+            setObligatoryFields(['numberDocument', 'typeDocument']);
+        }
+    }, [isValidated]);
+
+    const handleTypeRole = (e) => {
+        handleChange(e);
+        setErrorRole(e.target.value ? '' : 'Debe seleccionar un tipo de rol.');
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
 
         if (name === 'numberDocument')
             setError('');
-        if (name === 'birthDate') {
-            setAge(calculateAge(value));
-        }
 
         if (name === 'typeDocument' || name === 'numberDocument') {
-            setIsValidated("no");
+            setIsValidated("");
         }
 
         setFormData({
@@ -69,10 +80,15 @@ const CreateUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccessMessage('');
         try {
-            await signUp({ formData });
+            if (formData.role) {
+                await registerUser({ formData });
+                setSuccessMessage('Usuario creado exitosamente.');
+            }
         } catch (err) {
-            setError(err);
+            setError('Error al crear el usuario. Por favor, inténtalo de nuevo.');
             console.error(err);
         }
     };
@@ -114,6 +130,66 @@ const CreateUser = () => {
                                 visibleTI={false}
                                 visibleInRegister={false}
                             />
+                            {(isValidated === 'no') && (
+                                <>
+                                    <ValidationInput
+                                        label="Email (*)"
+                                        type="email"
+                                        placeholder="Ingresa tu dirección de email"
+                                        required
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        Icon={MdEmail}
+                                        id="email"
+                                        name="email"
+                                        onKeyDown={validateEmailInput}
+                                    />
+
+                                    <div className="flex flex-col mb-4">
+                                        <label htmlFor="role" className="text-gray-700 font-medium mb-2">Tipo de Rol (*)</label>
+                                        <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{ background: "hsl(330, 12%, 97%)" }}>
+                                            <FaAddressCard className="text-gray-500 mr-2" />
+                                            <select
+                                                id="role"
+                                                name="role"
+                                                required
+                                                value={formData.role}
+                                                onChange={handleTypeRole}
+                                                className={`flex-1 bg-transparent outline-none ${formData.role ? 'text-black' : 'text-gray-500'}`}
+                                            >
+                                                <option value="">Selecciona un tipo de role</option>
+                                                <option value="ADM">Administrador</option>
+                                                <option value="EMP">Empleado</option>
+                                            </select>
+                                            {errorRole && <MdError className="absolute right-2 text-red-500" />}
+                                        </div>
+                                        {errorRole && (
+                                            <p className="text-red-500 text-sm font-bold mt-1 flex items-center">
+                                                {errorRole}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className='mt-4 col-span-2'>
+                                        <Button
+                                            buttonText='Crear Usuario'
+                                            Icon={IoPersonAddSharp}
+                                            disabled={obligatoryFieldsCheck}
+                                            onClick={handleSubmit}
+                                            type='submit'
+                                        />
+                                        {obligatoryFieldsCheck && (
+                                            <p className='text-red-500 text-sm mt-2'>Por favor, completa todos los campos obligatorios.</p>
+                                        )}
+                                        {error && (
+                                            <p className='text-red-500 text-sm mt-2'>{error}</p>
+                                        )}
+                                        {successMessage && (
+                                            <p className='text-green-500 text-sm mt-2'>{successMessage}</p>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+
                             {(isValidated === 'yes') && (
                                 <>
                                     <ValidationInput
@@ -181,6 +257,30 @@ const CreateUser = () => {
                                         onKeyDown={validateDateInput}
                                     />
 
+                                    <div className="flex flex-col mb-4">
+                                        <label htmlFor="role" className="text-gray-700 font-medium mb-2">Tipo de Rol (*)</label>
+                                        <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{ background: "hsl(330, 12%, 97%)" }}>
+                                            <FaAddressCard className="text-gray-500 mr-2" />
+                                            <select
+                                                id="role"
+                                                name="role"
+                                                required
+                                                value={formData.role}
+                                                onChange={handleTypeRole}
+                                                className={`flex-1 bg-transparent outline-none ${formData.role ? 'text-black' : 'text-gray-500'}`}
+                                            >
+                                                <option value="">Selecciona un tipo de role</option>
+                                                <option value="ADM">Administrador</option>
+                                                <option value="EMP">Empleado</option>
+                                            </select>
+                                            {errorRole && <MdError className="absolute right-2 text-red-500" />}
+                                        </div>
+                                        {errorRole && (
+                                            <p className="text-red-500 text-sm font-bold mt-1 flex items-center">
+                                                {errorRole}
+                                            </p>
+                                        )}
+                                    </div>
                                     <div className='mt-4 col-span-2'>
                                         <Button
                                             buttonText='Crear Usuario'
@@ -192,6 +292,12 @@ const CreateUser = () => {
                                         {obligatoryFieldsCheck && (
                                             <p className='text-red-500 text-sm mt-2'>Por favor, completa todos los campos obligatorios.</p>
                                         )}
+                                        {error && (
+                                            <p className='text-red-500 text-sm mt-2'>{error}</p>
+                                        )}
+                                        {successMessage && (
+                                            <p className='text-green-500 text-sm mt-2'>{successMessage}</p>
+                                        )}
                                     </div>
                                 </>
                             )}
@@ -199,10 +305,16 @@ const CreateUser = () => {
                     </div>
                 </div>
             </div>
-            {
-                singUpError && (
+            {    
+                (singUpError || error) && (
                     <div className="z-50 bg-white w-full h-20 bg-transparent flex justify-center items-center px-8 py-4 absolute bottom-0">
-                        <p className="text-red-500">{singUpError}</p>
+                        {
+                            singUpError ? (
+                                <p className="text-red-500">{singUpError}</p>
+                            ) : (
+                                <p className="text-red-500">{error}</p>
+                            )
+                        }
                     </div>
                 )
             }

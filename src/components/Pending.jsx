@@ -1,34 +1,35 @@
 import { useState, useEffect } from 'react';
 import { SignOutButton, useUser } from '@clerk/nextjs';
-import { updateMetadataUserStudent } from "@/db/user";
+// import { updateMetadataUserStudent } from "@/db/user";
 
 import Loader from '@/components/Loader';
 import ButtonLogOut from '@/components/buttons/ButtonLogOut'
 
 const Pending = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const { user, isLoaded } = useUser();
+    // const [isLoading, setIsLoading] = useState(false);
+    // const { user, isLoaded } = useUser();
+    const { isLoaded } = useUser();
 
-    useEffect(() => {
-        if (!user?.publicMetadata?.role && !user?.publicMetadata?.status) {
-            const updateMetadata = async () => {
-                setIsLoading(true);
-                try {
-                    await updateMetadataUserStudent();
-                    setIsLoading(false);
-                }
-                catch (error) {
-                    console.error('Error updating metadata:', error);
-                    setIsLoading(false);
-                }
-            }
-            if (user) {
-                updateMetadata();
-            }
-        }
-    }, [user]);
+    // useEffect(() => {
+    //     if (!user?.publicMetadata?.role && !user?.publicMetadata?.status) {
+    //         const updateMetadata = async () => {
+    //             setIsLoading(true);
+    //             try {
+    //                 await updateMetadataUserStudent();
+    //                 setIsLoading(false);
+    //             }
+    //             catch (error) {
+    //                 console.error('Error updating metadata:', error);
+    //                 setIsLoading(false);
+    //             }
+    //         }
+    //         if (user) {
+    //             updateMetadata();
+    //         }
+    //     }
+    // }, [user]);
 
-    if (isLoading || !isLoaded) {
+    if (!isLoaded) {
         return (
             <div className='w-screen h-screen flex justify-center items-center'>
                 <Loader />

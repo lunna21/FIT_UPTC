@@ -63,7 +63,7 @@ export function generateUsername(name, lastName, role, number) {
   one number, and one special character.
 */
 export function generatePassword() {
-  const length = 12;
+  const length = 16;
   const charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
   let generatedPassword = "";

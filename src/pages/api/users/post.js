@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { validateUser, validateInscriptionDetail } from '@/utils/validations';
 import { generateUsername } from '@/utils/utils';
-import { hashPassword } from '@/utils/bcrypt';
+// import { hashPassword } from '@/utils/bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -11,8 +11,8 @@ export default async function postHandler(req, res) {
         const {
             document_number_person,
             id_role_user,
-            password_user,
             email_user,
+            password_user,
             inscription_detail,
         } = data;
 
@@ -21,7 +21,6 @@ export default async function postHandler(req, res) {
             document_number_person,
             id_role_user,
             email_user,
-            password_user
         });
 
         if (!userValidation.isValid) {
@@ -55,8 +54,19 @@ export default async function postHandler(req, res) {
             );
         }
 
-        const username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername + 1);
+        let username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername + 1);
+        // Verificar si ya existe un usuario con el mismo nombre de usuario
+        let existingUser = await prisma.user.findUnique({
+            where: { name_user: username },
+        });
 
+        while (existingUser) {
+            numberUsername += 1;
+            username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername);
+            existingUser = await prisma.user.findUnique({
+                where: { name_user: username },
+            });
+        }
         // Verificar si el rol de usuario existe
         const existingRole = await prisma.role_user.findUnique({
             where: { id_role_user: id_role_user },
@@ -70,16 +80,19 @@ export default async function postHandler(req, res) {
 
         // Usar una transacción para asegurar la integridad de los datos
         const result = await prisma.$transaction(async (prisma) => {
+
+            const userData = {
+                id_person: existingPerson.id_person,
+                document_number_person: document_number_person,
+                id_role_user,
+                name_user: username,
+                password_user: password_user,
+                email_user,
+                creation_date_user: new Date(),
+            }
+
             const newUser = await prisma.user.create({
-                data: {
-                    id_person: existingPerson.id_person,
-                    document_number_person: document_number_person,
-                    id_role_user,
-                    name_user: username,
-                    email_user,
-                    password_user: await hashPassword(password_user),
-                    creation_date_user: new Date(),
-                }
+                data: userData,
             });
 
             let newInscriptionDetail = null;
@@ -259,7 +272,7 @@ export default async function postHandler(req, res) {
                 case 'userstatu_uk_name_userstatus':
                     errorMessage = 'El nombre del estado del usuario ya está registrado';
                     break;
-                
+
             }
 
             return res.status(400).json({ error: errorMessage });

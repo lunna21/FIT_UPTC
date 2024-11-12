@@ -326,7 +326,6 @@ export function validateUser(user) {
     let errors = {};
 
     // errors.username = validateUsername(user.name_user);
-    errors.password = validatePassword(user.password_user);
     errors.role = validateUserRole(user.id_role_user);
     errors.email = validateEmail(user.email_user);
     

@@ -1,6 +1,6 @@
 
 // its really by document_number_person
-export async function getUserById(id, url) {
+export async function getUserById(id) {
     try {
         const response = await fetch(`/api/users/${id}`, {
             method: 'GET',
@@ -17,13 +17,48 @@ export async function getUserById(id, url) {
     }
 }
 
-export async function updateMetadataUserStudent() {
+export async function getUserByUsername(username) {
+    try {
+        const response = await fetch(`/api/users?username=${username}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.ok) {
+            return response.json();
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error;
+    }
+}
+
+// export async function updateMetadataUserStudent() {
+//     try {
+//         const response = await fetch('/api/users/clerk/student', {
+//             method: 'PUT',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             }
+//         });
+//         if (response.ok) {
+//             return response.json();
+//         }
+//     } catch (error) {
+//         console.error('Error updating user metadata:', error);
+//         throw error;
+//     }
+// }
+
+export async function updateMetadataUser({role, status}) {
     try {
         const response = await fetch('/api/users/clerk', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify({ role, status }),
         });
         if (response.ok) {
             return response.json();
@@ -32,7 +67,7 @@ export async function updateMetadataUserStudent() {
         console.error('Error updating user metadata:', error);
         throw error;
     }
-}
+} 
 
 export async function addUserStudent(formData, url_consent) {
     try {
@@ -50,7 +85,7 @@ export async function addUserStudent(formData, url_consent) {
         const userData = {
             document_number_person: formData.numberDocument,
             id_role_user: 'STU', // Assuming the role is 'STU' for students
-            password_user: formData.password_user, // Assuming password is part of formData
+            password_user: formData.password, // Assuming password is part of formData
             email_user: formData.email,
             inscription_detail: {
                 id_estatment_u: formData.programType,
@@ -92,12 +127,17 @@ export async function addUserStudent(formData, url_consent) {
     }
 }
 
-export async function addUserWithRole(formData, idRole) {
+export async function addUserWithRole(formData) {
     try {
+        console.log(formData.role);
+        if(formData.role !== 'ADM' && formData.role !== 'EMP') {
+            throw "El tipo de usuario no es válido";
+        }
+
         const userData = {
             document_number_person: formData.numberDocument,
-            id_role_user: idRole,
-            password_user: formData.password_user,
+            id_role_user: formData.role,
+            password_user: formData.password,
             email_user: formData.email,
         };
 
@@ -134,6 +174,25 @@ export async function deleteUser(id, url) {
         }
     } catch (error) {
         console.error('Error deleting user:', error);
+        throw error;
+    }
+}
+
+
+export async function addUserInClerk({ email, password, username }) {
+    try {
+        const response = await fetch('/api/users/clerk', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password, username }),
+        });
+        if (response.ok) {
+            return response.json();
+        }
+    } catch (error) {
+        console.error('Error adding user:', error);
         throw error;
     }
 }

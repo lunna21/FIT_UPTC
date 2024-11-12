@@ -19,9 +19,23 @@ const publicRoutes = [
 ];
 
 // actions when the user's status is ACT
-// function statusActiveActions(path) {
+function statusActiveActions(path, role) {
+  if (path === '/') {
+    const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
+    const redirectUrl = new URL(BASE_URL + dashboardRoute);
+    return NextResponse.redirect(redirectUrl.toString());
+  }
 
-// }
+  const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
+  let isAllowed = allowedRoutes.some(route => {
+    return route === path;
+  });
+
+  if (!isAllowed)
+    return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+
+  return NextResponse.next();
+}
 
 function statusPendingActions(path) {
   if (path === '/pending') {
@@ -50,25 +64,16 @@ export default clerkMiddleware(async (auth, req) => {
     if (role && rolePermissions[role.toLowerCase()] && status) {
       switch (status) {
         case 'ACT':
-          if (actualUrl.pathname === '/') {
-            const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
-            const redirectUrl = new URL(BASE_URL + dashboardRoute);
-            return NextResponse.redirect(redirectUrl.toString());
-          }
-
-          const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
-          let isAllowed = allowedRoutes.some(route => {
-            return route === actualUrl.pathname;
-          });
-
-          if (!isAllowed)
-            return NextResponse.redirect(new URL(BASE_URL + '/').toString());
-
-          return NextResponse.next();
+          return statusActiveActions(actualUrl.pathname, role);
+        case 'PEN':
+          return statusPendingActions(actualUrl.pathname);
       }
     }
 
-    return statusPendingActions(actualUrl.pathname);
+    if (actualUrl.pathname !== '/create-password')
+      return NextResponse.redirect(new URL(BASE_URL + '/create-password').toString());
+
+    return NextResponse.next();
 
   }
 

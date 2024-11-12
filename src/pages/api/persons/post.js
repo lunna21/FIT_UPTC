@@ -65,7 +65,7 @@ export default async function postHandler(req, res) {
           created_person_at: new Date(),
         },
       });
-    });
+    }, {timeout: 60000});
 
     return res.status(201).json(newPerson);
   } catch (error) {

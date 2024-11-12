@@ -218,6 +218,12 @@ model user_status {
   history_user_status    history_user_status[]
 }
 
+enum inscription_detail_audit_change_type {
+  INSERT
+  UPDATE
+  DELETE
+}
+
 enum emergency_contact_relationship_emecont {
   PADRE
   MADRE
@@ -238,10 +244,4 @@ enum emergency_contact_relationship_emecont {
   COLEGA
   VECINO
   OTRO
-}
-
-enum inscription_detail_audit_change_type {
-  INSERT
-  UPDATE
-  DELETE
 }
