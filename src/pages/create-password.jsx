@@ -71,9 +71,10 @@ const ChangePasswordPage = () => {
     }
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center">
-            <div className="mx-auto max-w-md p-8 rounded-lg shadow-lg bg-neutral-gray-light text-center">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Bienvenid@ {user?.username} !!</h1>
+        <div className="w-screen h-screen flex justify-center items-center bg-gray-100">
+            <div className="mx-auto max-w-md p-8 rounded-lg shadow-lg bg-white text-center">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Bienvenid@!!</h1>
+                <p className="mb-4">Tu nombre de usuario para la aplicación es: <span className="font-semibold">{user?.username}</span></p>
                 <form onSubmit={handleChangePassword} className="space-y-4">
                     <Input
                         label="Contraseña"

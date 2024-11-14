@@ -558,7 +558,7 @@ const Register = () => {
                                     handleFileChange={handleFileChange}
                                     errorMessage={errorMessageFile}
                                 />
-                                {uploadError && (
+                                {(uploadError && (!formData.informedConsent || !formData.parentalAuthorization)) && (
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>
                                 )}
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}

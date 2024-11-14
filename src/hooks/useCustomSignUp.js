@@ -20,14 +20,14 @@ const useCustomSignUp = () => {
         let person;
 
         try {
-            person = await getPersonByDocument(formData.document_number_person);
+            person = await getPersonByDocument(formData.numberDocument);
 
             if (person.length < 1 || !person) {
                 console.log("Entro a crear persona")
                 person = await addPerson(formData);
             }
 
-            console.log(person)
+            console.log("persona farruca: ", person)
 
             const password = generatePassword();
             formData.password = password;
@@ -115,7 +115,7 @@ const useCustomSignUp = () => {
             }
 
             if (formData.firstName && formData.lastName && person) {
-                await deletePersonByDocumentNumber(formData.document_number_person);
+                await deletePersonByDocumentNumber(formData.numberDocument);
             }
 
             setIsLoading(false);

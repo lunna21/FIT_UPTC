@@ -10,6 +10,7 @@ export default async function getHandler(req, res) {
         let persons;
 
         if (!document_number || document_number == 'undefined' || document_number == 'null') {
+            console.log("Devolviendo todas las personas", document_number);
             persons = await prisma.person.findMany();
         } else {
             persons = await prisma.person.findFirst({
