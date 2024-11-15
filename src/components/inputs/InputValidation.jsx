@@ -126,7 +126,7 @@ const ValidationInput = ({
   return (
     <div className="w-full p-1 box-border">
       <label htmlFor={name} className="block text-black font-medium text-sm py-2">
-        {label} {required && <span className="text-red-500">*</span>}
+        {label} 
       </label>
       <div className={`flex items-center gap-2 p-2 bg-gray-100 rounded-lg ${error ? 'border border-red-500' : ''}`}>
         {Icon && <Icon className="text-gray-500" />}

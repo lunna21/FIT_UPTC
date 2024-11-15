@@ -47,8 +47,14 @@ export function getValidDate(dateS) {
     return date;
   }
 
-export function generateUsername(name, lastName, number) {
-    return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${number}`;
+export function generateUsername(name, lastName, role, number) {
+  let roleSuffix = '';
+  if (role === 'EMP') {
+    roleSuffix = '_staff';
+  } else if (role === 'ADM') {
+    roleSuffix = '_admin';
+  }
+  return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${roleSuffix}${number}`;
 }
 
 /* 
@@ -57,7 +63,7 @@ export function generateUsername(name, lastName, number) {
   one number, and one special character.
 */
 export function generatePassword() {
-  const length = 12;
+  const length = 16;
   const charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
   let generatedPassword = "";

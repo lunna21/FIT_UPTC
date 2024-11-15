@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { validateUser, validateInscriptionDetail } from '@/utils/validations';
 import { generateUsername } from '@/utils/utils';
-import { hashPassword } from '@/utils/bcrypt';
+// import { hashPassword } from '@/utils/bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -11,6 +11,7 @@ export default async function postHandler(req, res) {
         const {
             document_number_person,
             id_role_user,
+            email_user,
             password_user,
             inscription_detail,
         } = data;
@@ -19,12 +20,12 @@ export default async function postHandler(req, res) {
         const userValidation = validateUser({
             document_number_person,
             id_role_user,
-            password_user
+            email_user,
         });
 
         if (!userValidation.isValid) {
             return res.status(400).json(
-                { error: 'Errores de validación en los datos del usuario', details: userValidation.errors }
+                { error: 'Errores de validación en los datos del usuario ' + userValidation.errors.join(', ') }
             );
         }
 
@@ -41,7 +42,7 @@ export default async function postHandler(req, res) {
         });
 
         let numberUsername = 0;
-        if(personForUsername){
+        if (personForUsername) {
             numberUsername = await prisma.user.count({
                 where: { id_person: personForUsername.id_person }
             });
@@ -53,19 +54,19 @@ export default async function postHandler(req, res) {
             );
         }
 
-        const username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, numberUsername+1);
-
-        // Verificar si ya existe un usuario con el mismo name_user
-        const existingUser = await prisma.user.findFirst({
+        let username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername + 1);
+        // Verificar si ya existe un usuario con el mismo nombre de usuario
+        let existingUser = await prisma.user.findUnique({
             where: { name_user: username },
         });
 
-        if (existingUser) {
-            return res.status(400).json(
-                { error: 'Ya existe un usuario con este nombre de usuario' }
-            );
+        while (existingUser) {
+            numberUsername += 1;
+            username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername);
+            existingUser = await prisma.user.findUnique({
+                where: { name_user: username },
+            });
         }
-
         // Verificar si el rol de usuario existe
         const existingRole = await prisma.role_user.findUnique({
             where: { id_role_user: id_role_user },
@@ -79,15 +80,19 @@ export default async function postHandler(req, res) {
 
         // Usar una transacción para asegurar la integridad de los datos
         const result = await prisma.$transaction(async (prisma) => {
+
+            const userData = {
+                id_person: existingPerson.id_person,
+                document_number_person: document_number_person,
+                id_role_user,
+                name_user: username,
+                password_user: password_user,
+                email_user,
+                creation_date_user: new Date(),
+            }
+
             const newUser = await prisma.user.create({
-                data: {
-                    id_person: existingPerson.id_person,
-                    document_number_person: document_number_person,
-                    id_role_user,
-                    name_user: username,
-                    password_user: await hashPassword(password_user),
-                    creation_date_user: new Date(),
-                }
+                data: userData,
             });
 
             let newInscriptionDetail = null;
@@ -226,6 +231,53 @@ export default async function postHandler(req, res) {
         return res.status(201).json(result);
     } catch (error) {
         console.error('Error creating user:', error);
+
+        if (error.code === 'P2002') {
+            // Prisma unique constraint error
+            const uniqueField = error.meta.target;
+            console.log('Unique field:', uniqueField);
+            let errorMessage = 'Error al crear la persona';
+
+            switch (uniqueField) {
+                case 'user_uk_email_user':
+                    errorMessage = 'El correo electrónico ya está registrado';
+                    break;
+                case 'user_uk_name_user':
+                    errorMessage = 'El nombre de usuario ya está registrado';
+                    break;
+                case 'pers_uk_document_person':
+                    errorMessage = 'El número de documento de la persona ya está registrado';
+                    break;
+                case 'insdtail_uk_student_code':
+                    errorMessage = 'El código de estudiante ya está registrado';
+                    break;
+                case 'insdtail_uk_urlconsent':
+                    errorMessage = 'La URL del consentimiento ya está registrada';
+                    break;
+                case 'presmed_uk_name':
+                    errorMessage = 'El nombre del medicamento ya está registrado';
+                    break;
+                case 'uk_name_allergy':
+                    errorMessage = 'El nombre de la alergia ya está registrado';
+                    break;
+                case 'eps_uk_name_eps':
+                    errorMessage = 'El nombre de la EPS ya está registrado';
+                    break;
+                case 'estatemeu_uk_name_userstatus':
+                    errorMessage = 'El nombre del estado del usuario ya está registrado';
+                    break;
+                case 'doctype_uk_document_type':
+                    errorMessage = 'El nombre del tipo de documento ya está registrado';
+                    break;
+                case 'userstatu_uk_name_userstatus':
+                    errorMessage = 'El nombre del estado del usuario ya está registrado';
+                    break;
+
+            }
+
+            return res.status(400).json({ error: errorMessage });
+
+        }
 
         // Si el error es de validación, devolver los detalles
         try {

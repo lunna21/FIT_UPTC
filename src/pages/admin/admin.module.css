@@ -1,0 +1,11 @@
+.register-containerR {
+    height: auto !important;
+    overflow-y: hidden !important;
+} 
+
+.register-registerPage {
+    align-items: start !important;
+    height: auto !important;
+    padding: 32px 0 !important;
+    box-shadow: none !important;
+}

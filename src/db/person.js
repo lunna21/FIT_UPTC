@@ -3,6 +3,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 // GET /api/persons?document_number=123456&document_type=CC
 export async function getPersonByDocument(documentNumber) {
     try {
+        console.log("documentNumber: ", documentNumber)
         const response = await fetch(`/api/persons?document_number=${documentNumber}`, {
             method: 'GET',
             headers: {
@@ -20,13 +21,13 @@ export async function getPersonByDocument(documentNumber) {
 
 export async function addPerson(formData) {
     try {
+        console.log(formData)
         const personData = {
             document_number_person: formData.numberDocument,
             id_document_type: formData.typeDocument,
             first_name_person: formData.firstName,
             last_name_person: formData.lastName,
             phone_number_person: formData.phoneNumber,
-            email_person: formData.email,
             birthdate_person: formData.birthDate,
             created_person_by: 1, // Assuming 'system' or replace with actual user
         };

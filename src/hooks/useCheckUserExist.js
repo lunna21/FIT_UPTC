@@ -18,14 +18,13 @@ const useCheckUserExist = () => {
             const person = await getPersonByDocument(documentNumber);
 
             if(!person) {
-                console.log('entra');
                 setIsLoadingVerification(false);
                 setErrorCheck('');
                 setIsValidated('yes');
                 return null;
             }
 
-            if (person.document_number_person === parseInt(documentNumber)) {
+            if (person.document_number_person === documentNumber) {
                 setIsValidated('no');
                 setErrorCheck("El usuario ya existe");
                 setIsLoadingVerification(false);

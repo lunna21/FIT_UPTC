@@ -1,21 +1,17 @@
+import AdminHeader from '@/components/headers/AdminHeader';
+import estudiantes from '@/fakeData/estudiantes';
+import TableUser from '@/components/TableUser';
 import Link from 'next/link';
 import { SignOutButton } from '@clerk/nextjs';
 
-import HeaderMenu from '@/components/HeaderMenu';
-
-
 const Dashboard = () => {
-    const menu = [
-        { name: 'Usuarios', href: '/admin/users' },
-        { name: 'Crear usuario', href: '/admin/create-user' },
-    ]
-
     return (
         <div>
-            <HeaderMenu 
-                menu={menu}
-            />
+            <AdminHeader />
 
+            <TableUser
+                estudiantes={estudiantes}
+            />
         </div>
     );
 };

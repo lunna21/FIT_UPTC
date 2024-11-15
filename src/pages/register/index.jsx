@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/router'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
 import ValidationInput from '@/components/inputs/InputValidation'
-import HeaderRegister from '@/components/HeaderRegister'
+import HeaderRegister from '@/components/headers/HeaderRegister'
 import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
 import UploadFileRegister from '@/components/UploadFileRegister'
@@ -559,7 +558,7 @@ const Register = () => {
                                     handleFileChange={handleFileChange}
                                     errorMessage={errorMessageFile}
                                 />
-                                {uploadError && (
+                                {(uploadError && (!formData.informedConsent || !formData.parentalAuthorization)) && (
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>
                                 )}
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}

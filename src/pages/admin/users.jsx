@@ -1,16 +1,9 @@
-import HeaderMenu from "@/components/HeaderMenu";
+import AdminHeader from "@/components/headers/AdminHeader";
 
 const Users = () => {
-    const menu = [
-        { name: 'Usuarios', href: '/admin/users' },
-        { name: 'Crear usuario', href: '/admin/create-user' },
-    ]
-
     return (
         <div>
-            <HeaderMenu 
-                menu={menu}
-            />
+            <AdminHeader />
             <main>
                 <h2>Users</h2>
             </main>

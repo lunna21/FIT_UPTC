@@ -82,7 +82,7 @@ model inscription_detail {
   id_eps                   Int
   blood_type               String                     @db.Char(3)
   id_allergy               Int?
-  url_consent              String                     @unique(map: "insdtail_uk_urlconsent") @db.VarChar(100)
+  url_consent              String                     @unique(map: "insdtail_uk_urlconsent") @db.VarChar(500)
   created_at_insdetail     DateTime?                  @default(now()) @db.Timestamp(0)
   inscripdetail_presmed    inscripdetail_presmed[]
   allergy                  allergy?                   @relation(fields: [id_allergy], references: [id_allergy], onDelete: NoAction, onUpdate: NoAction, map: "insdtail_fk_idallergy")
@@ -127,12 +127,11 @@ model inscription_detail_audit {
 
 model person {
   id_person                           Int                  @id @default(autoincrement())
-  document_number_person              String?              @unique(map: "pers_uk_document_person") @db.VarChar(20)
+  document_number_person              String               @unique(map: "pers_uk_document_person") @db.VarChar(20)
   id_document_type                    String               @db.Char(2)
   first_name_person                   String               @db.VarChar(50)
   last_name_person                    String               @db.VarChar(50)
   phone_number_person                 String?              @db.VarChar(10)
-  email_person                        String               @unique(map: "pers_uk_email_person") @db.VarChar(100)
   birthdate_person                    DateTime             @db.Date
   created_person_by                   Int
   created_person_at                   DateTime?            @default(now()) @db.Timestamp(0)
@@ -172,9 +171,10 @@ model role_user {
 model user {
   id_user                                                               Int                        @id @default(autoincrement())
   id_person                                                             Int
-  document_number_person                                                String?                    @db.VarChar(20)
+  document_number_person                                                String                     @db.VarChar(20)
   id_role_user                                                          String                     @db.Char(3)
   name_user                                                             String                     @unique(map: "user_uk_name_user") @db.VarChar(50)
+  email_user                                                            String                     @unique(map: "user_uk_email_user") @db.VarChar(100)
   password_user                                                         String                     @db.VarChar(255)
   creation_date_user                                                    DateTime                   @db.DateTime(0)
   history_user_status_history_user_status_id_userTouser                 history_user_status[]      @relation("history_user_status_id_userTouser")
