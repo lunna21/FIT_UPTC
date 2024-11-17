@@ -47,12 +47,23 @@ export function getValidDate(dateS) {
     return date;
   }
 
-export function generateUsername(name, lastName, number) {
-    return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${number}`;
+export function generateUsername(name, lastName, role, number) {
+  let roleSuffix = '';
+  if (role === 'EMP') {
+    roleSuffix = '_staff';
+  } else if (role === 'ADM') {
+    roleSuffix = '_admin';
+  }
+  return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${roleSuffix}${number}`;
 }
 
+/* 
+  This function generates a random password with 12 characters
+  and at least one uppercase letter, one lowercase letter,
+  one number, and one special character.
+*/
 export function generatePassword() {
-  const length = 12;
+  const length = 16;
   const charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
   let generatedPassword = "";

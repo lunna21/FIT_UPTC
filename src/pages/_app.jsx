@@ -2,6 +2,7 @@
 import Head from 'next/head';
 import { Montserrat, Poppins } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
+import { esMX } from '@clerk/localizations'
 
 import Layout from '@/components/Layout';
 import '../global.css';
@@ -24,7 +25,7 @@ function MyApp({ Component, pageProps }) {
                 <meta name="description" content="FIT UPTC" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <ClerkProvider>
+            <ClerkProvider localization={esMX}>
                 <main className={`${montserrat.className} ${poppins.className}`}>
                     <Layout>
                         <Component {...pageProps} />

@@ -1,20 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
-import { useSignUp } from '@clerk/nextjs';
-import { useRouter } from 'next/router';
-import Link from 'next/link'
 
 import Button from '@/components/buttons/Button'
 import Loader from '@/components/Loader'
 import ValidationInput from '@/components/inputs/InputValidation'
-import HeaderRegister from '@/components/HeaderRegister'
+import HeaderRegister from '@/components/headers/HeaderRegister'
 import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
 import UploadFileRegister from '@/components/UploadFileRegister'
 
-import { calculateAge, getToday, generatePassword, generateUsername } from '@/utils/utils'
-import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
+import useCustomSignUp from '@/hooks/useCustomSignUp'
 
-import { getUserById } from '@/db/user'
+import { calculateAge, getToday } from '@/utils/utils'
+import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
 
 import './register.css'
 import Modal from './Modal';
@@ -30,9 +27,8 @@ import { FaHouseChimneyMedical } from "react-icons/fa6";
 import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
-    const { isLoaded, signUp } = useSignUp();
+    const { signUp, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
 
-    const router = useRouter();
     const [formData, setFormData] = useState({
         typeDocument: '',
         numberDocument: '',
@@ -61,17 +57,16 @@ const Register = () => {
         parentalAuthorization: null,
         terms: false
     })
-    const [isValidated, setIsValidated] = useState(false);
-    const [isLoadingVerification, setIsLoadingVerification] = useState(false);
+    const [isValidated, setIsValidated] = useState("no");
     const [age, setAge] = useState(0);
     const [error, setError] = useState('');
     const [countFillObligatory, setCountFillObligatory] = useState(1);
     const [obligatoryFields, setObligatoryFields] = useState(['numberDocument', 'typeDocument', 'firstName', 'lastName', 'email', 'studentCode', 'phoneNumber', 'birthDate', 'eps', 'bloodType', 'programType', 'emergencyfullName', 'relationship', 'contactNumber', 'terms'])
     const [obligatoryFieldsCheck, setObligatoryFieldsCheck] = useState(false);
     const containerRef = useRef(null);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessageFile, setErrorMessageFile] = useState("");
     const [uploadError, setUploadError] = useState("");
-    const maxFileSize = 3 * 1024 * 1024; // Tamaño máximo 5 MB
+    const maxFileSize = 1 * 1024 * 1024; // Tamaño máximo 1 MB
     const today = getToday(14);
 
     useEffect(() => {
@@ -117,36 +112,6 @@ const Register = () => {
         }))
     }, [countFillObligatory, obligatoryFields.length]); // Actualiza el ancho de la línea cuando cambia el contador o el número de pasos
 
-    //Verification userexistence 
-    const checkUserExists = async (e) => {
-        e.preventDefault();
-
-        setIsLoadingVerification(true);
-
-        try {
-            const user = await getUserById(formData.numberDocument, '/register');
-
-            if (user?.id === formData?.numberDocument) {
-                setIsValidated(false);
-                setError("El usuario ya existe, no es necesario registrarse");
-                setIsLoadingVerification(false);
-            } else {
-                setIsLoadingVerification(false);
-                setIsValidated(true);
-                setError('');
-                return null;
-            }
-
-        } catch (error) {
-            setIsLoadingVerification(false);
-            setError('Error al verificar el usuario');
-            setIsValidated(false);
-            console.error("Error al verificar el usuario", error);
-            alert("Error al verificar el usuario: " + error);
-            return null;
-        }
-    };
-
     const handleChange = (e, section) => {
         const { name, value } = e.target
 
@@ -157,7 +122,7 @@ const Register = () => {
         }
 
         if (name === 'typeDocument' || name === 'numberDocument') {
-            setIsValidated(false);
+            setIsValidated("no");
         }
 
         if (name == 'terms') {
@@ -203,22 +168,24 @@ const Register = () => {
             }
         });
     }
+
     const [selectedFile, setSelectedFile] = useState(null);
-    
+
     const handleFileChange = (e) => {
         const { name, files } = e.target;
         const file = files[0];
+        setErrorMessageFile("");
 
         if (file) {
             if (file.type !== "application/pdf") {
-                setErrorMessage('Por favor, sube un archivo PDF.');
+                setErrorMessageFile('Por favor, sube un archivo PDF.');
                 return;
             }
             if (file.size > maxFileSize) {
-                setErrorMessage('El archivo es demasiado grande. El tamaño máximo permitido es de 3 MB.');
+                setErrorMessageFile('El archivo es demasiado grande. El tamaño máximo permitido es de 1 MB.');
                 return;
             }
-            setErrorMessage("");
+            setErrorMessageFile("");
             setFormData({
                 ...formData,
                 [name]: file
@@ -275,112 +242,52 @@ const Register = () => {
         };
     }, []);
 
-     const handleSubmit = async (e) => {
-         e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-         if (!selectedFile) {
-             setUploadError('Por favor, selecciona un archivo.');
-             return;
-         }
+        if (!selectedFile) {
+            setUploadError('Por favor, selecciona un archivo.');
+            return;
+        }
 
-         const reader = new FileReader();
-         reader.readAsDataURL(selectedFile);
-         reader.onloadend = async () => {
-             const base64File = reader.result.split(',')[1];
-             const studentCode = formData.studentCode; 
-             const formattedDate = new Date().toISOString();
-
-             try {
-                 const response = await fetch('/api/upload', {
-                     method: 'POST',
-                     headers: {
-                         'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({ 
-                         file: base64File,
-                         studentCode: studentCode,
-                         uploadDate: formattedDate
-                     }),
-                 });
-
-                 if (!response.ok) {
-                     throw new Error('Error en la carga del archivo: ${response.statusText}');
-                 }
-
-                 const data = await response.json();
-                 console.log(data.message);
-                 console.log(data.fileId); //Si la carga es exitosa, proceder con el registro
-                 try {
-                    //         Inicia el proceso de registro
-                               const email = formData.email;
-                               const password = generatePassword(); 
-                               const username = generateUsername(formData.firstName, formData.lastName, 2);
-                
-                               await signUp.create({
-                                   emailAddress: email,
-                                   password: password,
-                                   username: username,
-                               });
-                
-                               // Envía el enlace de verificación de email
-                               await signUp.prepareEmailAddressVerification({
-                                   strategy: "email_link",
-                                   redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
-                               });
-                
-                                 // Redirecciona a la página de espera para que el usuario confirme el email
-                               router.push("/verification");
-                           } catch (err) {
-                                 // See https:  clerk.com/docs/custom-flows/error-handling
-                                  //for more info on error handling
-                               console.error(JSON.stringify(err, null, 2))
-                          }
-                 router.push('/verification');
-             } catch (error) {
-                 setUploadError('Error al subir el archivo ');
-                 console.error(error);
-             }
-         };
-     };
-
-     //Código antes de agregar la función de subida de archivo
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     if (!isLoaded) return;
-
-    //     try {
-    //         // Inicia el proceso de registro
-    //         const email = formData.email;
-    //         const password = generatePassword(); 
-    //         const username = generateUsername(formData.firstName, formData.lastName, 2);
-
-    //         await signUp.create({
-    //             emailAddress: email,
-    //             password: password,
-    //             username: username,
-    //         });
-
-    //         // Envía el enlace de verificación de email
-    //         await signUp.prepareEmailAddressVerification({
-    //             strategy: "email_link",
-    //             redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/pending`,
-    //         });
-
-    //         // Redirecciona a la página de espera para que el usuario confirme el email
-    //         router.push("/verification");
-    //     } catch (err) {
-    //         // See https://clerk.com/docs/custom-flows/error-handling
-    //         // for more info on error handling
-    //         console.error(JSON.stringify(err, null, 2))
-    //       }
-    // };
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onloadend = async () => {
+            const base64File = reader.result.split(',')[1];
+            try {
+                await signUp({
+                    formData,
+                    file64Consent: base64File
+                });
+            } catch (err) {
+                console.log(err)
+                console.error(err);
+            }
+        };
+    };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const handleAcceptTerms = () => {
         setFormData((prevData) => ({ ...prevData, terms: true }));
-      };
+    };
+
+    if (isLoading || !isLoaded) {
+        return (
+            <div className="w-screen h-screen flex justify-center items-center">
+                <Loader />
+            </div>
+        )
+    }
+
     return (
         <div className="register-registerPage register-flex">
+            {
+                singUpError && (
+                    <div className="z-50 bg-white w-full h-80px bg-transparent flex justify-center items-center px-8 py-4 absolute top-0">
+                        <p className="text-red-500">{singUpError}</p>
+                    </div>
+                )
+            }
             <div className="register-containerR register-flex">
                 <div ref={containerRef} className="register-formDiv register-flex relative">
                     <ProgressLine
@@ -394,33 +301,15 @@ const Register = () => {
                         Los campos con (*) son campos obligatorios.
                     </p>
 
-                  <form className="register-formR register-grid" onSubmit={handleSubmit}>
+                    <form className="register-formR register-grid max-w-[820px]" onSubmit={handleSubmit}>
 
                         <CheckUserRegister
                             valueTypeDocument={formData.typeDocument}
                             valueNumberDocument={formData.numberDocument}
                             handleChange={handleChange}
-                            checkUserExists={checkUserExists}
+                            setIsValidated={setIsValidated}
                         />
-
-                        {isLoadingVerification && (
-                            <div
-                                className='w-full h-80px bg-transparent flex justify-center'
-                                style={{ gridColumn: 'span 2' }}
-                            >
-                                <Loader />
-
-                            </div>
-                        )}
-                        {
-                            error && (
-                                <Link href="/login" style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
-                                    {error}
-                                </Link>
-                            )
-                        }
-
-                        {isValidated && (
+                        {(isValidated === 'yes') && (
                             <>
                                 {/*Other information */}
                                 <ValidationInput
@@ -541,9 +430,9 @@ const Register = () => {
                                         <MdOutlineRealEstateAgent className="register-icon" />
                                         <select className={`w-full ${formData.programType && "text-primary-medium font-semibold "}`} name="programType" value={formData.programType} onChange={handleChange} required >
                                             <option value="">Selecciona tu estamento</option>
-                                            <option value="Pregrado">Pregrado</option>
-                                            <option value="Prosgrado">Posgrado</option>
-                                            <option value="Fesad">Fesad</option>
+                                            <option value="PREGR">Pregrado</option>
+                                            <option value="POSTG">Posgrado</option>
+                                            <option value="FESAD">Fesad</option>
                                         </select>
                                     </div>
                                 </div>
@@ -624,7 +513,7 @@ const Register = () => {
                                         name="nameMedication"
                                         onKeyDown={validateTextInput}
                                         Icon={MdDriveFileRenameOutline}
-                                        
+
                                     />
                                     < ValidationInput
                                         placeholder="Ingresa la dosis del medicamento"
@@ -634,7 +523,7 @@ const Register = () => {
                                         name="dosage"
                                         onKeyDown={validateTextInput}
                                         Icon={GiMedicines}
-                                        
+
                                     />
 
                                     < ValidationInput
@@ -645,9 +534,9 @@ const Register = () => {
                                         name="reason"
                                         onKeyDown={validateTextInput}
                                         Icon={RiFileAddFill}
-                                        
+
                                     />
-                                  
+
 
                                     <div className='flex gap-2 items-center'>
                                         <Button
@@ -667,42 +556,42 @@ const Register = () => {
                                     parentalAuthorization={formData.parentalAuthorization}
                                     informedConsent={formData.informedConsent}
                                     handleFileChange={handleFileChange}
-                                    errorMessage={errorMessage}
+                                    errorMessage={errorMessageFile}
                                 />
-                                {uploadError && (
+                                {(uploadError && (!formData.informedConsent || !formData.parentalAuthorization)) && (
                                     <p className='text-red-500 text-sm mt-2'>{uploadError}</p>
                                 )}
                                 {/* CHECKBOX pediendole que si hacepta las cumplir las condiciones medicas y politicas de privacidad */}
-                                <div>
-                                <div className="flex gap-2 items-center" style={{ gridColumn: "span 2" }}>
-                                    <input 
-                                    type="checkbox" 
-                                    id="terms" 
-                                    name="terms" 
-                                    className='text-primary' 
-                                    onChange={handleChange} 
-                                    required 
-                                    checked={formData.terms} 
-                                    />
-                                    <label htmlFor="terms" className="register-checkboxLabel">
-                                        He leido y aceptado los terminos y condiciones
-                                    </label>
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255"
-                                    >
-                                        Términos y condiciones
-                                    </button>
-                                </div>
-                                {/* Modal Component */}
+                                <div style={{ gridColumn: "span 2" }}>
+                                    <div className="flex gap-2 items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="terms"
+                                            name="terms"
+                                            className='text-primary'
+                                            onChange={handleChange}
+                                            required
+                                            checked={formData.terms}
+                                        />
+                                        <label htmlFor="terms" className="register-checkboxLabel">
+                                            He leido y aceptado los terminos y condiciones
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsModalOpen(true)}
+                                            className="text-sm font-light border-b-2 border-b-primary hover:text-primary-medium transition ease-in-out duration-255"
+                                        >
+                                            Términos y condiciones
+                                        </button>
+                                    </div>
+                                    {/* Modal Component */}
                                     <Modal
                                         isOpen={isModalOpen}
                                         onClose={() => setIsModalOpen(false)}
                                         onAccept={handleAcceptTerms}
                                     />
                                 </div>
-                                
+
                                 <div className='mt-4' style={{ gridColumn: "span 2" }}>
                                     <Button
                                         buttonText='Registrate'

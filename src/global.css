@@ -17,7 +17,7 @@
 }
 
 ::-webkit-scrollbar {
-    width: 8px; 
+    width: 8px;
 }
 
 /* Track */
@@ -34,9 +34,18 @@
 
 /* To handle height for vertical scrollbar, you can control the thumb height */
 ::-webkit-scrollbar-thumb {
-    max-height: 200px; /* Minimum height of the thumb handle */
+    max-height: 200px;
+    /* Minimum height of the thumb handle */
 }
- 
+
+.clip-trapezoid {
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+}
+
+body {
+    background-color: #f5f5f5;
+    overflow-x: hidden;
+}
 
 /* hidden scroll-bar when is mobile */
 @media (max-width: 760px) {

@@ -1,33 +1,45 @@
-import fs from 'fs';
-import path from 'path';
+import { error } from 'console';
+import { writeFile, mkdirSync } from 'fs';
+import { join } from 'path';
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     if (req.method === 'POST') {
-        const { file, studentCode } = req.body;
+        try {
+            const { studentCode, base64Data } = req.body;
 
-        if (!studentCode) {
-            return res.status(400).json({ message: 'Student code is required.' });
-        }
-
-        // Decode the base64 file
-        const base64Data = file.replace(/^data:application\/pdf;base64,/, "");
-
-        // Get the current date and format it as YYYYMMDD
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString().slice(0, 10).replace(/-/g, '');
-
-        // Create the file name with student code and date
-        const fileName = `${studentCode}_${formattedDate}.pdf`;
-        const filePath = path.join(process.cwd(), 'public', 'consents', fileName);
-
-        fs.writeFile(filePath, base64Data, 'base64', (err) => {
-            if (err) {
-                return res.status(500).json({ message: 'File upload failed.' });
+            if (!studentCode || !base64Data) {
+                return res.status(400).json({ error: 'Missing studentCode or base64Data in request body.' });
             }
-            res.status(200).json({ message: 'File uploaded successfully.', fileName });
-        });
+
+            // Get the current date and format it as YYYYMMDD
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().slice(0, 10).replace(/-/g, '');
+
+            // Create the file name with student code and date
+            const fileName = `${studentCode}_${formattedDate}.pdf`;
+            const filePath = join(process.cwd(), 'public', 'consents', fileName);
+
+            // Ensure the directory exists
+            mkdirSync(join(process.cwd(), 'public', 'consents'), { recursive: true });
+
+            console.log(`Writing file to ${filePath}`);
+
+            writeFile(filePath, base64Data, 'base64', (err) => {
+                if (err) {
+                    console.error('File write error:', err);
+                    return res.status(500).json({ error: 'File upload failed.' });
+                }
+                console.log('File uploaded successfully');
+                return res.status(201).json({ message: 'File uploaded successfully.', fileName, filePath });
+            });
+        } catch (error) {
+            console.error('Error handling request:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
     } else {
         res.setHeader('Allow', ['POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
+
+export default handler;
