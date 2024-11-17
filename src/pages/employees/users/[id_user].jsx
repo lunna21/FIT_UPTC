@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import HeaderMenu from '@/components/HeaderMenu';
+import HeaderMenu from '@/components/headers/HeaderMenu';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Button from '@/components/buttons/Button';
@@ -88,7 +88,7 @@ function Details() {
                         <strong>Código Estudiantil:</strong> {inscriptionDetail?.studentCode || 'N/A'}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
-                        <strong>Correo Electrónico:</strong> {estudiante.person.emailPerson}
+                        <strong>Correo Electrónico:</strong> {estudiante.emailUser}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
                         <strong>Teléfono:</strong> {estudiante.person.phoneNumberPerson}
@@ -119,7 +119,7 @@ function Details() {
                     </p>
                     {inscriptionDetail?.urlConsent && (
                         <div className="mt-8">
-                            <Worker workerUrl={`https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js`}>
+                            <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
                                 <Viewer fileUrl={inscriptionDetail.urlConsent} />
                             </Worker>
                         </div>

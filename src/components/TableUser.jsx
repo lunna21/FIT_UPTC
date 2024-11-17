@@ -5,7 +5,7 @@ import { deletePersonByDocumentNumber } from '@/db/person';
 
 
 import Search from '@/components/Search';
-import { FaRegUserCircle, FaIdCard, FaRegTrashAlt, FaFilter,FaCheckCircle } from "react-icons/fa";
+import { FaRegUserCircle, FaIdCard, FaRegTrashAlt, FaFilter, FaCheckCircle } from "react-icons/fa";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { IoMdMailOpen } from "react-icons/io";
 import { GrStatusInfo } from "react-icons/gr";
@@ -154,7 +154,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                             {estudiante.inscriptionDetails[0]?.studentCode || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 font-montserrat">
-                                            {estudiante.person.emailPerson}
+                                            {estudiante.emailUser}
                                         </td>
                                         <td className="px-6 py-4 font-montserrat flex justify-center">
                                             {estudiante.person.phoneNumberPerson}
@@ -165,12 +165,12 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                                     estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-100 text-red-800' :
                                                         'bg-gray-500 text-white'
                                                     }`}>
-                                                    {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo'  :
+                                                    {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
                                                         estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
                                                             estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
-                                                {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
-                                                 estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning  className="inline-block ml-1 text-xl" /> :
-                                                 <FaRegTrashAlt className="inline-block ml-2" />}
+                                                    {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
+                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
+                                                            <FaRegTrashAlt className="inline-block ml-2" />}
                                                 </span>
                                             </div>
                                         </td>

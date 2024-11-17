@@ -53,6 +53,7 @@ export default async function getHandler(req, res) {
       nameUser: user.name_user,
       passwordUser: user.password_user,
       creationDateUser: user.creation_date_user,
+      emailUser: user.email_user,
       roleUser: user.role_user_user_id_role_userTorole_user && {
         idRoleUser: user.role_user_user_id_role_userTorole_user.id_role_user,
         nameRoleUser:

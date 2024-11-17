@@ -7,7 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const rolePermissions = {
   adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user"], // Define as needed
   stu: ["/", "/dashboard"],
-  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed'], // Define as needed
+  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed
 };
 
 // Define public routes that don't require authentication
@@ -25,7 +25,10 @@ function statusActiveActions(path, role) {
 
   const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
   let isAllowed = allowedRoutes.some((route) => {
-    return route === path;
+    return (
+      route === path ||
+      (route.includes("*") && path.startsWith(route.replace("*", "")))
+    );
   });
 
   if (!isAllowed)
@@ -53,14 +56,6 @@ export default clerkMiddleware(async (auth, req) => {
   if (actualUrl.pathname.startsWith("/api")) {
     console.log("API request");
     return NextResponse.next();
-  }
-
-  // Check if the user is authenticated
-  if (!userId) {
-    // Avoid redirect loop if already on the sign-in page
-    if (!req.url.includes("/login")) {
-      return redirectToSignIn();
-    }
   }
 
   if (userId) {
