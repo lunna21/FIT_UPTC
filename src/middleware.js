@@ -1,11 +1,13 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+
 // Define access permissions based on roles
 const rolePermissions = {
   adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user"], // Define as needed
   stu: ["/", "/dashboard"],
-  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed'], // Define as needed
+  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*", "/employees/turns"], // Define as needed'], // Define as needed
 };
 
 // Define public routes that don't require authentication
@@ -46,22 +48,22 @@ function statusPendingActions(path) {
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
 
-  const url = new URL(req.url);
+  const actualUrl = new URL(req.url);
 
   // Check if the route is public
-  if (publicRoutes.some(route => typeof route === 'string' ? url.pathname === route : route.test(url.pathname))) {
+  if (publicRoutes.some(route => typeof route === 'string' ? actualUrl.pathname === route : route.test(actualUrl.pathname))) {
     return NextResponse.next();
   }
 
   // Permitir el acceso a la ruta específica de registro en la API
-  if (url.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/register')) {
+  if (actualUrl.pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
   // Check if the user is authenticated
   if (!userId) {
     // Avoid redirect loop if already on the sign-in page
-    if (!req.url.includes("/login")) {
+    if (!actualUrl.pathname.includes("/login")) {
       return redirectToSignIn();
     }
   }

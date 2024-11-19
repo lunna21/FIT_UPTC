@@ -95,6 +95,40 @@ export async function addUserStudent(formData, url_consent) {
   }
 }
 
+export async function addUserWithRole(formData) {
+  try {
+      console.log(formData.role);
+      if(formData.role !== 'ADM' && formData.role !== 'EMP') {
+          throw "El tipo de usuario no es válido";
+      }
+
+      const userData = {
+          document_number_person: formData.numberDocument,
+          id_role_user: formData.role,
+          password_user: formData.password,
+          email_user: formData.email,
+      };
+
+      const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+          return response.json();
+      } else {
+          console.error('Error adding user:', response);
+          throw "Error al añadir el usuario, comprueba la información enviada";
+      }
+  } catch (error) {
+      console.error('Error adding user:', error);
+      throw error;
+  }
+}
+
 export async function deleteUser(id) {
   try {
     const response = await fetch(`/api/users/${id}`, {
@@ -150,4 +184,22 @@ export async function getUserDetailById(id) {
         console.error("Error fetching user details:", error);
         throw error;
     }
+}
+
+export async function addUserInClerk({ email, password, username }) {
+  try {
+      const response = await fetch('/api/users/clerk', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password, username }),
+      });
+      if (response.ok) {
+          return response.json();
+      }
+  } catch (error) {
+      console.error('Error adding user:', error);
+      throw error;
+  }
 }

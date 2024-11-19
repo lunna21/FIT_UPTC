@@ -10,13 +10,15 @@ const HeaderMenu = ({ menu }) => {
     <header className="flex h-[72px] justify-between items-center p-4 bg-neutral-gray-dark pattern-diagonal-lines pattern-white-500 pattern-bg-white 
   pattern-size-8 pattern-opacity-80 relative">
 
-      <figure className="flex-shrink-0 mt-8">
-        <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" />
-      </figure>
+      <Link href="/">
+        <figure className="flex-shrink-0 mt-8">
+          <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" />
+        </figure>
+      </Link>
 
       <ul className="ml-8 flex-1 flex justify-start gap-10 items-center list-none p-0 m-0 z-50 w-3/4">
         {Array.isArray(menu) && menu.map((item, index) => (
-          <li key={index} className="transition duration-255 ease-in-out transform hover:scale-105 hover:text-primary-medium">
+          <li key={index} className="transition duration-200 ease-in-out transform hover:scale-105 hover:text-primary-medium">
             {item.href ? (
               <Link href={item.href} className="text-white hover:text-primary-medium">
                 {item.name}

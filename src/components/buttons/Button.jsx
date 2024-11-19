@@ -17,7 +17,8 @@ const Button = ({
     // Define las clases de Tailwind CSS para diferentes colores
     const colorClasses = {
         'primary-medium': 'bg-primary-medium hover:bg-primary-light text-neutral-gray-dark',
-        'red': 'bg-accent-red hover:bg-accent-redLight text-white' // Clases para el color rojo
+        'red': 'bg-accent-red hover:bg-accent-redLight text-white', // Clases para el color rojo
+        'green': 'bg-accent-green hover:bg-accent-greenLight text-white' // Clases para el color verde
     };
 
     // Usa las clases de color basadas en la propiedad `color`

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import estudiantes from '@/fakeData/estudiantes';
-import HeaderMenu from '@/components/HeaderMenu';
+import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import TableUser from '@/components/TableUser';
 import { getUserByRole } from '@/db/user';
 import Loder from '@/components/Loader';
@@ -47,14 +46,7 @@ function Estudiantes() {
 
     return (
         <div>
-            <HeaderMenu
-                menu={
-                    [
-                        { href: 'employees', name: 'Estudiantes' },
-                        { href: '#', name: "Gestión Turnos" }
-                    ]
-                }
-            />
+            <EmployeeHeader />
             <TableUser estudiantes={estudiantes} setIsLoading={setLoading} />
         </div>
     );

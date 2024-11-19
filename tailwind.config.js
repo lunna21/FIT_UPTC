@@ -30,6 +30,8 @@ const config = {
           red: '#FF1302',
           darkRed: '#800000',
           redLight: '#FF1717',
+          green: '#82c22e',
+          greenLight: '#8ACB2D',
         },
       },
     },
