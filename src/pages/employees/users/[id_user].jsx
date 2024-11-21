@@ -115,6 +115,22 @@ function Details() {
                         <strong>Alergias:</strong> {inscriptionDetail?.allergy?.nameAllergy || 'N/A'}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
+                        <strong>Medicamentos:</strong> 
+                    {inscriptionDetail?.medications?.map((medication, index) => (
+                        <div key={index} className="mb-2">
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Nombre:</strong> {medication.namePrescriptionMedication}
+                            </p>
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Dosis:</strong> {medication.dosePrescriptionMedication}
+                            </p>
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Razón de la Receta:</strong> {medication.recipeReason}
+                            </p>
+                        </div>
+                    )) || 'N/A'}
+                    </p>
+                    <p className="text-xl font-montserrat mb-4">
                         <strong>URL Consentimiento:</strong> {inscriptionDetail?.urlConsent ? <a href={inscriptionDetail.urlConsent} target="_blank" rel="noopener noreferrer">Ver PDF</a> : 'N/A'}
                     </p>
                     {inscriptionDetail?.urlConsent && (

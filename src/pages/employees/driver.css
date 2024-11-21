@@ -1,0 +1,70 @@
+.driver-popover.driverjs-theme {
+    background-color: #fde047;
+    color: #000;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+    font-size: 20px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title,
+.driver-popover.driverjs-theme .driver-popover-description,
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+    color: #000;
+}
+
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+    font-size: 12px;
+}
+.driver-popover.driverjs-theme button {
+    flex: 1;
+    text-align: center;
+    background-color: #000;
+    color: #ffffff;
+    border: 2px solid #000;
+    text-shadow: none;
+    font-size: 14px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+.driver-popover.driverjs-theme button:hover {
+    background-color: #ffffff; 
+    color: #000;
+    transform: scale(1.05); 
+}
+
+.driver-popover.driverjs-theme .driver-popover-navigation-btns {
+    justify-content: space-between;
+    gap: 3px;
+    font-size: 10px; 
+    padding: 2px 10px; 
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+    color: #000;
+    color: #ffffff;
+    font-size: 22px;
+    padding: 2px 2px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+    color: #ff0000; /* Cambia el color del botón de cerrar al pasar el ratón */
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
+    border-left-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
+    border-right-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
+    border-top-color: #fde047;
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
+    border-bottom-color: #fde047;
+}
