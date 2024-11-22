@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-const Input = ({ search, setSearch, onSearch }) => {
+const Search = ({ onSearch }) => {
+  const [search, setSearch] = useState('');
+
+  const handleSearch = () => {
+    onSearch(search);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSearch();
+    handleSearch();
   };
 
   const handleReset = () => {
     setSearch('');
+    onSearch('');
   };
 
   return (
@@ -114,4 +121,4 @@ const StyledWrapper = styled.div`
     margin-top: 3px;
   }`;
 
-export default Input;
+export default Search;

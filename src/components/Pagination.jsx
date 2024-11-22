@@ -19,7 +19,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
                 id='next'
                 className="px-4 py-2 mx-1 bg-primary text-white rounded hover:bg-primary-dark"
                 onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
             >
                 <MdNavigateNext className="transition-transform duration-300 transform hover:translate-x-1" />
             </button>

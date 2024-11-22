@@ -6,10 +6,12 @@ import { deletePersonByDocumentNumber } from '@/db/person';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "../pages/employees/driver.css";
-import ModalDisableUsers from "@/components/ModalDisableUsers";
+
 
 import Search from '@/components/Search';
+import ButtonHelp from '@/components/buttons/ButtonHelp';
 import PopMessage from '@/components/PopMessage';
+import ModalDisableUsers from "@/components/ModalDisableUsers";
 import Pagination from '@/components/Pagination';
 import { FaRegUserCircle, FaIdCard, FaRegTrashAlt, FaFilter, FaCheckCircle } from "react-icons/fa";
 import { FaPhoneVolume } from "react-icons/fa6";
@@ -35,41 +37,6 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        const driverObj = driver({
-            showProgress: true,
-            popoverClass: 'driverjs-theme',
-            nextBtnText: 'Siguiente »',
-            prevBtnText: '« Anterior',
-            doneBtnText: 'Listo ✓',
-            progressText: "{{current}} de {{total}}",
-            steps: [
-                { element: '#search-bar-and-filter', popover: { title: 'Barra de Búsqueda y Filtro', description: 'Aquí puedes usar la barra de búsqueda y el filtro para encontrar estudiantes específicos.', side: "bottom", align: 'start' } },
-                { element: '#search-bar', popover: { title: 'Barra de Búsqueda', description: 'Acá podrás introducir el nombre del estudiante o el código estudiantil para encontrarlo.', side: "bottom", align: 'start' } },
-                { element: '#filter', popover: { title: 'Filtro', description: 'Acá podrás filtrar los estudiantes por el estado de su inscripción: si se encuentra pendiente, o si el estudiante es activo o inactivo.', side: "left", align: 'start' } },
-                { element: '#column_fullname', popover: { title: 'Nombre completo', description: 'En esta columna encontrarás el nombre completo de cada estudiante.', side: "top", align: 'start' } },
-                { element: '#column', popover: { title: 'Código estudiantil', description: 'En esta columna encontrarás el código estudiantil de cada estudiante.', side: "top", align: 'start' } },
-                { element: '#column_email', popover: { title: 'Correo electrónico', description: 'En esta columna encontrarás el correo electrónico de cada estudiante.', side: "top", align: 'start' } },
-                { element: '#column_phoneNumber', popover: { title: 'Número de teléfono', description: 'En esta columna encontrarás el número de teléfono de cada estudiante.', side: "top", align: 'start' } },
-                { element: '#column_status', popover: { title: 'Estado', description: 'En esta columna encontrarás el estado de inscripción del estudiante seleccionado.', side: "top", align: 'start' } },
-                { element: '#column_actions', popover: { title: 'Acciones', description: 'En esta columna encontrarás las acciones disponibles para cada estudiante, como modificar o deshabilitar.', side: "top", align: 'start' } },
-                { element: '#details', popover: { title: 'Ver Detalles', description: 'Haz clic sobre cualquier fila de estudiantes para poder ver los detalles de inscripción por estudiante.', side: "top", align: 'start' } },
-                { element: '#button_modify', popover: { title: 'Modificar', description: 'Haz clic aquí para modificar la información del estudiante.', side: "top", align: 'start' } },
-                { element: '#button_delete', popover: { title: 'Eliminar', description: 'Haz clic aquí para deshabilitar un estudiante.', side: "top", align: 'start' } }
-            ]
-        });
-
-        driverObj.drive();
-        driverObj.highlight({
-            element: '#demo-theme',
-            popover: {
-                title: '¡Bienvenido ' + user.username + '!',
-                description: 'Esta es la lista de estudiantes inscritos en el CAF de la Universidad Pedagógica y Tecnológica de Colombia, Sede Central.',
-                side: "bottom", align: 'start'
-            }
-        });
-    }, []);
-
     const handleDeleteUser = async (id, numberDocument) => {
         try {
             // Espera a que las operaciones de eliminación se completen
@@ -91,26 +58,24 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     useEffect(() => {
         if (search === '') {
             setEstudiantes(initEstudiantes);
+            setCurrentPage(1);
+            setTotalPages(Math.ceil(initEstudiantes.length / itemsPerPage));
             setShowNoResultsMessage(false);
         } else {
-            setEstudiantes(prevEstudiantes => {
-                const filteredEstudiantes = initEstudiantes.filter(estudiante => {
-                    const firstName = estudiante.person.firstNamePerson.toLowerCase();
-                    const lastName = estudiante.person.lastNamePerson.toLowerCase();
-                    const studentCode = estudiante.inscriptionDetails[0]?.studentCode?.toLowerCase() || '';
-                    const userStatus = estudiante.historyUserStatus[0]?.idUserStatus?.toLowerCase() || '';
-                    return (
-                        firstName.startsWith(search.toLowerCase()) ||
-                        lastName.startsWith(search.toLowerCase()) ||
-                        studentCode.startsWith(search.toLowerCase()) ||
-                        userStatus.startsWith(search.toLowerCase())
-                    );
-                });
-                setShowNoResultsMessage(filteredEstudiantes.length === 0);
-                setCurrentPage(1);
-                setTotalPages(Math.ceil(filteredData.length / itemsPerPage)); 
-                return filteredEstudiantes;
+            const filteredEstudiantes = initEstudiantes.filter(estudiante => {
+                const firstName = estudiante.person.firstNamePerson.toLowerCase();
+                const lastName = estudiante.person.lastNamePerson.toLowerCase();
+                const studentCode = estudiante.inscriptionDetails[0]?.studentCode?.toLowerCase() || '';
+                return (
+                    firstName.startsWith(search.toLowerCase()) ||
+                    lastName.startsWith(search.toLowerCase()) ||
+                    studentCode.startsWith(search.toLowerCase())
+                );
             });
+            setEstudiantes(filteredEstudiantes);
+            setCurrentPage(filteredEstudiantes.length > 0 ? 1 : 0);
+            setTotalPages(filteredEstudiantes.length > 0 ? Math.ceil(filteredEstudiantes.length / itemsPerPage) : 0);
+            setShowNoResultsMessage(filteredEstudiantes.length === 0);
         }
     }, [search, initEstudiantes]);
 
@@ -120,7 +85,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
         setCurrentPage(1);
         const filteredData = initEstudiantes.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(value));
         setEstudiantes(filteredData);
-        setTotalPages(Math.ceil(filteredData.length / itemsPerPage)); 
+        setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
     };
 
     const filteredData = estudiantes.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(filter));
