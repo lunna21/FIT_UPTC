@@ -3,9 +3,6 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default async function getHandler(req, res) {
-    if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
 
     try {
         const turns = await prisma.turn.findMany();
@@ -22,6 +19,7 @@ export default async function getHandler(req, res) {
         }));
         res.status(200).json(formattedTurns);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     } finally {
         await prisma.$disconnect();

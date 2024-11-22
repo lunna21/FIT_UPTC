@@ -3,7 +3,7 @@ import HeaderMenu from './HeaderMenu';
 const EmployeeHeader = () => {
     const menu = [
         { href: '/employees', name: 'Estudiantes' },
-        { href: '/employees/turns', name: "Gestión Turnos" }
+        { href: '/employees/turns', name: "Turnos" }
     ]
 
     return (
