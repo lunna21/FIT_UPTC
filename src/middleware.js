@@ -1,8 +1,6 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 // Define access permissions based on roles
