@@ -198,7 +198,7 @@ const TableConfigTurns = () => {
                     </div>
                 ))}
             </div>
-            <div className="w-auto fixed inset-x-0 bottom-0 flex justify-end items-center p-2">
+            <div className="w-auto fixed inset-x-0 bottom-0 flex justify-end items-center p-2 z-20">
                 <div>
                     <div className="mr-4 mt-2 font-bold text-3xl">
                         <button className="Btn" onClick={() => setShowTurnModal(prev => !prev)}>
