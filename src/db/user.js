@@ -217,4 +217,3 @@ export async function addUserInClerk({ email, password, username }) {
   }
 }
 
-
