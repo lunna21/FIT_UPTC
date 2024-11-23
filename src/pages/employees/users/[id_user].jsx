@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import HeaderMenu from '@/components/headers/HeaderMenu';
+import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Button from '@/components/buttons/Button';
@@ -70,12 +70,7 @@ function Details() {
 
     return (
         <>
-            <HeaderMenu
-                menu={[
-                    { href: '/employees', name: 'Estudiantes' },
-                    { href: '#', name: "Gestión Turnos" }
-                ]}
-            />
+            <EmployeeHeader />
             <div className="min-h-screen bg-neutral-gray-light p-6">
                 <div className="max-w-7xl mx-auto bg-neutral-white rounded-lg shadow-lg p-6">
                     <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6">

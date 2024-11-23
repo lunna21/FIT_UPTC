@@ -184,6 +184,7 @@ model user {
   person_person_created_person_byTouser                                 person[]                   @relation("person_created_person_byTouser")
   person_person_updated_person_byTouser                                 person[]                   @relation("person_updated_person_byTouser")
   role_user_role_user_created_role_user_byTouser                        role_user[]                @relation("role_user_created_role_user_byTouser")
+  schedule                                                              schedule[]
   person_user_id_personToperson                                         person                     @relation("user_id_personToperson", fields: [id_person], references: [id_person], onDelete: NoAction, onUpdate: NoAction, map: "user_fk_idperson")
   role_user_user_id_role_userTorole_user                                role_user                  @relation("user_id_role_userTorole_user", fields: [id_role_user], references: [id_role_user], onDelete: NoAction, onUpdate: NoAction, map: "user_fk_idroleuser")
   user_audit_user_audit_change_useraudit_byTouser                       user_audit[]               @relation("user_audit_change_useraudit_byTouser")
@@ -218,6 +219,35 @@ model user_status {
   history_user_status    history_user_status[]
 }
 
+model schedule {
+  id_schedule           Int                     @id @default(autoincrement())
+  date_schedule         DateTime                @db.DateTime(0)
+  id_student            Int
+  id_turn               Int
+  state_schedule        schedule_state_schedule @default(PENDING)
+  created_schedule_at   DateTime?               @default(now()) @db.Timestamp(0)
+  updated_schedule_time DateTime?               @default(now()) @db.Timestamp(0)
+  user                  user                    @relation(fields: [id_student], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "schedule_fk_student")
+  turn                  turn                    @relation(fields: [id_turn], references: [id_turn], onDelete: NoAction, onUpdate: NoAction, map: "schedule_fk_turn")
+
+  @@index([id_student], map: "schedule_fk_student")
+  @@index([id_turn], map: "schedule_fk_turn")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model turn {
+  id_turn         Int         @id @default(autoincrement())
+  max_capacity    Int
+  day             turn_day
+  status          turn_status @default(ACTIVE)
+  start_time      DateTime    @db.Time(0)
+  end_time        DateTime    @db.Time(0)
+  created_turn_at DateTime?   @default(now()) @db.Timestamp(0)
+  updated_turn_at DateTime?   @default(now()) @db.Timestamp(0)
+  color_turn      String?     @default("rgba(49, 49, 49, 0.72)") @db.VarChar(30)
+  schedule        schedule[]
+}
+
 enum inscription_detail_audit_change_type {
   INSERT
   UPDATE
@@ -244,4 +274,25 @@ enum emergency_contact_relationship_emecont {
   COLEGA
   VECINO
   OTRO
+}
+
+enum turn_day {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+}
+
+enum turn_status {
+  ACTIVE
+  BLOCK
+}
+
+enum schedule_state_schedule {
+  PENDING
+  ATTEND
+  MISSED
+  CANCELLED
 }
