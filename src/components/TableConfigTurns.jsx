@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 
 import TurnModal from "@/components/modals/TurnModal";
 import TurnCard from "@/components/cards/TurnCard";
+import PopMessage from '@/components/PopMessage'
 
 import { getTurns, deleteTurn } from "@/db/turn";
 
@@ -15,7 +16,12 @@ const TableConfigTurns = () => {
     const [turns, setTurns] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showTurnModal, setShowTurnModal] = useState(false);
-    const [actionMessage, setActionMessage] = useState('');
+    const [pop, setPop] = useState({
+        color: '',
+        duration: 0,
+        isShow: false,
+        text: '',
+    })
 
     useEffect(() => {
         const fetchTurns = async () => {
@@ -41,7 +47,35 @@ const TableConfigTurns = () => {
         }
     }, [turns]);
 
-    const calculateTopPosition = (startTime, containerHeight) => {
+    useEffect(() => {
+        if (turns) {
+            setTurns(prev => {
+                const updatedTurns = { ...prev };
+                Object.keys(updatedTurns).forEach(day => {
+                    let countTurn = 0;
+
+                    // Calculamos los valores de `top` y ordenamos los turnos por `top`
+                    let sortedTurns = updatedTurns[day].map(turn => ({
+                        ...turn,
+                        top: calculateTopPosition(turn, containerHeight),
+                    })).sort((a, b) => a.top - b.top);
+
+                    // Actualizamos el `countTurn` basado en el orden por `top`
+                    sortedTurns = sortedTurns.map(turn => ({
+                        ...turn,
+                        countTurn: ++countTurn,
+                    }));
+
+                    // Asignamos los turnos actualizados al día correspondiente
+                    updatedTurns[day] = sortedTurns;
+                });
+                return updatedTurns;
+            });
+        }
+    }, [isLoading])
+
+    const calculateTopPosition = (turn, containerHeight) => {
+        const { startTime } = turn;
         // Suponiendo que startTime es un string en formato "HH:MM"
         const [hours, minutes] = startTime.split(':').map(Number);
         const adjust = (hours - START_TIME) * 3;
@@ -75,17 +109,22 @@ const TableConfigTurns = () => {
                 });
                 return newTurns;
             })
-            showMessagePopUp(response.message, 'success');
+            showMessagePopUp(response.message, 'black');
         } catch (error) {
             console.error('Failed to delete turn:', error);
-            showMessagePopUp(response.message, 'success');
+            showMessagePopUp(error.message, 'accent-red');
         } finally {
             setIsLoading(false);
         }
     };
 
     const showMessagePopUp = (message, color) => {
-        alert(message);
+        setPop({
+            color,
+            text: message,
+            duration: 5000, // ms
+            isShow: true
+        })
     }
 
     return (
@@ -155,7 +194,7 @@ const TableConfigTurns = () => {
                                     turns[day].map((turn, i) => (
                                         <div
                                             className="absolute px-2"
-                                            style={{ top: `${calculateTopPosition(turn.startTime, containerHeight)}px` }}
+                                            style={{ top: `${calculateTopPosition(turn, containerHeight)}px` }}
                                             key={turn.idTurn}
                                         >
                                             <TurnCard
@@ -198,6 +237,17 @@ const TableConfigTurns = () => {
                     </div>
                 ))}
             </div>
+            {
+                pop.isShow && (
+                    <PopMessage
+                        color={pop.color}
+                        duration={pop.duration}
+                        onClose={() => setPop(prev => ({ ...prev, isShow: false }))}
+                        text={pop.text}
+                        key={pop.key}
+                    />
+                )
+            }
             <div className="w-auto fixed inset-x-0 bottom-0 flex justify-end items-center p-2 z-20">
                 <div>
                     <div className="mr-4 mt-2 font-bold text-3xl">
@@ -213,9 +263,9 @@ const TableConfigTurns = () => {
             <TurnModal
                 onClose={() => setShowTurnModal(false)}
                 isOpen={showTurnModal}
-                setActionMessage={setActionMessage}
                 setTurns={setTurns}
                 setIsLoading={setIsLoading}
+                showMessagePopUp={showMessagePopUp}
             />
 
             <style jsx>{`

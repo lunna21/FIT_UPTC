@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-export default function PopMessage({ text, duration, onClose, color }) {
+export default function PopMessage({ text, duration, onClose, color = 'black' }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -9,9 +9,11 @@ export default function PopMessage({ text, duration, onClose, color }) {
     return () => clearTimeout(timer);
   }, [duration, onClose]);
 
+  console.log("COLLOOOOOR: ", color)
+
   return (
     <aside
-      className={`fixed bottom-4 left-4 z-50 flex items-center justify-center gap-4 rounded-lg px-5 py-3 text-neutral-white shadow-lg ${color}`}
+      className={`fixed bottom-4 left-4 z-50 flex items-center justify-center gap-4 rounded-lg px-5 py-3 text-neutral-white shadow-lg bg-${color}`}
     >
       <span className="text-sm font-medium">
         {text}

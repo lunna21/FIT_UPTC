@@ -8,7 +8,7 @@ export async function getTurns() {
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw response.message;
         }
 
         const turns = await response.json();
@@ -47,7 +47,7 @@ export async function deleteTurn(idTurn) {
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw response.message;
         }
 
         const data = await response.json();
@@ -78,8 +78,9 @@ export async function createTurn(turn) {
         });
 
         if (!response.ok) {
-            console.log(response);
-            throw new Error('Network response was not ok');
+            const error = await response.json();
+            console.log(error.message)
+            throw error.message;
         }
 
         const data = await response.json();

@@ -13,7 +13,7 @@ import { FaSave } from "react-icons/fa";
 import { FaCalendarDay } from "react-icons/fa";
 import { TbWorld } from "react-icons/tb";
 
-const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading }) => {
+const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading, showMessagePopUp }) => {
     const [turn, setTurn] = useState({
         startTime: '',
         endTime: '',
@@ -23,13 +23,13 @@ const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading }) => {
         colorTurn: 'default',
     });
     const [dismissable, setDismissable] = useState(true);
-    const [actionMessage, setActionMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
             setIsLoading(true);
+            onClose();
             const newTurn = await createTurn(turn);
             setTurns(prev => {
                 const newTurns = { ...prev };
@@ -44,9 +44,9 @@ const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading }) => {
                 status: '',
                 colorTurn: 'default',
             })
-            setActionMessage('Turno creado correctamente.');
+            showMessagePopUp("Turno creado exitosamente.", 'accent-green')
         } catch (error) {
-            console.error('Error en la creación del turno:', error.message);
+            showMessagePopUp(error, 'accent-red')
         } finally {
             setIsLoading(false);
         }

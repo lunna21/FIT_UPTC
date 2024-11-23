@@ -24,6 +24,10 @@ export default async function postHandler(req, res) {
         return res.status(400).json({ message: 'El horario de atención es de 05:00am a 09:00pm.' });
     }
 
+    if (max_capacity <= 0) {
+        return res.status(400).json({ message: 'La capacidad del turno debe ser mayor que 0'})
+    }
+
     try {
         const turnsWithSameDay = await prisma.turn.findMany({
             where: {
@@ -41,11 +45,36 @@ export default async function postHandler(req, res) {
             },
         });
 
+        const existingTurns = await prisma.turn.findMany({
+            where: {
+                day: day,
+            },
+        });
+
+        const startTime = new Date(`1970-01-01T${start_time}:00Z`);
+        const endTime = new Date(`1970-01-01T${end_time}:00Z`);
+        const fiveMinutes = 5 * 60 * 1000; // 5 minutos en milisegundos
+
+        for (const turn of existingTurns) {
+            const existingStartTime = new Date(turn.start_time);
+            const existingEndTime = new Date(turn.end_time);
+
+            if (
+                Math.abs(startTime - existingStartTime) < fiveMinutes ||
+                Math.abs(startTime - existingEndTime) < fiveMinutes ||
+                Math.abs(endTime - existingStartTime) < fiveMinutes ||
+                Math.abs(endTime - existingEndTime) < fiveMinutes
+            ) {
+                return res.status(400).json({ message: 'Cada turno debe crearse con al menos 5 minutos de diferencia.' });
+            }
+        }
+
         if (turnsWithSameDay.length > 0) {
             return res.status(400).json({ message: 'Ya existe un turno en el mismo intervalo de tiempo.' });
         }
 
-        
+
+
         const newTurn = await prisma.turn.create({
             data: {
                 max_capacity: parseInt(max_capacity),
@@ -57,19 +86,19 @@ export default async function postHandler(req, res) {
             },
         });
 
-    const formattedTurn = {
-        idTurn: newTurn.id_turn,
-        maxCapacity: newTurn.max_capacity,
-        day: newTurn.day,
-        status: newTurn.status,
-        colorTurn: newTurn.color_turn,
-        startTime: newTurn.start_time.toISOString().split('T')[1].split('.')[0],
-        endTime: newTurn.end_time.toISOString().split('T')[1].split('.')[0],
-        createdTurnAt: newTurn.created_turn_at,
-        updatedTurnAt: newTurn.updated_turn_at
-    };
+        const formattedTurn = {
+            idTurn: newTurn.id_turn,
+            maxCapacity: newTurn.max_capacity,
+            day: newTurn.day,
+            status: newTurn.status,
+            colorTurn: newTurn.color_turn,
+            startTime: newTurn.start_time.toISOString().split('T')[1].split('.')[0],
+            endTime: newTurn.end_time.toISOString().split('T')[1].split('.')[0],
+            createdTurnAt: newTurn.created_turn_at,
+            updatedTurnAt: newTurn.updated_turn_at
+        };
 
-    res.status(201).json(formattedTurn);
+        res.status(201).json(formattedTurn);
 
     } catch (error) {
         console.error(error)
