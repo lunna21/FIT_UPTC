@@ -1,16 +1,11 @@
-import HeaderMenu from "@/components/headers/HeaderMenu"; 
+import EmployeeHeader from '@/components/headers/EmployeeHeader';
+
 
 const Dashboard = () => {
     return (
         <div>
-            <HeaderMenu
-                menu={
-                    [
-                        { href: '/employees', name: 'Estudiantes' },
-                        { href: '#', name: "Gestión Turnos"}
-                    ]
-                }
-            />
+            <EmployeeHeader />
+            <h1>Dashboard</h1>
         </div>
     );
 }

@@ -162,26 +162,6 @@ export async function getUserByRole(role) {
   }
 }
 
-export async function getUserDetailById(id) {
-  try {
-      const response = await fetch(`/api/users/details/${id}`, {
-          method: "GET",
-          headers: {
-              "Content-Type": "application/json",
-          },
-      });
-      if (response.ok) {
-          return response.json();
-      } else {
-          console.error("Error fetching user details:", response);
-          throw "Error al obtener detalles del usuario, comprueba la información enviada";
-      }
-  } catch (error) {
-      console.error("Error fetching user details:", error);
-      throw error;
-  }
-}
-
 export async function deleteUser(id) {
   try {
     const response = await fetch(`/api/users/${id}`, {
@@ -215,5 +195,25 @@ export async function addUserInClerk({ email, password, username }) {
       console.error('Error adding user:', error);
       throw error;
   }
+}
+
+export async function getUserDetailById(id) {
+    try {
+        const response = await fetch(`/api/users/details/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error("Error fetching user details:", response);
+            throw "Error al obtener detalles del usuario, comprueba la información enviada";
+        }
+    } catch (error) {
+        console.error("Error fetching user details:", error);
+        throw error;
+    }
 }
 

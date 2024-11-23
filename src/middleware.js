@@ -1,13 +1,13 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 // Define access permissions based on roles
 const rolePermissions = {
-  adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user"], // Define as needed
+  adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user", "/admin/schedules"], // Define as needed
   stu: ["/", "/dashboard"],
-  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed
+  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*", "/employees/turns",], // Define as needed'], // Define as needed
 };
 
 // Define public routes that don't require authentication

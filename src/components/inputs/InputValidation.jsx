@@ -111,6 +111,12 @@ const ValidationInput = ({
           setError('');
         }
         break;
+      case 'time':
+        if (value.length < 5) {
+          setError('La hora debe tener el formato HH:MM');
+        } else {
+          setError('');
+        }
       default:
         if (validation) {
           const validationError = validation(value);
@@ -141,7 +147,7 @@ const ValidationInput = ({
             handleValidation(e.target.value);
           }}
           onBlur={() => setTouched(true)}
-          className={`w-full outline-none bg-transparent ${error ? 'text-red-500' : ''}`}
+          className={`w-full outline-none bg-transparent ${error ? 'text-red-500' : ''} text-black`}
           required={required}
           max={type === 'number' ? max : undefined}
           min={type === 'number' ? min : undefined}
