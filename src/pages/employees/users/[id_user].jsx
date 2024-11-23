@@ -83,7 +83,7 @@ function Details() {
                         <strong>Código Estudiantil:</strong> {inscriptionDetail?.studentCode || 'N/A'}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
-                        <strong>Correo Electrónico:</strong> {estudiante.person.emailPerson}
+                        <strong>Correo Electrónico:</strong> {estudiante.emailUser}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
                         <strong>Teléfono:</strong> {estudiante.person.phoneNumberPerson}
@@ -110,11 +110,27 @@ function Details() {
                         <strong>Alergias:</strong> {inscriptionDetail?.allergy?.nameAllergy || 'N/A'}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
+                        <strong>Medicamentos:</strong> 
+                    {inscriptionDetail?.medications?.map((medication, index) => (
+                        <div key={index} className="mb-2">
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Nombre:</strong> {medication.namePrescriptionMedication}
+                            </p>
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Dosis:</strong> {medication.dosePrescriptionMedication}
+                            </p>
+                            <p className="text-xl font-montserrat mb-1">
+                                <strong>Razón de la Receta:</strong> {medication.recipeReason}
+                            </p>
+                        </div>
+                    )) || 'N/A'}
+                    </p>
+                    <p className="text-xl font-montserrat mb-4">
                         <strong>URL Consentimiento:</strong> {inscriptionDetail?.urlConsent ? <a href={inscriptionDetail.urlConsent} target="_blank" rel="noopener noreferrer">Ver PDF</a> : 'N/A'}
                     </p>
                     {inscriptionDetail?.urlConsent && (
                         <div className="mt-8">
-                            <Worker workerUrl={`https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js`}>
+                            <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
                                 <Viewer fileUrl={inscriptionDetail.urlConsent} />
                             </Worker>
                         </div>

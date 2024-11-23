@@ -56,6 +56,8 @@ export default async function postHandler(req, res) {
 
         let username = generateUsername(existingPerson.first_name_person, existingPerson.last_name_person, id_role_user, numberUsername + 1);
         // Verificar si ya existe un usuario con el mismo nombre de usuario
+        console.log(username);
+
         let existingUser = await prisma.user.findUnique({
             where: { name_user: username },
         });

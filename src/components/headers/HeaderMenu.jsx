@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import logoUptc from '@/assets/logoUPTC24.svg';
+import ButtonHelp from '@/components/buttons/ButtonHelp'
 
 const HeaderMenu = ({ menu }) => {
   return (
@@ -31,7 +32,7 @@ const HeaderMenu = ({ menu }) => {
           </li>
         ))}
       </ul>
-
+      <ButtonHelp/>
       <UserButton />
     </header>
   );

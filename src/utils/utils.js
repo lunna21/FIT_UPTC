@@ -48,13 +48,24 @@ export function getValidDate(dateS) {
   }
 
 export function generateUsername(name, lastName, role, number) {
+  const normalizeString = (str) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .replace(/[^a-zA-Z0-9]/g, ''); // Remove non-alphanumeric characters
+  };
+
   let roleSuffix = '';
   if (role === 'EMP') {
     roleSuffix = '_staff';
   } else if (role === 'ADM') {
     roleSuffix = '_admin';
   }
-  return `${name.toLowerCase().replace(/ /g, '')}_${lastName.toLowerCase().replace(/ /g, '')}${roleSuffix}${number}`;
+
+  const normalizedFirstName = normalizeString(name.toLowerCase());
+  const normalizedLastName = normalizeString(lastName.toLowerCase());
+
+  return `${normalizedFirstName}_${normalizedLastName}${roleSuffix}${number}`;
 }
 
 /* 
