@@ -1,69 +1,61 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // Define access permissions based on roles
 const rolePermissions = {
   adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user"], // Define as needed
   stu: ["/", "/dashboard"],
-  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed'], // Define as needed
+  emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*"], // Define as needed
 };
 
 // Define public routes that don't require authentication
-const publicRoutes = [
-  '/login',
-  '/register',
-  '/verification',
-  '/recover',
-];
+const publicRoutes = ["/login", "/register", "/verification", "/recover"];
 
-// actions when the user's status is ACT
 function statusActiveActions(path, role) {
-  if (path === '/') {
-    const dashboardRoute = rolePermissions[role.toLowerCase()].find(route => route.includes('dashboard')) || '/dashboard';
+  if (path === "/") {
+    const dashboardRoute =
+      rolePermissions[role.toLowerCase()].find((route) =>
+        route.includes("dashboard")
+      ) || "/dashboard";
     const redirectUrl = new URL(BASE_URL + dashboardRoute);
     return NextResponse.redirect(redirectUrl.toString());
   }
 
   const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
-  let isAllowed = allowedRoutes.some(route => {
-    return route === path;
+  let isAllowed = allowedRoutes.some((route) => {
+    return (
+      route === path ||
+      (route.includes("*") && path.startsWith(route.replace("*", "")))
+    );
   });
 
   if (!isAllowed)
-    return NextResponse.redirect(new URL(BASE_URL + '/').toString());
+    return NextResponse.redirect(new URL(BASE_URL + "/").toString());
 
   return NextResponse.next();
 }
 
 function statusPendingActions(path) {
-  if (path === '/pending') {
+  if (path === "/pending") {
     return NextResponse.next();
   } else {
-    return NextResponse.redirect(new URL(BASE_URL + '/pending').toString());
+    return NextResponse.redirect(new URL(BASE_URL + "/pending").toString());
   }
 }
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
+  const actualUrl = new URL(req.url);
 
-  const url = new URL(req.url);
+  console.log(actualUrl.pathname);
+  console.log(userId);
 
-  // Check if the route is public
-  if (publicRoutes.some(route => typeof route === 'string' ? url.pathname === route : route.test(url.pathname))) {
+  // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
+  if (actualUrl.pathname.startsWith("/api")) {
+    console.log("API request");
     return NextResponse.next();
-  }
-
-  // Permitir el acceso a la ruta específica de registro en la API
-  if (url.pathname.startsWith('/api/users/') && req.headers.get('referer')?.includes('/register')) {
-    return NextResponse.next();
-  }
-
-  // Check if the user is authenticated
-  if (!userId) {
-    // Avoid redirect loop if already on the sign-in page
-    if (!req.url.includes("/login")) {
-      return redirectToSignIn();
-    }
   }
 
   if (userId) {
@@ -71,34 +63,19 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (role && rolePermissions[role.toLowerCase()] && status) {
       switch (status) {
-        case "ACT": {
-          if (actualUrl.pathname === "/") {
-            const dashboardRoute =
-              rolePermissions[role.toLowerCase()].find((route) =>
-                route.includes("dashboard")
-              ) || "/dashboard";
-            const redirectUrl = new URL(BASE_URL + dashboardRoute);
-            return NextResponse.redirect(redirectUrl.toString());
-          }
-
-          const allowedRoutes = rolePermissions[role.toLowerCase()] || [];
-          let isAllowed = allowedRoutes.some((route) => {
-            if (route.endsWith("*")) {
-              return true;
-            } else {
-              return route === actualUrl.pathname;
-            }
-          });
-
-          if (!isAllowed)
-            return NextResponse.redirect(new URL(BASE_URL + "/").toString());
-
-          return NextResponse.next();
-        }
+        case "ACT":
+          return statusActiveActions(actualUrl.pathname, role);
+        case "PEN":
+          return statusPendingActions(actualUrl.pathname);
       }
     }
 
-    return statusPendingActions(actualUrl.pathname);
+    if (actualUrl.pathname !== "/create-password")
+      return NextResponse.redirect(
+        new URL(BASE_URL + "/create-password").toString()
+      );
+
+    return NextResponse.next();
   }
 
   // public routes
