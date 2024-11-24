@@ -19,14 +19,13 @@ import './register.css'
 import Modal from './Modal';
 
 //Import Icons
-import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom } from "react-icons/md";
+import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom , MdOutlineRealEstateAgent} from "react-icons/md";
 import { RiFileAddFill } from "react-icons/ri";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
 import { LiaAllergiesSolid } from "react-icons/lia";
 import { GiMedicines } from "react-icons/gi";
 import { FaHouseChimneyMedical } from "react-icons/fa6";
-import { MdOutlineRealEstateAgent } from "react-icons/md";
 
 const Register = () => {
     const { signUp, isLoading, isLoaded } = useCustomSignUp();
