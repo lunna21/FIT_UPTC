@@ -5,6 +5,16 @@ const useClerkSignUp = () => {
     const { isLoaded, signUp } = useSignUp();
     const router = useRouter();
 
+    const waitForClerkLoad = () => new Promise(resolve => {
+        const interval = setInterval(() => {
+            console.log('Esperando a que Clerk cargue...');
+            if (isLoaded) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 100); // Revisa cada 100 ms si está cargado
+    });
+
     const handleSignUp = async ({
         email,
         password,
@@ -13,10 +23,10 @@ const useClerkSignUp = () => {
     }) => {
         if (!isLoaded) return;
 
-        console.log('SignUp Data:', { email, password, username });
-        
         try {
             // Crea un nuevo usuario con role
+            await waitForClerkLoad();
+
             try {
                 await signUp.create({
                     emailAddress: email,

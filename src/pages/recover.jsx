@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
 import { useSignIn } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
+import useShowPopUp from '@/hooks/useShowPopUp'
+import Link from 'next/link'
 
 import Button from '@/components/buttons/Button'
 import Input from '@/components/inputs/InputValidation'
+import PopMessage from "@/components/PopMessage";
 
 import { IoIosSend } from "react-icons/io";
 import { FaUnlock } from 'react-icons/fa';
 import { MdEmail, MdVerified } from 'react-icons/md'
 import { BsFillShieldLockFill } from 'react-icons/bs'
+import { IoIosArrowBack } from "react-icons/io";
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('')
@@ -16,6 +20,14 @@ const ForgotPasswordPage = () => {
     const [code, setCode] = useState('')
     const [successfulCreation, setSuccessfulCreation] = useState(false)
     const [error, setError] = useState('')
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
 
     const router = useRouter()
     const { isLoaded, signIn } = useSignIn()
@@ -34,11 +46,11 @@ const ForgotPasswordPage = () => {
             })
             .then((_) => {
                 setSuccessfulCreation(true)
-                setError('')
+                showPopUp({ text: 'Se ha enviado un código de restablecimiento a tu correo electrónico' })
             })
             .catch((err) => {
                 console.error('error', err.errors[0].longMessage)
-                setError(err.errors[0].longMessage)
+                showPopUp({ text: 'No se encontró tu cuenta.', status: 'error' });
             })
     }
 
@@ -56,20 +68,26 @@ const ForgotPasswordPage = () => {
             .then((result) => {
                 if (result.status === 'complete') {
                     // Redirigir al usuario a la página de inicio después del restablecimiento
-                    router.push('/') // Redirigir al login o al dashboard
+                    showPopUp({ text: 'Contraseña restablecida correctamente 💪', status: 'success' });
+                    setTimeout(() => {
+                        router.push('/login')
+                    } , 1500)
                 } else {
                     console.log(result)
                 }
             })
             .catch((err) => {
                 console.error('error', err.errors[0].longMessage)
-                setError(err.errors[0].longMessage)
+                showPopUp({ text: 'No se pudo restablecer la contraseña, intentalo nuevamente.', status: 'error' });
             })
     }
 
     return (
         <div className="w-screen h-screen flex justify-center items-center">
-            <div className="mx-auto max-w-md p-8 rounded-lg shadow-lg bg-neutral-gray-light text-center">
+            <div className="relative mx-auto max-w-md p-8 rounded-lg shadow-lg bg-neutral-gray-light text-center">
+                <Link href="/login" className="group absolute top-0 left-0 w-[40px] h-[40px] flex justify-center items-center bg-primary-medium rounded-l-lg rounded-b-none">
+                    <IoIosArrowBack className="text-neutral-gray-dark text-lg transition-all duration-200 group-hover:-translate-x-1" />
+                </Link>
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">¿Olvidaste tu contraseña?</h1>
                 <form onSubmit={!successfulCreation ? create : reset} className="space-y-4">
                     {!successfulCreation && (
@@ -104,7 +122,7 @@ const ForgotPasswordPage = () => {
                                 Icon={BsFillShieldLockFill}
                             />
                             <Input
-                                label="Ingresa el código de restablecimiento de contraseña que se envió a tu correo electrónico"
+                                label="Ingresa el código de restablecimiento de contraseña"
                                 type="text"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
@@ -121,6 +139,16 @@ const ForgotPasswordPage = () => {
                     )}
                 </form>
             </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
+                )
+            }
         </div>
     )
 }

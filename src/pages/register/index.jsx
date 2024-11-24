@@ -7,8 +7,10 @@ import HeaderRegister from '@/components/headers/HeaderRegister'
 import ProgressLine from '@/components/ProgressLine'
 import CheckUserRegister from '@/components/CheckUserRegister'
 import UploadFileRegister from '@/components/UploadFileRegister'
+import PopMessage from "@/components/PopMessage";
 
 import useCustomSignUp from '@/hooks/useCustomSignUp'
+import useShowPopUp from '@/hooks/useShowPopUp'
 
 import { calculateAge, getToday } from '@/utils/utils'
 import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
@@ -26,8 +28,7 @@ import { GiMedicines } from "react-icons/gi";
 import { FaHouseChimneyMedical } from "react-icons/fa6";
 
 const Register = () => {
-    const { signUp, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
-
+    const { signUp, isLoading, isLoaded } = useCustomSignUp();
     const [formData, setFormData] = useState({
         typeDocument: '',
         numberDocument: '',
@@ -67,6 +68,14 @@ const Register = () => {
     const [uploadError, setUploadError] = useState("");
     const maxFileSize = 1 * 1024 * 1024; // Tamaño máximo 1 MB
     const today = getToday(14);
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
 
     useEffect(() => {
         if (!age) {
@@ -245,7 +254,8 @@ const Register = () => {
         e.preventDefault();
 
         if (!selectedFile) {
-            setUploadError('Por favor, selecciona un archivo.');
+            setUploadError();
+            showPopUp({ text: 'Por favor, selecciona un archivo.', status: 'error' });
             return;
         }
 
@@ -258,9 +268,9 @@ const Register = () => {
                     formData,
                     file64Consent: base64File
                 });
+                showPopUp({ text: 'Usuario registrado con exito 🙂', status: 'success' });
             } catch (err) {
-                console.log(err)
-                console.error(err);
+                showPopUp({ text: err, status: 'error' });
             }
         };
     };
@@ -280,13 +290,6 @@ const Register = () => {
 
     return (
         <div className="register-registerPage register-flex">
-            {
-                singUpError && (
-                    <div className="z-50 bg-white w-full h-80px bg-transparent flex justify-center items-center px-8 py-4 absolute top-0">
-                        <p className="text-red-500">{singUpError}</p>
-                    </div>
-                )
-            }
             <div className="register-containerR register-flex">
                 <div ref={containerRef} className="register-formDiv register-flex relative">
                     <ProgressLine
@@ -307,6 +310,7 @@ const Register = () => {
                             valueNumberDocument={formData.numberDocument}
                             handleChange={handleChange}
                             setIsValidated={setIsValidated}
+                            showPopUp={showPopUp}
                         />
                         {(isValidated === 'yes') && (
                             <>
@@ -610,6 +614,16 @@ const Register = () => {
                     </form>
                 </div>
             </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
+                )
+            }
         </div>
     )
 }

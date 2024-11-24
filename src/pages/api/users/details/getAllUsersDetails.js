@@ -120,7 +120,7 @@ export default async function getHandler(req, res) {
       return res.status(200).json(userDetails);
     } catch (error) {
       console.error("Error fetching user details:", error);
-      return res.status(500).json({ error: "Error fetching user details" });
+      return res.status(500).json({ message: "Error al traer el usuario" });
     }
   } else if (role === "STU") {
     try {
@@ -239,9 +239,9 @@ export default async function getHandler(req, res) {
       return res.status(200).json(userDetails);
     } catch (error) {
       console.error("Error fetching student details:", error);
-      return res.status(500).json({ error: "Error fetching student details" });
+      return res.status(500).json({ message: "Error fetching student details" });
     }
   } else {
-    return res.status(400).json({ error: "Invalid role" });
+    return res.status(400).json({ message: "Invalid role" });
   }
 }

@@ -24,8 +24,10 @@ export default async function postHandler(req, res) {
         });
 
         if (!userValidation.isValid) {
+            console.error(userValidation.errors)
+            const errorMessages = Object.values(userValidation.errors).flat().join(' - ');
             return res.status(400).json(
-                { error: 'Errores de validación en los datos del usuario ' + userValidation.errors.join(', ') }
+                { message: `${errorMessages}` }
             );
         }
 
@@ -50,7 +52,7 @@ export default async function postHandler(req, res) {
 
         if (!existingPerson) {
             return res.status(400).json(
-                { error: 'No existe una persona con este número de documento' }
+                { message: 'No existe una persona con este número de documento.' }
             );
         }
 
@@ -76,7 +78,7 @@ export default async function postHandler(req, res) {
 
         if (!existingRole) {
             return res.status(400).json(
-                { error: 'No existe un rol de usuario con este nombre' }
+                { message: 'No existe un rol de usuario con este nombre' }
             );
         }
 
@@ -104,8 +106,9 @@ export default async function postHandler(req, res) {
                 const inscriptionDetailValidation = validateInscriptionDetail(inscription_detail);
                 if (!inscriptionDetailValidation.isValid) {
                     console.error(inscriptionDetailValidation.errors)
+                    const errorMessages = Object.values(inscriptionDetailValidation.errors).flat().join(' - ');
                     return res.status(400).json(
-                        { error: 'Errores de validación en los datos de la inscripción', details: inscriptionDetailValidation.errors }
+                        { message: `${errorMessages}` }
                     );
                 }
 
@@ -116,7 +119,7 @@ export default async function postHandler(req, res) {
 
                 if (existingInscriptionDetail) {
                     return res.status(400).json(
-                        { error: 'Ya existe un detalle de inscripción con este código de estudiante' }
+                        { message: 'Ya existe un estudiante con el mismo código de estudiante' }
                     );
                 }
 
@@ -277,7 +280,7 @@ export default async function postHandler(req, res) {
 
             }
 
-            return res.status(400).json({ error: errorMessage });
+            return res.status(400).json({ message: errorMessage });
 
         }
 
@@ -292,7 +295,7 @@ export default async function postHandler(req, res) {
         }
 
         return res.status(500).json(
-            { error: 'Error al crear usuario y datos asociados' }
+            { message: 'Error al crear usuario y datos asociados' }
         );
     }
 }

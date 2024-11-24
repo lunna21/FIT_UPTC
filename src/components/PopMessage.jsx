@@ -1,6 +1,22 @@
 import React, { useEffect } from 'react';
 
-export default function PopMessage({ text, duration, onClose, color }) {
+export default function PopMessage({ text, duration, onClose, status }) {
+
+  // const allowedColors = ['black', 'accent-green', 'accent-red'];
+
+  let color = 'black'
+
+  if (status === "success") {
+    color = 'accent-green';
+  } else if (status === "error") {
+    color = 'accent-red';
+  }
+
+  const colors = {
+    error: '#FF1302',
+    success: '#82c22e',
+  }
+
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -11,7 +27,8 @@ export default function PopMessage({ text, duration, onClose, color }) {
 
   return (
     <aside
-      className={`fixed bottom-4 left-4 z-50 flex items-center justify-center gap-4 rounded-lg px-5 py-3 text-neutral-white shadow-lg ${color}`}
+      className={`fixed bottom-4 left-4 z-50 flex items-center justify-center gap-4 rounded-lg px-5 py-3 text-neutral-white shadow-lg`}
+      style={{ background: `${colors[status] ? colors[status] : "#000101"}` }}
     >
       <span className="text-sm font-medium">
         {text}

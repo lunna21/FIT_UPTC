@@ -27,8 +27,10 @@ export default async function postHandler(req, res) {
     });
 
     if (!personValidation.isValid) {
+      console.log(personValidation.errors);
+      const errorMessages = Object.values(personValidation.errors).flat().join(', ');
       return res.status(400).json(
-        { error: 'Errores de validación en los datos de la persona', details: personValidation.errors }
+        { message: `${errorMessages}` }
       );
     }
 
@@ -39,7 +41,7 @@ export default async function postHandler(req, res) {
 
     if (existingPerson) {
       return res.status(400).json(
-        { error: 'Ya existe una persona con este número de documento' }
+        { message: 'Ya existe una persona con este número de documento' }
       );
     }
 
@@ -47,7 +49,7 @@ export default async function postHandler(req, res) {
     const birthdate = new Date(birthdate_person);
     if (isNaN(birthdate.getTime())) {
       return res.status(400).json(
-        { error: 'Fecha de nacimiento no válida' }
+        { message: 'Fecha de nacimiento no válida' }
       );
     }
 
@@ -84,9 +86,9 @@ export default async function postHandler(req, res) {
         // Add more cases if there are other unique fields
       }
 
-      return res.status(400).json({ error: errorMessage });
+      return res.status(400).json({ message: errorMessage });
     }
 
-    return res.status(500).json({ error: 'Error al crear la persona' });
+    return res.status(500).json({ message: 'Error del sistema, por favor intenta más tarde' });
   }
 }
