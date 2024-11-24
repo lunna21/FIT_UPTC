@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
-import { deleteUser } from '@/db/user';
+import { disable } from '@/db/user';
 import { deletePersonByDocumentNumber } from '@/db/person';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
@@ -13,8 +13,8 @@ import ButtonHelp from '@/components/buttons/ButtonHelp';
 import PopMessage from '@/components/PopMessage';
 import ModalDisableUsers from "@/components/ModalDisableUsers";
 import Pagination from '@/components/Pagination';
-import { FaRegUserCircle, FaIdCard, FaRegTrashAlt, FaFilter, FaCheckCircle } from "react-icons/fa";
-import { FaPhoneVolume } from "react-icons/fa6";
+import { FaRegUserCircle, FaIdCard, FaFilter, FaCheckCircle, FaUserEdit, FaUserMinus } from "react-icons/fa";
+import { FaPhoneVolume, FaUserSlash } from "react-icons/fa6";
 import { IoMdMailOpen } from "react-icons/io";
 import { GrStatusInfo } from "react-icons/gr";
 import { GoPencil } from "react-icons/go";
@@ -36,26 +36,35 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     const [showNoResultsMessage, setShowNoResultsMessage] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [timeOut, setTimeout]=useState(null);
 
     const handleDeleteUser = async (id, numberDocument) => {
         try {
+            setIsLoading(true);
             // Espera a que las operaciones de eliminación se completen
-            // await deleteUser(id);
+            await disable(id);
             // await deletePersonByDocumentNumber(numberDocument);
+
+            // Simula un tiempo de espera para la operación de eliminación
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 10000); // 2 segundos
+
             setMessage('El usuario fue deshabilitado exitosamente');
             setShowMessage(true);
             setMessageColor('bg-green-500');
-            setEstudiantes(prevEstudiantes => prevEstudiantes.filter(est => est.idUser !== id));
+            // setEstudiantes(prevEstudiantes => prevEstudiantes.filter(est => est.idUser !== id));
 
         } catch (error) {
             console.error("Error inhabilitando el usuario:", error);
             setMessage('Error inhabilitando el usuario');
             setShowMessage(true);
             setMessageColor('bg-red-500');
+            setIsLoading(false);
         }
     }
 
-    useEffect(() => {
+       useEffect(() => {
         if (search === '') {
             setEstudiantes(initEstudiantes);
             setCurrentPage(1);
@@ -126,6 +135,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                             <div id="search-bar">
                                 <Search
                                     search={search}
+                                    onSearch={setSearch}
                                     setSearch={setSearch}
                                 />
                             </div>
@@ -141,6 +151,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                         <li onClick={() => handleFilterChange("")} className="p-2 cursor-pointer hover:bg-primary-medium">Todos</li>
                                         <li onClick={() => handleFilterChange('ACT')} className="p-2 cursor-pointer hover:bg-primary-medium">Activo</li>
                                         <li onClick={() => handleFilterChange('PEN')} className="p-2 cursor-pointer hover:bg-primary-medium">Pendiente</li>
+                                        <li onClick={() => handleFilterChange('INA')} className="p-2 cursor-pointer hover:bg-primary-medium">Inactivo</li>
                                     </ul>
                                 )}
                             </div>
@@ -218,12 +229,13 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                         </td>
                                         <td className="px-6 py-4 font-montserrat ">
                                             <div className='w-full flex justify-center'>
-                                                <span className={`px-2 py-1 rounded-full flex items-center font-semibold  ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-100 text-green-800' :
-                                                    estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-100 text-red-800' :
+                                                <span className={`px-2 py-1 rounded-full flex items-center font-semibold  ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
+                                                    estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
                                                         'bg-gray-500 text-white'
                                                     }`}>
                                                     {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
                                                         estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
+                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
                                                             estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
                                                     {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
                                                         estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
@@ -233,7 +245,9 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                         </td>
                                         <td className="px-6 py-4 font-montserrat flex justify-center space-x-2">
                                             <button id='button_modify' className="text-blue-600 hover:text-blue-800">
-                                                <GoPencil className="w-5 h-5" />
+                                                <div className="flex items-center justify-center w-10 h-10 bg-blue-200 rounded-full hover:bg-blue-400">
+                                                    <FaUserEdit className="w-6 h-6" />
+                                                </div>
                                             </button>
                                             <button
                                                 id='button_delete'
@@ -248,7 +262,9 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                                 }}
                                                 className="text-red-600 hover:text-red-800"
                                             >
-                                                <FaRegTrashAlt className='w-5 h-5' />
+                                                <div className="flex items-center justify-center w-10 h-10 bg-red-200 rounded-full  hover:bg-red-400">
+                                                    <FaUserSlash className='w-5 h-5' />
+                                                </div>
                                             </button>
                                         </td>
                                     </tr>

@@ -4,10 +4,21 @@ import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import Button from '@/components/buttons/Button';
-import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { RiCloseCircleFill } from 'react-icons/ri';
+
 import { getUserDetailById } from '@/db/user';
 import Loder from '@/components/Loader';
+import InputValidation from '@/components/inputs/InputValidation';
+
+//icons
+import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom, MdOutlineRealEstateAgent, MdVerified, MdError } from "react-icons/md";
+import { RiFileAddFill, RiCloseCircleFill } from "react-icons/ri";
+import { BsFillTelephoneFill } from "react-icons/bs";
+import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
+import { LiaAllergiesSolid } from "react-icons/lia";
+import { GiMedicines } from "react-icons/gi";
+import { FaHouseChimneyMedical } from "react-icons/fa6";
+import { IoIosCheckmarkCircle } from 'react-icons/io';
+import { FaAddressCard } from 'react-icons/fa';
 
 function Details() {
     const router = useRouter();
@@ -15,10 +26,80 @@ function Details() {
     const [estudiante, setEstudiante] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isValidated, setIsValidated] = useState("no");
+    const [visibleTI, setVisibleTI] = useState(true);
+    const [errors, setErrors] = useState({ typeDocument: '', numberDocument: '' });
+    const [formData, setFormData] = useState({
+        typeDocument: '',
+        numberDocument: '',
+        firstName: '',
+        lastName: '',
+        studentCode: '',
+        phoneNumber: '',
+        email: '',
+        birthDate: '',
+        eps: '',
+        bloodType: '',
+        programType: '',
+        allergies: '',
+        medications: [],
+        medication: {
+            nameMedication: '',
+            dosage: '',
+            reason: ''
+        },
+        emergencyContact: {
+            emergencyfullName: '',
+            relationship: '',
+            contactNumber: ''
+        },
+        informedConsent: null,
+        parentalAuthorization: null,
+        terms: false
+    })
 
-    console.log(id_user)
+    const handleChange = (e, section) => {
+        const { name, value } = e.target
 
-    console.log(estudiante)
+        if (name === 'numberDocument')
+            setError('');
+        if (name === 'birthDate') {
+            setAge(calculateAge(value));
+        }
+
+        if (name === 'typeDocument' || name === 'numberDocument') {
+            setIsValidated("no");
+        }
+
+        if (name == 'terms') {
+            setFormData({
+                ...formData,
+                [name]: e.target.checked
+            });
+        } else if (section === 'emergencyContact') {
+            setFormData({
+                ...formData,
+                emergencyContact: {
+                    ...formData.emergencyContact,
+                    [name]: value
+                }
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
+    };
+
+    const handleTypeDocumentChange = (e) => {
+        handleChange(e);
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            typeDocument: e.target.value ? '' : 'Debe seleccionar un tipo de documento.'
+        }));
+    };
+
 
     useEffect(() => {
         if (id_user) {
@@ -50,22 +131,6 @@ function Details() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">
-                <p className="text-xl font-montserrat text-red-600">Error: {error}</p>
-            </div>
-        );
-    }
-
-    if (!estudiante) {
-        return (
-            <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">
-                <p className="text-xl font-montserrat">Estudiante no encontrado</p>
-            </div>
-        );
-    }
-
     const inscriptionDetail = estudiante.inscriptionDetails[0];
 
     return (
@@ -76,9 +141,48 @@ function Details() {
                     <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6">
                         Detalles del Estudiante
                     </h1>
-                    <p className="text-xl font-montserrat mb-4">
-                        <strong>Nombre:</strong> {estudiante.person.firstNamePerson} {estudiante.person.lastNamePerson}
-                    </p>
+                    <label htmlFor="typeDocument">Tipo de Documento (*)</label>
+                    <div className="register-input register-flex" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                        <FaAddressCard className="register-icon" />
+                        <select
+                            id="typeDocument"
+                            name="typeDocument"
+                            required
+                            value={formData.typeDocument}
+                            onChange={handleTypeDocumentChange}
+                            className={`select-input ${formData.typeDocument ? 'filled' : ''}`}
+                        >
+                            <option value="">Selecciona un tipo de documento</option>
+                            <option value="CC">Cédula de Ciudadanía</option>
+                            {visibleTI && <option value="TI">Tarjeta de Identidad</option>}
+                            <option value="CE">Cédula de Extranjería</option>
+                        </select>
+                        {errors.typeDocument && <MdError style={{ position: 'absolute', right: '10px', fontSize: '1.5rem', color: '#FF1302' }} />}
+                    </div>
+                    {errors.typeDocument && (
+                        <p className="error-message">
+                            {errors.typeDocument}
+                        </p>
+                    )}
+
+                    <InputValidation
+                        label="Nombre completo"
+                        type='text'
+                        placeholder={`${estudiante.person.firstNamePerson} ${estudiante.person.lastNamePerson}`}
+                        value={formData.firstName}
+                        name="firstName"
+                        Icon={IoInformationCircleSharp}
+                        onChange={handleChange}
+
+                    />
+                    <InputValidation
+                        label="Código Estudiantil"
+                        type='number'
+                        placeholder={inscriptionDetail?.studentCode || 'N/A'}
+                        value={estudiante.nombre || ''}
+                        Icon={IoInformationCircleSharp}
+                        onChange={(e) => setEstudiante({ ...estudiante, nombre: e.target.value })}
+                    />
                     <p className="text-xl font-montserrat mb-4">
                         <strong>Código Estudiantil:</strong> {inscriptionDetail?.studentCode || 'N/A'}
                     </p>
@@ -109,21 +213,23 @@ function Details() {
                     <p className="text-xl font-montserrat mb-4">
                         <strong>Alergias:</strong> {inscriptionDetail?.allergy?.nameAllergy || 'N/A'}
                     </p>
+
+
                     <p className="text-xl font-montserrat mb-4">
-                        <strong>Medicamentos:</strong> 
-                    {inscriptionDetail?.medications?.map((medication, index) => (
-                        <div key={index} className="mb-2">
-                            <p className="text-xl font-montserrat mb-1">
-                                <strong>Nombre:</strong> {medication.namePrescriptionMedication}
-                            </p>
-                            <p className="text-xl font-montserrat mb-1">
-                                <strong>Dosis:</strong> {medication.dosePrescriptionMedication}
-                            </p>
-                            <p className="text-xl font-montserrat mb-1">
-                                <strong>Razón de la Receta:</strong> {medication.recipeReason}
-                            </p>
-                        </div>
-                    )) || 'N/A'}
+                        <strong>Medicamentos:</strong>
+                        {inscriptionDetail?.medications?.map((medication, index) => (
+                            <div key={index} className="mb-2">
+                                <p className="text-xl font-montserrat mb-1">
+                                    <strong>Nombre:</strong> {medication.namePrescriptionMedication}
+                                </p>
+                                <p className="text-xl font-montserrat mb-1">
+                                    <strong>Dosis:</strong> {medication.dosePrescriptionMedication}
+                                </p>
+                                <p className="text-xl font-montserrat mb-1">
+                                    <strong>Razón de la Receta:</strong> {medication.recipeReason}
+                                </p>
+                            </div>
+                        )) || 'N/A'}
                     </p>
                     <p className="text-xl font-montserrat mb-4">
                         <strong>URL Consentimiento:</strong> {inscriptionDetail?.urlConsent ? <a href={inscriptionDetail.urlConsent} target="_blank" rel="noopener noreferrer">Ver PDF</a> : 'N/A'}

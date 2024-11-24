@@ -7,6 +7,7 @@ import logoUptc from '@/assets/logoUPTC24.svg';
 import ButtonHelp from '@/components/buttons/ButtonHelp'
 
 const HeaderMenu = ({ menu }) => {
+  
   return (
     <header className="flex h-[72px] justify-between items-center p-4 bg-neutral-gray-dark pattern-diagonal-lines pattern-white-500 pattern-bg-white 
   pattern-size-8 pattern-opacity-80 relative">
