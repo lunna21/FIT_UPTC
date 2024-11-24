@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Loader from '@/components/Loader';
 
@@ -8,9 +8,15 @@ import Button from '@/components/buttons/Button';
 import { FaAddressCard } from 'react-icons/fa';
 import { MdOutlinePermIdentity, MdVerified, MdError } from 'react-icons/md';
 
-function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChange, setIsValidated, visibleTI = true, visibleInRegister = true }) {
+function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChange, setIsValidated, visibleTI = true, visibleInRegister = true, showPopUp = () => { } }) {
     const { isLoadingVerification, errorCheck, checkPersonByDocument } = useCheckUserExist();
     const [errors, setErrors] = useState({ typeDocument: '', numberDocument: '' });
+
+    useEffect(() => {
+        if (errorCheck) {
+            showPopUp({text: errorCheck });
+        }
+    }, [errorCheck]);
 
     const checkUserExists = async (e) => {
         e.preventDefault();
@@ -23,7 +29,6 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
         } catch (error) {
             console.error('Error al verificar el usuario', error);
         }
-
     };
 
     const handleNumberChange = (e) => {
@@ -43,15 +48,6 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
             ...prevErrors,
             typeDocument: e.target.value ? '' : 'Debe seleccionar un tipo de documento.'
         }));
-    };
-
-    const errorStyle = {
-        color: '#FF1302',
-        fontSize: '0.875rem',
-        fontWeight: 'bold',
-        marginTop: '0.5rem',
-        display: 'flex',
-        alignItems: 'center'
     };
 
     const inputContainerStyle = {
@@ -119,7 +115,7 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                 ) : (
                     <><div className="flex flex-col mb-4">
                         <label htmlFor="typeDocument" className="text-gray-700 font-medium mb-2">Tipo de Documento (*)</label>
-                        <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{background: "hsl(330, 12%, 97%)"}}>
+                        <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{ background: "hsl(330, 12%, 97%)" }}>
                             <FaAddressCard className="text-gray-500 mr-2" />
                             <select
                                 id="typeDocument"
@@ -143,7 +139,7 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
                         )}
                     </div><div className="flex flex-col mb-4">
                             <label htmlFor="numdoc" className="text-gray-700 font-medium mb-2">Número de documento (*)</label>
-                            <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{background: "hsl(330, 12%, 97%)"}}>
+                            <div className="h-12 flex items-center border rounded-lg p-2 relative" style={{ background: "hsl(330, 12%, 97%)" }}>
                                 <MdOutlinePermIdentity className="text-gray-500 mr-2" />
                                 <input
                                     type="text"
@@ -183,13 +179,6 @@ function CheckUserRegister({ valueTypeDocument, valueNumberDocument, handleChang
 
                 </div>
             )}
-            {
-                (errorCheck && visibleInRegister)  && (
-                    <p style={{ gridColumn: "span 2" }} className='w-auto m-auto px-6 py-2 bg-accent-red rounded-lg text-white'>
-                        {errorCheck}
-                    </p>
-                )
-            }
         </>
     );
 }

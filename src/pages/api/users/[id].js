@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
             // Verifica si el usuario fue encontrado
             if (!user) {
-                return res.status(404).json({ error: 'Usuario no encontrado' });
+                return res.status(404).json({ message: 'Usuario no encontrado' });
             }
 
             // Agrega el id_status a la información del usuario
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             return res.status(200).json(userWithStatus);
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error en la búsqueda del usuario' });
+            return res.status(500).json({ message: 'Error en la búsqueda del usuario' });
         }
     } else if (req.method === 'DELETE') {
         try {
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
             });
 
             if (!user) {
-                return res.status(404).json({ error: 'Usuario no encontrado' });
+                return res.status(404).json({ message: 'Usuario no encontrado' });
             }
 
             // Elimina las entradas relacionadas en las tablas foráneas
@@ -80,9 +80,9 @@ export default async function handler(req, res) {
             return res.status(200).json({ message: 'Usuario eliminado correctamente' });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Error al eliminar el usuario' });
+            return res.status(500).json({ message: 'Error al eliminar el usuario' });
         }
     } else {
-        return res.status(405).json({ error: 'Método no permitido' });
+        return res.status(405).json({ message: 'Método no permitido' });
     }
 }

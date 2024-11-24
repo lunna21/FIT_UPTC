@@ -9,4 +9,7 @@
     .login-info {
       display: none;
     }
+    .login_register-button {
+      display: flex;
+    }
   }

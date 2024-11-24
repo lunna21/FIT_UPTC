@@ -17,7 +17,7 @@ const TableConfigTurns = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showTurnModal, setShowTurnModal] = useState(false);
     const [pop, setPop] = useState({
-        color: '',
+        status: '',
         duration: 0,
         isShow: false,
         text: '',
@@ -109,18 +109,18 @@ const TableConfigTurns = () => {
                 });
                 return newTurns;
             })
-            showMessagePopUp(response.message, 'black');
+            showMessagePopUp(response.message, 'success');
         } catch (error) {
             console.error('Failed to delete turn:', error);
-            showMessagePopUp(error.message, 'accent-red');
+            showMessagePopUp(error.message, 'error');
         } finally {
             setIsLoading(false);
         }
     };
 
-    const showMessagePopUp = (message, color) => {
+    const showMessagePopUp = (message, status) => {
         setPop({
-            color,
+            status,
             text: message,
             duration: 5000, // ms
             isShow: true
@@ -240,7 +240,7 @@ const TableConfigTurns = () => {
             {
                 pop.isShow && (
                     <PopMessage
-                        color={pop.color}
+                        status={pop.status}
                         duration={pop.duration}
                         onClose={() => setPop(prev => ({ ...prev, isShow: false }))}
                         text={pop.text}

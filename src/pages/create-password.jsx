@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/buttons/Button';
 import Input from '@/components/inputs/InputValidation';
 import Loader from '@/components/Loader';
+import PopMessage from '@/components/PopMessage';
+
+import useShowPopUp from '@/hooks/useShowPopUp';
 
 import { FaUnlock } from 'react-icons/fa';
 import { BsFillShieldLockFill } from 'react-icons/bs';
@@ -16,49 +19,51 @@ const ChangePasswordPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
 
     const router = useRouter();
     const { user } = useUser();
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
-        
         setIsLoading(true);
-        setError('');
-        setSuccess('');
 
         if (newPassword !== confirmPassword) {
-            setError('Las contraseñas no coinciden');
+            setIsLoading(false);
+            showPopUp({ status: 'error', text: 'Las contraseñas no coinciden' });
             return;
         }
 
         try {
             const userDB = await getUserByUsername(user.username);
             if (userDB) {
-                console.log('UserDB:', userDB);
                 await updateMetadataUser({ role: userDB.id_role_user, status: userDB.id_status });
                 user.updatePassword({
                     currentPassword: userDB.password_user,
                     newPassword: newPassword,
                     signOutOfOtherSessions: true,
                 })
-                setSuccess('Contraseña cambiada exitosamente');
-                setError('');
+                showPopUp({ status: 'success', text: 'Contraseña cambiada exitosamente 💪' });
                 setIsLoading(false);
                 setTimeout(() => {
                     router.refresh();
                 }, 1500);
             } else {
                 setIsLoading(false);
-                setError('Usuario no encontrado');
+                showPopUp({ status: 'error', text: 'Usuario no encontrado' });
                 return;
             }
         } catch (err) {
             setIsLoading(false);
             console.error('error', err);
-            setError('Hubo un error al cambiar la contraseña');
+            showPopUp({ status: 'error', text: 'Usuario no encontrado' });
         }
     };
 
@@ -98,10 +103,18 @@ const ChangePasswordPage = () => {
                         Icon={FaUnlock}
                         disabled={!newPassword || !confirmPassword}
                     />
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
-                    {success && <p className="text-green-500 text-sm">{success}</p>}
                 </form>
             </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
+                )
+            }
         </div>
     );
 };

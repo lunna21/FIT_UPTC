@@ -3,25 +3,26 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 // GET /api/persons?document_number=123456&document_type=CC
 export async function getPersonByDocument(documentNumber) {
     try {
-        console.log("documentNumber: ", documentNumber)
         const response = await fetch(`/api/persons?document_number=${documentNumber}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        if (response.ok) {
-            return response.json();
+        if (!response.ok) {
+            const error = await response.json() 
+            throw error;
         }
+
+        return response.json()
     } catch (error) {
         console.error('Error fetching user:', error);
-        throw error.error;
+        throw error.message;
     }
 }
 
 export async function addPerson(formData) {
     try {
-        console.log(formData)
         const personData = {
             document_number_person: formData.numberDocument,
             id_document_type: formData.typeDocument,
@@ -41,15 +42,14 @@ export async function addPerson(formData) {
             body: JSON.stringify(personData),
         });
 
-        if (response.ok) {
-            return response.json();
-        } else {
-            const errorData = await response.json();
-            throw errorData.error || 'Error adding person';
+        if (!response.ok) {
+            const error = await response.json();
+            throw error;
         }
+        return response.json();
     } catch (error) {
         console.error('Error adding person:', error);
-        throw error;
+        throw error.message;
     }
 }
 
@@ -65,10 +65,10 @@ export async function deletePersonByDocumentNumber(documnetNumber) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Error deleting person');
+            throw (errorData || 'Error al borrar la persona');
         }
     } catch (error) {
         console.error('Error deleting person:', error);
-        throw error;
+        throw error.message;
     }
 }

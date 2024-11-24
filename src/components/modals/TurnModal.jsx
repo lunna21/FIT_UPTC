@@ -44,9 +44,9 @@ const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading, showMessagePopUp }
                 status: '',
                 colorTurn: 'default',
             })
-            showMessagePopUp("Turno creado exitosamente.", 'accent-green')
+            showMessagePopUp("Turno creado exitosamente.", 'success');
         } catch (error) {
-            showMessagePopUp(error, 'accent-red')
+            showMessagePopUp(error, 'error')
         } finally {
             setIsLoading(false);
         }

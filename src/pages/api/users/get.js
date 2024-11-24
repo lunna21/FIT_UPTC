@@ -25,12 +25,12 @@ export default async function gethandler(req, res) {
 
                 return res.status(200).json(userWithStatus);
             } else {
-                return res.status(404).json({ error: 'Usuario no encontrado' });
+                return res.status(404).json({ message: 'Usuario no encontrado' });
             }
         }
         return res.status(200).json(users);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Error al obtener usuarios' });
+        return res.status(500).json({ message: 'Error al obtener usuarios' });
     }
 }

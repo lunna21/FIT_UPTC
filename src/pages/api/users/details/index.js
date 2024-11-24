@@ -6,7 +6,7 @@ export default async function handler(req, res) {
       await getHandler(req, res);
       break;
     default:
-      res.status(405).json({ error: 'Método no permitido' });
+      res.status(405).json({ message: 'Método no permitido' });
       break;
   }
 }
