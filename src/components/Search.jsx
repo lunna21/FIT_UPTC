@@ -3,11 +3,9 @@ import styled from 'styled-components';
 
 const Search = ({ onSearch }) => {
   const [search, setSearch] = useState('');
-
   const handleSearch = () => {
     onSearch(search);
   };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     handleSearch();
@@ -40,7 +38,6 @@ const Search = ({ onSearch }) => {
 const StyledWrapper = styled.div`
   /* From uiverse.io by @satyamchaudharydev */
   /* removing default style of button */
-
   .form button {
     border: none;
     background: none;
@@ -94,7 +91,6 @@ const StyledWrapper = styled.div`
   .form:focus-within {
     border-radius: var(--after-border-radius);
   }
-
   input:focus {
     outline: none;
   }
