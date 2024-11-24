@@ -9,7 +9,7 @@ const useCheckUserExist = () => {
         setIsLoadingVerification(true);
 
         try {
-            if(!documentNumber) {
+            if (!documentNumber) {
                 setIsLoadingVerification(false);
                 setErrorCheck('Debe completar los campos');
                 setIsValidated('no');
@@ -17,9 +17,9 @@ const useCheckUserExist = () => {
             }
             const person = await getPersonByDocument(documentNumber);
 
-            if(!person) {
+            if (!person) {
                 setIsLoadingVerification(false);
-                setErrorCheck('');
+                setErrorCheck('Continua con el diligenciamiento del formulario ☺️');
                 setIsValidated('yes');
                 return null;
             }
@@ -32,7 +32,7 @@ const useCheckUserExist = () => {
 
         } catch (error) {
             setIsLoadingVerification(false);
-            setErrorCheck('Error al verificar el usuario');
+            setErrorCheck('Continua con el diligenciamiento del formulario ☺️');
             setIsValidated('yes');
             console.error(error)
             return null;

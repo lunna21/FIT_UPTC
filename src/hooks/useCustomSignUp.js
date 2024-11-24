@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSession } from '@clerk/nextjs';
 import { addPerson, deletePersonByDocumentNumber, getPersonByDocument } from '@/db/person';
 import { addUserStudent, deleteUser, addUserWithRole, addUserInClerk } from '@/db/user';
 import { uploadPdf } from '@/db/upload';
@@ -10,24 +11,32 @@ import { generatePassword } from '@/utils/utils';
 
 const useCustomSignUp = () => {
     const { handleSignUp, isLoaded } = useClerkSignUp();
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const { session } = useSession();
 
     const registerUser = async ({ formData }) => {
+        if (!session) {
+            console.error("No hay sesión activa en el cliente.");
+            return; // Evita realizar acciones que dependan de la autenticación
+        }
         setIsLoading(true);
-        setError(null);
         let user;
         let person;
 
         try {
-            person = await getPersonByDocument(formData.numberDocument);
-
-            if (person.length < 1 || !person) {
-                console.log("Entro a crear persona")
-                person = await addPerson(formData);
+            try {
+                person = await getPersonByDocument(formData.numberDocument);
+                if (!person) {
+                    person = [];
+                }
+            } catch (err) {
+                console.error(err);
+                person = [];
             }
 
-            console.log("persona farruca: ", person)
+            if (person.length < 1 || !person) {
+                person = await addPerson(formData);
+            }
 
             const password = generatePassword();
             formData.password = password;
@@ -40,13 +49,11 @@ const useCustomSignUp = () => {
             const username = user.user.name_user;
             const email = user.user.email_user;
 
-            const userClerk = await addUserInClerk({
+            await addUserInClerk({
                 email: email,
                 password: password,
                 username: username,
             });
-
-            console.log("user clerk: ", userClerk)
 
             // const urlToRedirect = `${process.env.NEXT_PUBLIC_BASE_URL}/verification/sign-in?token=${userClerk?.token?.token}`;
 
@@ -107,9 +114,6 @@ const useCustomSignUp = () => {
 
             setIsLoading(false);
         } catch (err) {
-            console.error('Error during register process:', err);
-            setError(err);
-            console.log(user);
             if (user?.user) {
                 await deleteUser(user.user.id_user);
             }
@@ -119,12 +123,13 @@ const useCustomSignUp = () => {
             }
 
             setIsLoading(false);
+
+            throw err;
         }
     }
 
     const signUp = async ({ formData, file64Consent }) => {
         setIsLoading(true);
-        setError(null);
         let person;
         let user;
 
@@ -175,8 +180,8 @@ const useCustomSignUp = () => {
             }
 
             console.error('Error during signup process:', err);
-            setError(err);
             setIsLoading(false);
+            throw err;
         }
     }
 
@@ -184,7 +189,6 @@ const useCustomSignUp = () => {
         signUp,
         registerUser,
         isLoading,
-        error,
         isLoaded,
     };
 };

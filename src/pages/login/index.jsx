@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/router";
+import useShowPopUp from '@/hooks/useShowPopUp'
 import Link from "next/link";
 import Image from "next/image";
 
+import PopMessage from "@/components/PopMessage";
 import FormLogin from "@/components/FormLogin";
 import Button from "@/components/buttons/Button";
 import Loader from "@/components/Loader";
@@ -13,7 +16,22 @@ import gym from '@/assets/gym.jpeg';
 import './login.css';
 
 function LoginPage() {
-    const { isLoaded } = useAuth(); // Obtener los estados aquí
+    const { isLoaded, userId } = useAuth(); // Obtener los estados aquí
+    const router = useRouter();
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
+
+    useEffect(() => {
+        if (userId) {
+            router.push('/');
+        }
+    }, [userId]);
 
     if (!isLoaded) {
         return (
@@ -26,16 +44,14 @@ function LoginPage() {
     return (
         <div className="min-h-screen w-full flex items-center justify-center">
             <div className="login-container h-[80vh] w-[60%] min-w-[660px] min-h-[545px] flex justify-between rounded-lg bg-neutral-gray-light">
-
                 <div className="login-info relative flex-1 flex flex-col justify-center items-center p-6 text-center rounded-lg overflow-hidden">
-                    <Image 
+                    <Image
                         src={gym}
                         alt="Gym"
                         layout="fill"
                         objectFit="cover"
                         className="absolute inset-0 w-full h-full object-cover filter brightness-50"
                     />
-
 
                     <div className="relative z-10">
                         <h1 className="text-[85px] font-extrabold text-white drop-shadow-lg">
@@ -52,8 +68,8 @@ function LoginPage() {
                     <div className="absolute bottom-4 left-4 right-4 h-[60px] flex justify-between items-center px-4 bg-black/30 backdrop-blur rounded-lg">
                         <span className="text-neutral-white">¿No tienes una cuenta?</span>
                         <Link href="/register">
-                            <Button 
-                                buttonText="Regístrate" 
+                            <Button
+                                buttonText="Regístrate"
                                 sizeHeight="h-10"
                                 sizeWidth="w-32"
                             />
@@ -76,9 +92,31 @@ function LoginPage() {
                             ¡Inicia sesión y lleva el control al siguiente nivel!
                         </h3>
                     </div>
-                    <FormLogin />
+                    <FormLogin
+                        showPopUp={showPopUp}
+                    />
+                    <div className="hidden bottom-4 left-4 right-4 h-[60px] justify-between items-center px-4 bg-black/30 backdrop-blur rounded-lg login_register-button">
+                        <span className="text-neutral-white">¿No tienes una cuenta?</span>
+                        <Link href="/register">
+                            <Button
+                                buttonText="Regístrate"
+                                sizeHeight="h-10"
+                                sizeWidth="w-32"
+                            />
+                        </Link>
+                    </div>
                 </div>
             </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
+                )
+            }
         </div>
     );
 }

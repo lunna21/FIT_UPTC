@@ -13,24 +13,12 @@ import { FaUserShield } from "react-icons/fa";
 import { BsFillShieldLockFill } from "react-icons/bs";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
-function FormLogin() {
+function FormLogin({ showPopUp }) {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [loginStatus, setLoginStatus] = useState("");
-  const [statusHolder, setStatusHolder] = useState("hidden");
   const [loginUsername, setLoginUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    if (loginStatus !== "") {
-      setStatusHolder("absolute");
-      setTimeout(() => {
-        setStatusHolder("hidden");
-        setLoginStatus("");
-      }, 3000);
-    }
-  }, [loginStatus]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -44,29 +32,27 @@ function FormLogin() {
         });
 
         if (response.status === 'complete') {
-          console.log("Inicio de sesión exitoso:", response);
           await setActive({ session: response.createdSessionId });
           setIsLoading(false);
+          showPopUp({ text: "Inicio de sesión completado 😜", status: "success" });
           router.push('/');
         }
         else {
-          setLoginStatus("Error en inicio de sesión");
-          setStatusHolder("absolute");
           setIsLoading(false);
+          showPopUp({ text: "Error en inicio de sesión", status: "error" });
         }
       } else {
-        setLoginStatus("Por favor, ingrese sus credenciales");
         setIsLoading(false);
-        setStatusHolder("absolute");
+        showPopUp({ text: "Por favor, ingrese sus credenciales", status: "error" });
       }
+
     } catch (error) {
       console.error("Error en Clerk:", error?.errors || error);
       if (error.errors[0].code === "form_identifier_not_found" || error.errors[0].code === "form_password_incorrect") {
-        setLoginStatus("Por favor verifica el usuario y contraseña y vuelve a intentar.");
+        showPopUp({ text: "Por favor verifica el usuario o contraseña y vuelve a intentar.", status: "error" });
       } else
-        setLoginStatus("Error al iniciar sesión");
+        showPopUp({ text: "Error al iniciar sesión", status: "error" });
 
-      setStatusHolder("absolute");
       setIsLoading(false);
     }
   };
@@ -74,7 +60,7 @@ function FormLogin() {
 
   if (!isLoaded || isLoading) {
     return (
-      <div className="min-h-screen min-w-screen flex items-center justify-center">
+      <div className="absolute min-h-screen min-w-screen flex items-center justify-center">
         <Loader />
       </div>
     );
@@ -82,10 +68,6 @@ function FormLogin() {
 
   return (
     <form className="max-w-72 min-w-72 flex flex-col gap-2 mx-auto overflow-y-hidden">
-      <div className={`${statusHolder} top-auto max-w-[260px] text-neutral-white p-2.5 mt-[-44px] bg-accent-red text-sm rounded text-center`}>
-        {loginStatus}
-      </div>
-
       <ValidationInput
         className="mt-2"
         label="Nombre de Usuario"

@@ -8,7 +8,8 @@ export async function getTurns() {
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const error = await response.json();
+            throw error;
         }
 
         const turns = await response.json();
@@ -33,7 +34,7 @@ export async function getTurns() {
         return formattedTurns;
     } catch (error) {
         console.error('Failed to fetch turns:', error);
-        throw error;
+        throw error.message;
     }
 }
 
@@ -47,14 +48,15 @@ export async function deleteTurn(idTurn) {
         });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const error = await response.json();
+            throw error;
         }
 
         const data = await response.json();
         return data;
     } catch (error) {
         console.error('Failed to delete turn:', error);
-        throw error;
+        throw error.message;
     }
 }
 
@@ -78,8 +80,8 @@ export async function createTurn(turn) {
         });
 
         if (!response.ok) {
-            console.log(response);
-            throw new Error('Network response was not ok');
+            const error = await response.json();
+            throw error;
         }
 
         const data = await response.json();
@@ -99,6 +101,6 @@ export async function createTurn(turn) {
         return formattedData;
     } catch (error) {
         console.error('Failed to create turn:', error);
-        throw error;
+        throw error.message;
     }
 }

@@ -6,10 +6,12 @@ import ValidationInput from '@/components/inputs/InputValidation';
 import AdminHeader from '@/components/headers/AdminHeader';
 import ProgressLine from '@/components/ProgressLine';
 import CheckUserRegister from '@/components/CheckUserRegister';
+import PopMessage from '@/components/PopMessage';
 
 import useCustomSignUp from '@/hooks/useCustomSignUp';
+import useShowPopUp from '@/hooks/useShowPopUp';
 
-import { calculateAge, getToday } from '@/utils/utils';
+import { getToday } from '@/utils/utils';
 import { validateEmailInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation';
 
 // Import Icons
@@ -20,7 +22,6 @@ import { FaAddressCard } from 'react-icons/fa';
 
 const CreateUser = () => {
     const { registerUser, isLoading, isLoaded, error: singUpError } = useCustomSignUp();
-
     const [formData, setFormData] = useState({
         typeDocument: '',
         numberDocument: '',
@@ -40,6 +41,14 @@ const CreateUser = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const containerRef = useRef(null);
     const today = getToday(14);
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
 
     useEffect(() => {
         const countFilledFields = obligatoryFields.filter(field => formData[field]).length;
@@ -85,11 +94,11 @@ const CreateUser = () => {
         try {
             if (formData.role) {
                 await registerUser({ formData });
-                setSuccessMessage('Usuario creado exitosamente.');
+                showPopUp({ status: 'success', text: 'Usuario creado exitosamente. ☺️' });
             }
         } catch (err) {
-            setError('Error al crear el usuario. Por favor, inténtalo de nuevo.');
             console.error(err);
+            showPopUp({ status: 'error', text: err });
         }
     };
 
@@ -305,17 +314,14 @@ const CreateUser = () => {
                     </div>
                 </div>
             </div>
-            {    
-                (singUpError || error) && (
-                    <div className="z-50 bg-white w-full h-20 bg-transparent flex justify-center items-center px-8 py-4 absolute bottom-0">
-                        {
-                            singUpError ? (
-                                <p className="text-red-500">{singUpError}</p>
-                            ) : (
-                                <p className="text-red-500">{error}</p>
-                            )
-                        }
-                    </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
                 )
             }
         </>

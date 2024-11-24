@@ -1,9 +1,5 @@
 
 const ColorChooser = ({ colors, setColor, color, label }) => {
-
-    console.log(color);
-    console.log("color: ")
-
     return (
         <div className="w-full p-1 box-border">
             <label className="block text-black font-medium text-sm py-2">{label}</label>

@@ -20,14 +20,14 @@ export default async function getHandler(req, res) {
             });
 
             if (!persons) {
-                return res.status(404).json({ error: 'Persona no encontrada' });
+                return res.status(404).json({ message: 'Persona no encontrada' });
             }
         }
 
         return res.status(200).json(persons);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error' });
     } finally {
         await prisma.$disconnect();
     }
