@@ -20,7 +20,7 @@ import { GrStatusInfo } from "react-icons/gr";
 import { GoPencil } from "react-icons/go";
 import { TiWarning } from "react-icons/ti";
 
-export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, setInitStudents }) {
+export default function TableUser({ users: initUsers, setIsLoading, setInitUsers, detailsUrl, title }) {
     const { updateStatus } = useUpdateStatusUser();
     const {
         status,
@@ -31,12 +31,12 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
         showPopUp
     } = useShowPopUp();
 
-    const [estudiantes, setEstudiantes] = useState(initEstudiantes);
+    const [users, setUsers] = useState(initUsers);
     const [showFilter, setShowFilter] = useState(false);
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(Math.ceil(initEstudiantes.length / 7));
+    const [totalPages, setTotalPages] = useState(Math.ceil(initUsers.length / 7));
     const itemsPerPage = 7;
     const router = useRouter();
     const [message, setMessage] = useState('');
@@ -48,55 +48,70 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
     const [statusUserChange, setStatusUserChange] = useState('');
     const [showSkeleton, setShowSkeleton] = useState(false);
 
-    const getEstudianteById = (id) => {
-        return estudiantes.find(estudiante => estudiante.idUser === id);
+    const getUserById = (id) => {
+        return users.find(user => user.idUser === id);
     }
 
     useEffect(() => {
         if (search === '') {
-            setEstudiantes(initEstudiantes.map(estudiante => ({
-                ...estudiante,
+            setUsers(initUsers.map(user => ({
+                ...user,
                 showMenuStatus: false,
             })));
             setCurrentPage(1);
-            setTotalPages(Math.ceil(initEstudiantes.length / itemsPerPage));
+            setTotalPages(Math.ceil(initUsers.length / itemsPerPage));
         } else {
-            const filteredEstudiantes = initEstudiantes.filter(estudiante => {
-                const firstName = estudiante.person.firstNamePerson.toLowerCase();
-                const lastName = estudiante.person.lastNamePerson.toLowerCase();
-                const studentCode = estudiante.inscriptionDetails[0]?.studentCode?.toLowerCase() || '';
+            const filteredUsers = initUsers.filter(user => {
+                const firstName = user.person.firstNamePerson.toLowerCase();
+                const lastName = user.person.lastNamePerson.toLowerCase();
+                const studentCode = user.inscriptionDetails[0]?.studentCode?.toLowerCase() || '';
                 return (
                     firstName.startsWith(search.toLowerCase()) ||
                     lastName.startsWith(search.toLowerCase()) ||
                     studentCode.startsWith(search.toLowerCase())
                 );
             });
-            setEstudiantes(filteredEstudiantes.map(estudiante => ({
-                ...estudiante,
+            setUsers(filteredUsers.map(user => ({
+                ...user,
                 showMenuStatus: false
             })));
-            setCurrentPage(filteredEstudiantes.length > 0 ? 1 : 0);
-            setTotalPages(filteredEstudiantes.length > 0 ? Math.ceil(filteredEstudiantes.length / itemsPerPage) : 0);
-            if (filteredEstudiantes.length === 0) {
+            setCurrentPage(filteredUsers.length > 0 ? 1 : 0);
+            setTotalPages(filteredUsers.length > 0 ? Math.ceil(filteredUsers.length / itemsPerPage) : 0);
+            if (filteredUsers.length === 0) {
                 showPopUp({ text: 'No se encontraron coincidencias, verifica tu búsqueda e intenta de nuevo.', status: "error" });
             }
         }
-    }, [search, initEstudiantes]);
+    }, [search, initUsers]);
 
-    const handleFilterChange = (value) => {
+    const handleFilterChangeStatus = (value) => {
         setFilter(value);
         setShowFilter(false);
         setCurrentPage(1);
-        const filteredData = initEstudiantes.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(value));
-        setEstudiantes(filteredData);
+        const filteredData = initUsers.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(value));
+        setUsers(filteredData);
         setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
     };
 
-    const filteredData = estudiantes.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(filter));
+    const handeleFilterChangeRol = (value) => {
+        setFilter(value);
+        setShowFilter(false);
+        setCurrentPage(1);
+        const filteredData = initUsers.filter(user => user.idRoleUser === value);
+        setUsers(filteredData);
+        setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
+    };
+
+    let filteredData = users;
+
+    if (filter === 'EMP' || filter === 'STU') {
+        filteredData = users.filter(user => user.idRoleUser.includes(filter));
+    } else {
+        filteredData = users.filter(user => user.historyUserStatus[0]?.idUserStatus.includes(filter));
+    }
 
     const mostrarDetalles = (id) => {
         setIsLoading(true);
-        router.push(`/employees/users/${id}`);
+        router.push(`${detailsUrl}/${id}`);
     };
 
     function capitalize(str) {
@@ -111,8 +126,6 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
         setCurrentPage(page);
     };
 
-    console.log("show modal ", isShow)
-
     const handleStatus = async (reason) => {
         setShowSkeleton(true)
         try {
@@ -123,7 +136,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                 username: selectedUser.nameUser
             })
 
-            setInitStudents(initEstudiantes.map(estu => {
+            setInitUsers(initUsers.map(estu => {
                 if (estu.idUser === selectedUser.idUser) {
                     return ({
                         ...estu,
@@ -137,8 +150,8 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
             showPopUp({ text: response.message, status: "success" })
         } catch (error) {
             console.error('Error updating user status:', error);
-            setEstudiantes(prev => prev.map(estu => estu.idUser === selectedUser.idUser ? selectedUser : estu))
-            showPopUp({ text: error.message, status: "error" })
+            setUsers(prev => prev.map(estu => estu.idUser === selectedUser.idUser ? selectedUser : estu))
+            showPopUp({ text: error, status: "error" })
         } finally {
             setIsModalOpen(false);
             setShowSkeleton(false)
@@ -153,17 +166,17 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
 
     const handleMenuStatus = (e, id) => {
         e.stopPropagation();
-        setEstudiantes(prev => prev.map(estu => estu.idUser === id ? { ...estu, showMenuStatus: !estu.showMenuStatus } : estu));
-        setSelectedUser(getEstudianteById(id));
+        setUsers(prev => prev.map(estu => estu.idUser === id ? { ...estu, showMenuStatus: !estu.showMenuStatus } : estu));
+        setSelectedUser(getUserById(id));
     }
 
     return (
-        <div className="min-h-screen bg-neutral-gray-light p-6" onClick={() => { setShowFilter(false); setEstudiantes(prev => prev.map(estu => ({ ...estu, showMenuStatus: false }))) }}>
+        <div className="min-h-screen bg-neutral-gray-light p-6" onClick={() => { setShowFilter(false); setUsers(prev => prev.map(estu => ({ ...estu, showMenuStatus: false }))) }}>
             <div className="max-w-7xl mx-auto">
                 <div className="bg-neutral-white rounded-lg shadow-lg p-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6">
-                            Lista de Estudiantes
+                            Lista de {title}
                         </h1>
 
                         <div id="search-bar-and-filter" className='flex gap-4'>
@@ -183,10 +196,12 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                                 </button>
                                 {showFilter && (
                                     <ul className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
-                                        <li onClick={() => handleFilterChange("")} className="p-2 cursor-pointer hover:bg-primary-medium">Todos</li>
-                                        <li onClick={() => handleFilterChange('ACT')} className="p-2 cursor-pointer hover:bg-primary-medium">Activo</li>
-                                        <li onClick={() => handleFilterChange('PEN')} className="p-2 cursor-pointer hover:bg-primary-medium">Pendiente</li>
-                                        <li onClick={() => handleFilterChange('INA')} className="p-2 cursor-pointer hover:bg-primary-medium">Inactivo</li>
+                                        <li onClick={() => handleFilterChangeStatus("")} className="p-2 cursor-pointer hover:bg-primary-medium">Todos</li>
+                                        <li onClick={() => handleFilterChangeStatus('ACT')} className="p-2 cursor-pointer hover:bg-primary-medium">Activo</li>
+                                        <li onClick={() => handleFilterChangeStatus('PEN')} className="p-2 cursor-pointer hover:bg-primary-medium">Pendiente</li>
+                                        <li onClick={() => handleFilterChangeStatus('INA')} className="p-2 cursor-pointer hover:bg-primary-medium">Inactivo</li>
+                                        <li onClick={() => handeleFilterChangeRol('EMP')} className="p-2 cursor-pointer hover:bg-primary-medium">Empleado</li>
+                                        <li onClick={() => handeleFilterChangeRol('STU')} className="p-2 cursor-pointer hover:bg-primary-medium">Estudiante</li>
                                     </ul>
                                 )}
                             </div>
@@ -223,8 +238,19 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                                     </th>
                                     <th id='column_phoneNumber' className="px-6 py-4 font-montserrat">
                                         <span className="flex items-center justify-center">
-                                            Teléfono
-                                            <FaPhoneVolume className='w-5 h-5 ml-2' />
+                                            {
+                                                title === 'Usuarios' ? (
+                                                    <>
+                                                        Rol
+                                                        <FaIdCard className='w-5 h-5 ml-2' />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Teléfono
+                                                        <FaPhoneVolume className='w-5 h-5 ml-2' />
+                                                    </>
+                                                )
+                                            }
                                         </span>
                                     </th>
                                     <th id='column_status' className="px-6 py-4 font-montserrat">
@@ -269,43 +295,50 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                                             ))}
                                         </>
                                     ) : (
-                                        currentData.map(estudiante => (
+                                        currentData.map(user => (
                                             <tr
                                                 id='details'
-                                                key={estudiante.historyUserStatus[0]?.idUser}
-                                                href={`/employees/users/${estudiante.historyUserStatus[0]?.idUser}`}
-                                                onClick={() => mostrarDetalles(estudiante.idUser)}
+                                                key={user.historyUserStatus[0]?.idUser}
+                                                onClick={() => mostrarDetalles(user.idUser)}
                                                 className="border-b border-neutral-gray-light hover:bg-primary-light cursor-pointer transition-colors duration-200"
                                             >
                                                 <td className="px-6 py-4 font-montserrat">
-                                                    {capitalize(estudiante.person.firstNamePerson)} {capitalize(estudiante.person.lastNamePerson)}
+                                                    {capitalize(user.person.firstNamePerson)} {capitalize(user.person.lastNamePerson)}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
-                                                    {estudiante.inscriptionDetails[0]?.studentCode || 'N/A'}
+                                                    {user.inscriptionDetails[0]?.studentCode || ' — '}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat">
-                                                    {estudiante.emailUser}
+                                                    {user.emailUser}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
-                                                    {estudiante.person.phoneNumberPerson}
+                                                {
+                                                    title === 'Usuarios' ? (
+                                                        <td className='px-6 py-4 font-montserrat text-center'>
+                                                            {user.idRoleUser === 'EMP' ? 'Empleado' : 'Estudiante'}
+                                                        </td>
+                                                    ) : (       
+                                                        user.person.phoneNumberPerson
+                                                    )
+                                                }
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat relative">
-                                                    <button className='w-full flex justify-center' onClick={(e) => handleMenuStatus(e, estudiante.idUser)}>
-                                                        <span className={`px-2 py-1 rounded-full flex items-center font-semibold transition ease-in-out duration-200 hover:opacity-60 shadow-md ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
-                                                            estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
+                                                    <button className='w-full flex justify-center' onClick={(e) => handleMenuStatus(e, user.idUser)}>
+                                                        <span className={`px-2 py-1 rounded-full flex items-center font-semibold transition ease-in-out duration-200 hover:opacity-60 shadow-md ${user.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
+                                                            user.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
                                                                 'bg-gray-500 text-white'
                                                             }`}>
-                                                            {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
-                                                                estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
-                                                                    estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
-                                                                        estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
-                                                            {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
-                                                                estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
+                                                            {user.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
+                                                                user.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
+                                                                    user.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
+                                                                        user.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
+                                                            {user.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
+                                                                user.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
                                                                     <TiWarning className="inline-block ml-2" />}
                                                         </span>
                                                     </button>
                                                     {
-                                                        getEstudianteById(estudiante.idUser).showMenuStatus && (
+                                                        getUserById(user.idUser).showMenuStatus && (
                                                             <ul className='absolute bottom-[-36px] right-[-60px] min-w-[120px] bg-white rounded-md z-50 shadow-lg'>
                                                                 {
                                                                     [
@@ -322,7 +355,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                                                                             status: 'INA'
                                                                         }
                                                                     ].map((item, index) => {
-                                                                        if (estudiante.historyUserStatus[0].idUserStatus === item.status) {
+                                                                        if (user.historyUserStatus[0].idUserStatus === item.status) {
                                                                             return null;
                                                                         }
 
@@ -350,7 +383,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, 
                                                     <button
                                                         id='button_delete'
                                                         onClick={(e) => {
-                                                            setSelectedUser(estudiante)
+                                                            setSelectedUser(user)
                                                             handleAdminStatusUser(e, "INA")
                                                         }}
                                                         className="text-red-600 hover:text-red-800"

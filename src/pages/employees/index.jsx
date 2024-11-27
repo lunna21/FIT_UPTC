@@ -44,7 +44,13 @@ function Estudiantes() {
     return (
         <div>
             <EmployeeHeader />
-            <TableUser estudiantes={estudiantes} setIsLoading={setLoading} setInitStudents={setEstudiantes}/>
+            <TableUser 
+                users={estudiantes} 
+                setIsLoading={setLoading} 
+                setInitUsers={setEstudiantes}
+                detailsUrl="/employees/users"
+                title={"Estudiantes"}
+            />
         </div>
     );
 }
