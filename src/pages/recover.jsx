@@ -8,6 +8,8 @@ import Button from '@/components/buttons/Button'
 import Input from '@/components/inputs/InputValidation'
 import PopMessage from "@/components/PopMessage";
 
+import styled from 'styled-components'
+
 import { IoIosSend } from "react-icons/io";
 import { FaUnlock } from 'react-icons/fa';
 import { MdEmail, MdVerified } from 'react-icons/md'
@@ -83,7 +85,7 @@ const ForgotPasswordPage = () => {
     }
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center">
+        <ContainerStyled className="w-screen h-screen flex justify-center items-center">
             <div className="relative mx-auto max-w-md p-8 rounded-lg shadow-lg bg-neutral-gray-light text-center">
                 <Link href="/login" className="group absolute top-0 left-0 w-[40px] h-[40px] flex justify-center items-center bg-primary-medium rounded-l-lg rounded-b-none">
                     <IoIosArrowBack className="text-neutral-gray-dark text-lg transition-all duration-200 group-hover:-translate-x-1" />
@@ -149,8 +151,14 @@ const ForgotPasswordPage = () => {
                     />
                 )
             }
-        </div>
+        </ContainerStyled>
     )
 }
 
 export default ForgotPasswordPage
+
+const ContainerStyled = styled.div`
+    @media (max-width: 768px) {
+        background-color: hsl(0, 0%, 91%);
+    }
+`
