@@ -57,6 +57,26 @@ export async function updateMetadataUser({ role, status }) {
   }
 }
 
+export async function updateMetadataExternalUser({ id, role, status }) {
+  try {
+    const response = await fetch('/api/users/clerk', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, role, status }),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw error;
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error updating user metadata:', error);
+    throw error;
+  }
+}
+
 export async function addUserStudent(formData, url_consent) {
   try {
     let age = 0;
@@ -224,3 +244,41 @@ export async function getUserDetailById(id) {
   }
 }
 
+export async function updateStatusUser({idUser, status, reason, idModifier}) {
+  try {
+    const response = await fetch(`/api/users/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ idUser, status, reason, idModifier }),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw error;
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    throw error.message;
+  }
+}
+
+export async function getUserByUsernameWithClerk(username) {
+  try {
+    const response = await fetch(`/api/users/clerk?username=${username}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw error;
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error.message;
+  }
+}

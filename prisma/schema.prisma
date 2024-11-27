@@ -45,11 +45,12 @@ model estatement_u {
 model history_user_status {
   id_history                                             Int          @id @default(autoincrement())
   id_user_status                                         String?      @db.Char(3)
-  id_user                                                Int?
+  id_user                                                Int?         @unique(map: "histuserstat_uk_iduser")
   date_hour_userstatus                                   DateTime     @db.Timestamp(0)
   created_hiuserstatus_by                                Int
   created_hiuserstatus_at                                DateTime?    @default(now()) @db.Timestamp(0)
   updated_hiuserstatus_by                                Int?
+  reason_status_change                                   String?      @db.VarChar(500)
   updated_hiuserstatus_at                                DateTime?    @default(now()) @db.Timestamp(0)
   user_history_user_status_id_userTouser                 user?        @relation("history_user_status_id_userTouser", fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_iduser")
   user_history_user_status_created_hiuserstatus_byTouser user         @relation("history_user_status_created_hiuserstatus_byTouser", fields: [created_hiuserstatus_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "histuserstat_fk_idusercreated")

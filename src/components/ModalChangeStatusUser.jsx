@@ -4,7 +4,7 @@ import { RiCloseCircleFill } from "react-icons/ri";
 import { Form } from 'react-bootstrap';
 import Button from '@/components/buttons/Button';
 
-const ModalDisableUsers = ({ isOpen, onClose, onAccept, nameUser }) => {
+const ModalDisableUsers = ({ isOpen, onClose, onAccept, nameUser, status }) => {
     const [reason, setReason] = useState('');
     const [error, setError] = useState('');
 
@@ -40,20 +40,21 @@ const ModalDisableUsers = ({ isOpen, onClose, onAccept, nameUser }) => {
                         <RiCloseCircleFill size={40} />
                     </button>
                 </div>
-                <h1 className="text-primary text-center text-3xl font-bold mb-4">Deshabilitar Usuario {nameUser}</h1>
                 <div className="mb-4 text-neutral-gray-dark leading-relaxed space-y-4">
-                    <h2 className="text-primary text-2xl font-semibold mb-4 text-center">¿Está seguro de que desea deshabilitar al usuario {nameUser}?</h2>
-                    <Form.Group controlId="formBasicReason" className="text-center m-2 gap-2">
-                        <Form.Label className="block text-center mb-2">Ingresa la razón para la deshabilitación del usuario</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Ingrese la razón para deshabilitar al usuario"
-                            className="mx-auto w-3/4"
-                            style={{ resize: 'none', border: '4px solid #ffcc00', margin: 0, boxShadow: 'none' }}
-                            value={reason}
-                            onChange={(e) => setReason(e.target.value)}
-                        />
+                    <h2 className="text-2xl font-semibold mb-4 text-center">¿Está seguro de que desea {status.toLowerCase()} al usuario <span className="text-primary">{nameUser}</span>?</h2>
+                    <Form.Group controlId="formBasicReason" className="m-2 gap-2">
+                        <Form.Label className="block mb-2 font-bold">Ingresa la razón:</Form.Label>
+                        <div className='text-center'>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder={`Ingrese la razón para ${status.toLowerCase()} al usuario`}
+                                className="mx-auto w-3/4 p-4 rounded-lg focus:outline-dashed focus:ring-2 focus:ring-accent-yellow focus:border-transparent"
+                                style={{ resize: 'none', border: '4px solid #ffcc00', margin: 0, boxShadow: 'none' }}
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                            />
+                        </div>
                         {error && <p className="text-red-500 mt-2 font-bold">{error}</p>}
                     </Form.Group>
                     <div className="flex justify-center w-full gap-4 mt-4">

@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
-import { disable } from '@/db/user';
-import { deletePersonByDocumentNumber } from '@/db/person';
+// import { disable } from '@/db/user';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import "../pages/employees/driver.css";
 
+import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
+import useShowPopUp from '@/hooks/useShowPopUp';
 
 import Search from '@/components/Search';
 import ButtonHelp from '@/components/buttons/ButtonHelp';
 import PopMessage from '@/components/PopMessage';
-import ModalDisableUsers from "@/components/ModalDisableUsers";
+import ModalChangeStatusUser from "@/components/ModalChangeStatusUser";
 import Pagination from '@/components/Pagination';
 import { FaRegUserCircle, FaIdCard, FaFilter, FaCheckCircle, FaUserEdit, FaUserMinus } from "react-icons/fa";
 import { FaPhoneVolume, FaUserSlash } from "react-icons/fa6";
@@ -20,7 +20,17 @@ import { GrStatusInfo } from "react-icons/gr";
 import { GoPencil } from "react-icons/go";
 import { TiWarning } from "react-icons/ti";
 
-export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }) {
+export default function TableUser({ estudiantes: initEstudiantes, setIsLoading, setInitStudents }) {
+    const { updateStatus } = useUpdateStatusUser();
+    const {
+        status,
+        text,
+        duration,
+        onClose,
+        isShow,
+        showPopUp
+    } = useShowPopUp();
+
     const [estudiantes, setEstudiantes] = useState(initEstudiantes);
     const [showFilter, setShowFilter] = useState(false);
     const [search, setSearch] = useState('');
@@ -29,47 +39,27 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     const [totalPages, setTotalPages] = useState(Math.ceil(initEstudiantes.length / 7));
     const itemsPerPage = 7;
     const router = useRouter();
-    const { user } = useUser();
     const [message, setMessage] = useState('');
     const [showMessage, setShowMessage] = useState(false);
     const [messageColor, setMessageColor] = useState('');
     const [showNoResultsMessage, setShowNoResultsMessage] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [timeOut, setTimeout]=useState(null);
+    const [statusUserChange, setStatusUserChange] = useState('');
+    const [showSkeleton, setShowSkeleton] = useState(false);
 
-    const handleDeleteUser = async (id, numberDocument) => {
-        try {
-            setIsLoading(true);
-            // Espera a que las operaciones de eliminación se completen
-            await disable(id);
-            // await deletePersonByDocumentNumber(numberDocument);
-
-            // Simula un tiempo de espera para la operación de eliminación
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 10000); // 2 segundos
-
-            setMessage('El usuario fue deshabilitado exitosamente');
-            setShowMessage(true);
-            setMessageColor('bg-green-500');
-            // setEstudiantes(prevEstudiantes => prevEstudiantes.filter(est => est.idUser !== id));
-
-        } catch (error) {
-            console.error("Error inhabilitando el usuario:", error);
-            setMessage('Error inhabilitando el usuario');
-            setShowMessage(true);
-            setMessageColor('bg-red-500');
-            setIsLoading(false);
-        }
+    const getEstudianteById = (id) => {
+        return estudiantes.find(estudiante => estudiante.idUser === id);
     }
 
-       useEffect(() => {
+    useEffect(() => {
         if (search === '') {
-            setEstudiantes(initEstudiantes);
+            setEstudiantes(initEstudiantes.map(estudiante => ({
+                ...estudiante,
+                showMenuStatus: false,
+            })));
             setCurrentPage(1);
             setTotalPages(Math.ceil(initEstudiantes.length / itemsPerPage));
-            setShowNoResultsMessage(false);
         } else {
             const filteredEstudiantes = initEstudiantes.filter(estudiante => {
                 const firstName = estudiante.person.firstNamePerson.toLowerCase();
@@ -81,10 +71,15 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                     studentCode.startsWith(search.toLowerCase())
                 );
             });
-            setEstudiantes(filteredEstudiantes);
+            setEstudiantes(filteredEstudiantes.map(estudiante => ({
+                ...estudiante,
+                showMenuStatus: false
+            })));
             setCurrentPage(filteredEstudiantes.length > 0 ? 1 : 0);
             setTotalPages(filteredEstudiantes.length > 0 ? Math.ceil(filteredEstudiantes.length / itemsPerPage) : 0);
-            setShowNoResultsMessage(filteredEstudiantes.length === 0);
+            if (filteredEstudiantes.length === 0) {
+                showPopUp({ text: 'No se encontraron coincidencias, verifica tu búsqueda e intenta de nuevo.', status: "error" });
+            }
         }
     }, [search, initEstudiantes]);
 
@@ -105,6 +100,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     };
 
     function capitalize(str) {
+        if (!str) return '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
@@ -115,15 +111,54 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
         setCurrentPage(page);
     };
 
-    const handleDisableUser = (reason) => {
-        if (selectedUser) {
-            handleDeleteUser(selectedUser.id, selectedUser.documentNumber, reason);
-        }
-    };
+    console.log("show modal ", isShow)
 
+    const handleStatus = async (reason) => {
+        setShowSkeleton(true)
+        try {
+            const response = await updateStatus({
+                idUser: selectedUser.idUser,
+                status: statusUserChange,
+                reason: reason,
+                username: selectedUser.nameUser
+            })
+
+            setInitStudents(initEstudiantes.map(estu => {
+                if (estu.idUser === selectedUser.idUser) {
+                    return ({
+                        ...estu,
+                        historyUserStatus: [response.historyUserStatus]
+                    })
+                }
+                return estu
+            }))
+
+            console.log(response.message)
+            showPopUp({ text: response.message, status: "success" })
+        } catch (error) {
+            console.error('Error updating user status:', error);
+            setEstudiantes(prev => prev.map(estu => estu.idUser === selectedUser.idUser ? selectedUser : estu))
+            showPopUp({ text: error.message, status: "error" })
+        } finally {
+            setIsModalOpen(false);
+            setShowSkeleton(false)
+        }
+    }
+
+    const handleAdminStatusUser = (e, status) => {
+        e.stopPropagation();
+        setStatusUserChange(status);
+        setIsModalOpen(true);
+    }
+
+    const handleMenuStatus = (e, id) => {
+        e.stopPropagation();
+        setEstudiantes(prev => prev.map(estu => estu.idUser === id ? { ...estu, showMenuStatus: !estu.showMenuStatus } : estu));
+        setSelectedUser(getEstudianteById(id));
+    }
 
     return (
-        <div className="min-h-screen bg-neutral-gray-light p-6" onClick={() => setShowFilter(false)}>
+        <div className="min-h-screen bg-neutral-gray-light p-6" onClick={() => { setShowFilter(false); setEstudiantes(prev => prev.map(estu => ({ ...estu, showMenuStatus: false }))) }}>
             <div className="max-w-7xl mx-auto">
                 <div className="bg-neutral-white rounded-lg shadow-lg p-6">
                     <div className="flex items-center justify-between">
@@ -160,7 +195,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                     <div className="absolute top-0 right-12 m-20 ">
                         {showNoResultsMessage && (
                             <div className="flex pop-message bg-red-500 text-white p-2 rounded-lg mb-4 w-90 items-center relative gap-2">
-                                <TiWarning />  No se encontraron coincidencias, verifica tu búsqueda e intenta de nuevo.
+                                <TiWarning />
                             </div>
                         )}
                     </div>
@@ -207,68 +242,127 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentData.map(estudiante => (
-                                    <tr
-                                        id='details'
-                                        key={estudiante.historyUserStatus[0]?.idUser}
-                                        href={`/employees/users/${estudiante.historyUserStatus[0]?.idUser}`}
-                                        onClick={() => mostrarDetalles(estudiante.idUser)}
-                                        className="border-b border-neutral-gray-light hover:bg-primary-light cursor-pointer transition-colors duration-200"
-                                    >
-                                        <td className="px-6 py-4 font-montserrat">
-                                            {capitalize(estudiante.person.firstNamePerson)} {capitalize(estudiante.person.lastNamePerson)}
-                                        </td>
-                                        <td className="px-6 py-4 font-montserrat flex justify-center">
-                                            {estudiante.inscriptionDetails[0]?.studentCode || 'N/A'}
-                                        </td>
-                                        <td className="px-6 py-4 font-montserrat">
-                                            {estudiante.emailUser}
-                                        </td>
-                                        <td className="px-6 py-4 font-montserrat flex justify-center">
-                                            {estudiante.person.phoneNumberPerson}
-                                        </td>
-                                        <td className="px-6 py-4 font-montserrat ">
-                                            <div className='w-full flex justify-center'>
-                                                <span className={`px-2 py-1 rounded-full flex items-center font-semibold  ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
-                                                    estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
-                                                        'bg-gray-500 text-white'
-                                                    }`}>
-                                                    {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
-                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
-                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
-                                                            estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
-                                                    {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
-                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
-                                                            <TiWarning className="inline-block ml-2" />}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 font-montserrat flex justify-center space-x-2">
-                                            <button id='button_modify' className="text-blue-600 hover:text-blue-800">
-                                                <div className="flex items-center justify-center w-10 h-10 bg-blue-200 rounded-full hover:bg-blue-400">
-                                                    <FaUserEdit className="w-6 h-6" />
-                                                </div>
-                                            </button>
-                                            <button
-                                                id='button_delete'
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setSelectedUser({
-                                                        id: estudiante.historyUserStatus[0]?.idUser,
-                                                        documentNumber: estudiante.person.documentNumberPerson,
-                                                        name: `${capitalize(estudiante.person.firstNamePerson)} ${capitalize(estudiante.person.lastNamePerson)}`
-                                                    });
-                                                    setIsModalOpen(true);
-                                                }}
-                                                className="text-red-600 hover:text-red-800"
+                                {
+                                    showSkeleton ? (
+                                        <>
+                                            {[...Array(6)].map((_, index) => (
+                                                <tr key={index}>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-24 mx-auto rounded"></div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-16 mx-auto rounded"></div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-32 mx-auto rounded"></div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-20 mx-auto rounded"></div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-20 mx-auto rounded"></div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="animate-pulse bg-gray-400 h-6 w-20 mx-auto rounded"></div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        currentData.map(estudiante => (
+                                            <tr
+                                                id='details'
+                                                key={estudiante.historyUserStatus[0]?.idUser}
+                                                href={`/employees/users/${estudiante.historyUserStatus[0]?.idUser}`}
+                                                onClick={() => mostrarDetalles(estudiante.idUser)}
+                                                className="border-b border-neutral-gray-light hover:bg-primary-light cursor-pointer transition-colors duration-200"
                                             >
-                                                <div className="flex items-center justify-center w-10 h-10 bg-red-200 rounded-full  hover:bg-red-400">
-                                                    <FaUserSlash className='w-5 h-5' />
-                                                </div>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                <td className="px-6 py-4 font-montserrat">
+                                                    {capitalize(estudiante.person.firstNamePerson)} {capitalize(estudiante.person.lastNamePerson)}
+                                                </td>
+                                                <td className="px-6 py-4 font-montserrat flex justify-center">
+                                                    {estudiante.inscriptionDetails[0]?.studentCode || 'N/A'}
+                                                </td>
+                                                <td className="px-6 py-4 font-montserrat">
+                                                    {estudiante.emailUser}
+                                                </td>
+                                                <td className="px-6 py-4 font-montserrat flex justify-center">
+                                                    {estudiante.person.phoneNumberPerson}
+                                                </td>
+                                                <td className="px-6 py-4 font-montserrat relative">
+                                                    <button className='w-full flex justify-center' onClick={(e) => handleMenuStatus(e, estudiante.idUser)}>
+                                                        <span className={`px-2 py-1 rounded-full flex items-center font-semibold transition ease-in-out duration-200 hover:opacity-60 shadow-md ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
+                                                            estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
+                                                                'bg-gray-500 text-white'
+                                                            }`}>
+                                                            {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
+                                                                estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
+                                                                    estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
+                                                                        estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
+                                                            {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
+                                                                estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
+                                                                    <TiWarning className="inline-block ml-2" />}
+                                                        </span>
+                                                    </button>
+                                                    {
+                                                        getEstudianteById(estudiante.idUser).showMenuStatus && (
+                                                            <ul className='absolute bottom-[-36px] right-[-60px] min-w-[120px] bg-white rounded-md z-50 shadow-lg'>
+                                                                {
+                                                                    [
+                                                                        {
+                                                                            name: 'Pendiente',
+                                                                            status: 'PEN'
+                                                                        },
+                                                                        {
+                                                                            name: 'Activo',
+                                                                            status: 'ACT'
+                                                                        },
+                                                                        {
+                                                                            name: 'Inactivo',
+                                                                            status: 'INA'
+                                                                        }
+                                                                    ].map((item, index) => {
+                                                                        if (estudiante.historyUserStatus[0].idUserStatus === item.status) {
+                                                                            return null;
+                                                                        }
+
+                                                                        return (
+                                                                            <li
+                                                                                key={index}
+                                                                                className='hover:bg-primary-light px-4 py-1 rounded-md cursor-pointer'
+                                                                                onClick={(e) => handleAdminStatusUser(e, item.status)}
+                                                                            >
+                                                                                {item.name}
+                                                                            </li>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </ul>
+                                                        )
+                                                    }
+                                                </td>
+                                                <td className="px-6 py-4 font-montserrat flex justify-center space-x-2">
+                                                    <button id='button_modify' className="text-blue-600 hover:text-blue-800">
+                                                        <div className="flex items-center justify-center w-10 h-10 bg-blue-200 rounded-full hover:bg-blue-400">
+                                                            <FaUserEdit className="w-6 h-6" />
+                                                        </div>
+                                                    </button>
+                                                    <button
+                                                        id='button_delete'
+                                                        onClick={(e) => {
+                                                            setSelectedUser(estudiante)
+                                                            handleAdminStatusUser(e, "INA")
+                                                        }}
+                                                        className="text-red-600 hover:text-red-800"
+                                                    >
+                                                        <div className="flex items-center justify-center w-10 h-10 bg-red-200 rounded-full  hover:bg-red-400">
+                                                            <FaUserSlash className='w-5 h-5' />
+                                                        </div>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        )))
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -285,14 +379,25 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                             color={messageColor}
                         />
                     )}
-                    <ModalDisableUsers
+                    <ModalChangeStatusUser
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
-                        onAccept={handleDisableUser}
-                        nameUser={selectedUser?.name}
+                        onAccept={handleStatus}
+                        nameUser={capitalize(selectedUser?.person?.firstNamePerson) + ' ' + capitalize(selectedUser?.person?.lastNamePerson)}
+                        status={statusUserChange === 'ACT' ? 'Activar' : statusUserChange === 'INA' ? 'Inactivar' : 'Dejar pendiente'}
                     />
                 </div>
             </div>
+            {
+                isShow && (
+                    <PopMessage
+                        status={status}
+                        text={text}
+                        duration={duration}
+                        onClose={onClose}
+                    />
+                )
+            }
         </div>
     );
 }
