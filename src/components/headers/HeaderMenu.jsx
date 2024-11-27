@@ -14,7 +14,7 @@ const HeaderMenu = ({ menu }) => {
 
       <Link href="/">
         <figure className="flex-shrink-0 mt-8">
-          <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" />
+          <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" priority/>
         </figure>
       </Link>
 

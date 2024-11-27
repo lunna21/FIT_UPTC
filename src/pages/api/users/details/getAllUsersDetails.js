@@ -122,11 +122,11 @@ export default async function getHandler(req, res) {
       console.error("Error fetching user details:", error);
       return res.status(500).json({ message: "Error al traer el usuario" });
     }
-  } else if (role === "STU") {
+  } else if (role === "STU" || role === "EMP") {
     try {
       const students = await prisma.user.findMany({
         where: {
-          id_role_user: "STU",
+          id_role_user: role,
         },
         include: {
           person_user_id_personToperson: {

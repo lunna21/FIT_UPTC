@@ -25,8 +25,13 @@ function Estudiantes() {
         fetchEstudiantes();
     }, []);
 
-    console.log(estudiantes);
-
+    if (error) {
+        return (
+            <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">
+                <p className="text-xl font-montserrat text-red-600">Error: {error}</p>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
@@ -36,18 +41,16 @@ function Estudiantes() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">
-                <p className="text-xl font-montserrat text-red-600">Error: {error}</p>
-            </div>
-        );
-    }
-
     return (
         <div>
             <EmployeeHeader />
-            <TableUser estudiantes={estudiantes} setIsLoading={setLoading} />
+            <TableUser 
+                users={estudiantes} 
+                setIsLoading={setLoading} 
+                setInitUsers={setEstudiantes}
+                detailsUrl="/employees/users"
+                title={"Estudiantes"}
+            />
         </div>
     );
 }

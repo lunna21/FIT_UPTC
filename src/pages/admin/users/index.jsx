@@ -5,16 +5,18 @@ import { getUserByRole } from '@/db/user';
 import Loder from '@/components/Loader';
 
 function Users() {
-    const [Users, setUsers] = useState([]);
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const role = 'STU';
+            setLoading(true);
             try {
-                const students = await getUserByRole(role);
-                setUsers(students);
+                const students = await getUserByRole('STU');
+                const employees = await getUserByRole('EMP');
+                const allUsers = students.concat(employees);
+                setUsers(allUsers);
             } catch (error) {
                 setError(error);
             } finally {
@@ -25,7 +27,7 @@ function Users() {
         fetchUsers();
     }, []);
 
-    console.log(Users);
+    console.log(users);
 
 
     if (loading) {
@@ -47,7 +49,13 @@ function Users() {
     return (
         <div>
             <AdminHeader />
-            <TableUser estudiantes={Users} setIsLoading={setLoading} />
+            <TableUser 
+                users={users} 
+                setIsLoading={setLoading} 
+                setInitUsers={setUsers}
+                detailsUrl="#"
+                title="Usuarios"
+            />
         </div>
     );
 }

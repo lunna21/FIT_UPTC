@@ -20,7 +20,7 @@ const TurnCard = ({ turnName, startTime, endTime, color = "default", height, isA
 
     return (
         <div
-            className={`p-4 rounded-lg shadow-md text-black flex flex-col justify-center items-center cursor-pointer ${bgColorCard[color]} ${!isActive && "bg-gray-600 text-gray-400 cursor-not-allowed"}`}
+            className={`p-4 rounded-lg shadow-md text-black flex flex-col justify-center items-center ${bgColorCard[color]} ${!isActive && "bg-gray-600 text-gray-400 cursor-not-allowed"}`}
             style={{ height: height, opacity: isActive ? 1 : 0.5 }}
         >
             <h3 className="text-sm font-bold">{turnName}</h3>
