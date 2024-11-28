@@ -139,11 +139,10 @@ const TableConfigTurns = () => {
                 <h2 className="text-sm font-semibold text-center px-4 py-4">
                     Horario
                 </h2>
-                {Array.from({ length: 16 }, (_, i) => (
+                {Array.from({ length: HOURS_GYM_ATTENTION+1 }, (_, i) => (
                     <div key={i} className="flex flex-col w-auto">
-                        {/* Horas (6 AM - 8 PM) */}
                         <div className="flex items-center py-2 justify-center font-medium">
-                            {5 + i}:00
+                            {START_TIME + i}:00
                         </div>
                         {/* Celdas de la cuadrícula */}
                         {Array.from({ length: 2 }, (_, j) => (
@@ -193,7 +192,7 @@ const TableConfigTurns = () => {
                                 turns[day] && (
                                     turns[day].map((turn, i) => (
                                         <div
-                                            className="absolute px-2"
+                                            className="absolute px-2 w-[80%]"
                                             style={{ top: `${calculateTopPosition(turn, containerHeight)}px` }}
                                             key={turn.idTurn}
                                         >

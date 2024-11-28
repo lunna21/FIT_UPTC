@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 // import { disable } from '@/db/user';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
-import "../pages/employees/driver.css";
+import "@/pages/employees/driver.css";
 
 import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
 import useShowPopUp from '@/hooks/useShowPopUp';
@@ -11,7 +11,7 @@ import useShowPopUp from '@/hooks/useShowPopUp';
 import Search from '@/components/Search';
 import ButtonHelp from '@/components/buttons/ButtonHelp';
 import PopMessage from '@/components/PopMessage';
-import ModalChangeStatusUser from "@/components/ModalChangeStatusUser";
+import ModalChangeStatusUser from "@/components/modals/ModalChangeStatusUser";
 import Pagination from '@/components/Pagination';
 import { FaRegUserCircle, FaIdCard, FaFilter, FaCheckCircle, FaUserEdit, FaUserMinus } from "react-icons/fa";
 import { FaPhoneVolume, FaUserSlash } from "react-icons/fa6";

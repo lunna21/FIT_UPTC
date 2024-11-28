@@ -23,14 +23,6 @@ const HeaderMenu = ({ menu }) => {
           </figure>
         </Link>
       </LinkMobileStyled>
-      {/* <BurgerStyledWrapper>
-        <label htmlFor="check" className="menuButton">
-          <input id="check" type="checkbox" value={showMenu} onChange={() => setShowMenu(!showMenu)} />
-          <span className="top" />
-          <span className="mid" />
-          <span className="bot" />
-        </label>
-      </BurgerStyledWrapper> */}
       <ButtonBurger value={showMenu} onChange={setShowMenu} />
       {
         showMenu && (
@@ -130,7 +122,7 @@ const DesplegableMenuStyled = styled.div`
 const UlHiddenMobileStyled = styled.ul`
   display: flex;
   justify-content: start;
-  gap: 32px;
+  gap: 36px;
   align-items: center;
   list-style: none;
   padding: 0;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import EmployeeHeader from '@/components/headers/EmployeeHeader';
-import TableUser from '@/components/TableUser';
+import TableUser from '@/components/tables/TableUser';
 import { getUserByRole } from '@/db/user';
 import Loder from '@/components/Loader';
 
