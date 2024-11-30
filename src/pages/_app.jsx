@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
     return (
         <>
             <Head>
-                <title>FIT UPTC</title>
+                <title>UPTC FIT</title>
                 <meta name="description" content="FIT UPTC" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>

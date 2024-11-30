@@ -7,6 +7,7 @@ import Image from 'next/image';
 import logoUptc from '@/assets/logoUPTC24.svg';
 import ButtonHelp from '@/components/buttons/ButtonHelp'
 import ButtonBurger from '@/components/buttons/ButtonBurger'
+import FooterMobile from '@/components/footers/Footer'
 
 import styled from 'styled-components';
 
@@ -28,21 +29,24 @@ const HeaderMenu = ({ menu }) => {
         showMenu && (
           <DesplegableMenuStyled>
             <div className='container-info'>
-              <Link href="/" className='flex justify-center'>
-                <figure>
-                  <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" priority />
-                </figure>
-              </Link>
-              <ul>
-                {Array.isArray(menu) && menu.map((item, index) => (
-                  <li key={index}>
-                    <Link href={item.href} className='flex w-full items-center justify-between link'>
-                      {item.name}
-                      {<item.icon />}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div>
+                <Link href="/" className='flex justify-center'>
+                  <figure>
+                    <Image src={logoUptc} alt="Logo UPTC" className="h-24 w-auto" priority />
+                  </figure>
+                </Link>
+                <ul>
+                  {Array.isArray(menu) && menu.map((item, index) => (
+                    <li key={index}>
+                      <Link href={item.href} className='flex w-full items-center justify-between link'>
+                        {item.name}
+                        {<item.icon />}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <FooterMobile />
             </div>
           </DesplegableMenuStyled>
         )
@@ -98,6 +102,7 @@ const DesplegableMenuStyled = styled.div`
     right: 0;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
   }
 
   ul {
