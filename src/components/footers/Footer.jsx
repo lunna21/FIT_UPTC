@@ -11,9 +11,9 @@ import styled from 'styled-components';
 const Footer = () => {
 
     return (
-        <div className="w-full bg-neutral-gray-dark mt-4">
+        <div className="w-full bg-neutral-gray-dark">
             <div className="flex justify-around">
-                <SocialImageStyled className="flex flex-col justify-center items-center mt-2">
+                <SocialImageStyled className="flex flex-col justify-center items-center mt-4">
                     <figure className="max-w-[320px] bg-neutral-gray-light py-2 px-4 rounded-md mb-2">
                         <Image src={zonaLogos} alt="Logo UPTC" className="h-12 w-auto object-fit" priority />
                     </figure>
