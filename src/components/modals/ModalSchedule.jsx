@@ -11,9 +11,14 @@ const ModalCreateSchedule = ({ isOpen, onClose, turn, schedule, onAccept, handle
         onClose();
     }
 
+    const handleCancel = (schedule) => {
+        handleCancelTurn(schedule);
+        onClose();
+    }
+
     return (
-        <div className="fixed bg-neutral-gray-medium text-neutral-gray-dark top-0 h-screen w-screen flex flex-col items-center justify-center z-[200]">
-            <div className='w-[96%] h-[60%] bg-neutral-gray-light rounded-lg flex flex-col justify-between'>
+        <div className="fixed bg-neutral-gray-medium text-neutral-gray-dark top-0 right-0 h-screen w-screen flex flex-col items-center justify-center z-[200]">
+            <div className='w-[96%] max-w-[460px] h-[60%] bg-neutral-gray-light rounded-lg flex flex-col justify-between'>
                 <header className='w-full flex justify-end px-2 py-1'>
                     <ButtonClose onClick={onClose} />
                 </header>
@@ -54,7 +59,7 @@ const ModalCreateSchedule = ({ isOpen, onClose, turn, schedule, onAccept, handle
                                 <>
                                     <button 
                                         className='bg-primary-medium hover:bg-primary-light w-[80%] h-12 text-neutral-gray-dark disabled:opacity-50 font-semibold rounded-lg transition ease-in-out duration-255'
-                                        onClick={() => handleCancelTurn(schedule)}
+                                        onClick={() => handleCancel(schedule)}
                                     >
                                         Cancelar Turno
                                     </button>

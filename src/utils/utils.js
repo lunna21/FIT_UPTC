@@ -139,3 +139,10 @@ export const getFormatHour = (hour) => {
   const newHour = h > 12 ? h - 12 : h;
   return `${newHour}:${m} ${ amPm }`;
 };
+
+// recibe date en string formato yyyy-mm-dd y retorna el día de la semana
+export const getDayOfWeek = (date) => {
+  const days = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
+  const dateObj = new Date(date);
+  return days[dateObj.getDay()];
+}

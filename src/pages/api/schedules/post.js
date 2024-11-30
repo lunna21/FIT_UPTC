@@ -14,6 +14,25 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: 'Formato invalido de la fecha.' });
     }
 
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const inputDate = new Date(date_schedule);
+
+    console.log(inputDate.toDateString())
+
+    console.log(today.toDateString())
+
+    console.log(tomorrow.toDateString())
+
+    if (
+        inputDate.toDateString() !== today.toDateString() &&
+        inputDate.toDateString() !== tomorrow.toDateString()
+    ) {
+        return res.status(400).json({ message: 'Solo se permiten reservas para hoy o mañana 🥴' });
+    }
+
     try {
         const existingSchedule = await prisma.schedule.findFirst({
             where: {
@@ -31,9 +50,9 @@ export default async function handler(req, res) {
                         state_schedule: state_schedule || 'PENDING',
                     },
                     include: {
-                        user: true,
                         turn: true,
-                    },
+                        user: true,
+                    }
                 });
                 return res.status(200).json(updatedSchedule);
             } else {
@@ -48,8 +67,14 @@ export default async function handler(req, res) {
                 id_student,
                 id_turn,
                 state_schedule: state_schedule || 'PENDING',
-            },
+            }, 
+            include: {
+                turn: true,
+                user: true,
+            }
         });
+
+        console.log(newSchedule);
 
         res.status(201).json(newSchedule);
     } catch (error) {

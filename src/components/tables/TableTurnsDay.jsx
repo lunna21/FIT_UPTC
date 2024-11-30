@@ -9,11 +9,15 @@ import ModalSchedule from '@/components/modals/ModalSchedule'
 import { getTurnByDay } from '@/db/turn'
 import { getSchedules, createSchedule, updateSchedule } from '@/db/schedule'
 import { getUserByUsername } from '@/db/user';
+import { sendEmail } from '@/db/email'
 
-import { toCapitalize, getToday } from '@/utils/utils'
+import { emailCreateSchedule, emailCancelSchedule } from '@/emails/emailSchedule';
+
+import { toCapitalize, getDayOfWeek, getFormatHour } from '@/utils/utils'
 import { calculateTopPosition, calculateHeightCard } from '@/utils/turn';
 
-const TableTurnsDay = ({ day }) => {
+const TableTurnsDay = ({ dateToSchedule }) => {
+    const day = getDayOfWeek(dateToSchedule);
     const START_TIME = 5;
     const HOURS_GYM_ATTENTION = 15;
 
@@ -27,7 +31,7 @@ const TableTurnsDay = ({ day }) => {
     } = useShowPopUp();
 
     const containerRef = useRef(null);
-    const {user} = useUser();
+    const { user } = useUser();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [containerHeight, setContainerHeight] = useState(0);
@@ -58,9 +62,8 @@ const TableTurnsDay = ({ day }) => {
         const fetch = async () => {
             setIsLoading(true);
             try {
-                const dateToday = getToday();
                 const turns = await getTurnByDay(day);
-                const schedule = await getSchedules(dateToday);
+                const schedule = await getSchedules(dateToSchedule);
                 const userDb = await getUserByUsername(user.username);
                 const updatedTurns = turns.map(turn => ({
                     ...turn,
@@ -77,7 +80,7 @@ const TableTurnsDay = ({ day }) => {
             }
         };
 
-        if(user) {
+        if (user) {
             fetch();
         }
 
@@ -88,18 +91,21 @@ const TableTurnsDay = ({ day }) => {
             ...turn,
             isReserved
         }
-        setSelectedSchedule(schedules.find(schedule => schedule.user.name_user === user.username  && schedule.stateSchedule === 'PENDING'));
+        setSelectedSchedule(schedules.find(schedule =>
+            schedule.user &&
+            schedule.user.name_user === user.username &&
+            schedule.stateSchedule === 'PENDING' &&
+            new Date(schedule.dateSchedule).toISOString() === new Date(dateToSchedule).toISOString()
+        ));
         setSelectedTurn(turnReserved);
         setIsModalOpen(true);
     }
 
     const onAccept = async (turn) => {
-        const dateToday = getToday();
-
         setIsLoading(true);
         try {
             const schedule = {
-                dateSchedule: dateToday,
+                dateSchedule: dateToSchedule,
                 idStudent: userDB.id_user,
                 idTurn: turn.idTurn,
                 stateSchedule: 'PENDING'
@@ -107,8 +113,23 @@ const TableTurnsDay = ({ day }) => {
             const newSchedule = await createSchedule(schedule);
             setSchedules(prevSchedules => [...prevSchedules, newSchedule]);
             setTurns(prevTurns => prevTurns.map(t => t.idTurn === turn.idTurn ? { ...t, numSchedules: t.numSchedules + 1 } : t));
+
+            await sendEmail({
+                email: userDB.email_user,
+                subject: 'Agendamiento UPTC FIT',
+                text: `El agendamiento de tu turno ha sido exitoso. Te esperamos en UPTC FIT`,
+                html: emailCreateSchedule({
+                    firstName: toCapitalize(userDB?.person_user_id_personToperson?.first_name_person),
+                    lastName: toCapitalize(userDB?.person_user_id_personToperson?.last_name_person),
+                    scheduleDate: dateToSchedule,
+                    startTime: getFormatHour(turn.startTime),
+                    endTime: getFormatHour(turn.endTime),
+                }),
+            });
+
             showPopUp({ text: 'Se agendo tu turno satisfactoriamente ☺️', status: "success" })
         } catch (error) {
+            console.error(error)
             showPopUp({ text: error, status: "error" })
         } finally {
             setIsLoading(false);
@@ -122,6 +143,18 @@ const TableTurnsDay = ({ day }) => {
             const updatedSchedule = await updateSchedule({ idSchedule: schedule.id_schedule, stateSchedule: 'CANCELLED' });
             setSchedules(prevSchedules => prevSchedules.map(s => s.id_schedule === updatedSchedule.id_schedule ? updatedSchedule : s));
             setTurns(prevTurns => prevTurns.map(t => t.idTurn === updatedSchedule.idTurn ? { ...t, numSchedules: t.numSchedules - 1 } : t));
+
+            await sendEmail({
+                email: userDB.email_user,
+                subject: 'Cancelación de turno UPTC FIT',
+                text: `La cancelación de tu turno ha sido exitosa. Te esperamos en UPTC FIT`,
+                html: emailCancelSchedule({
+                    firstName: toCapitalize(userDB?.person_user_id_personToperson?.first_name_person),
+                    lastName: toCapitalize(userDB?.person_user_id_personToperson?.last_name_person),
+                    scheduleDate: dateToSchedule,
+                }),
+            });
+
             showPopUp({ text: 'Reserva cancelada con éxito 😵‍💫', status: "success" })
         } catch (error) {
             showPopUp({ text: error, status: "error" })
@@ -132,9 +165,15 @@ const TableTurnsDay = ({ day }) => {
     }
 
     let userSchedule;
-    if(user && schedules.length > 0) {
-        userSchedule = schedules.find(schedule => schedule.user.name_user === user.username && schedule.stateSchedule === 'PENDING');
+    if (user && schedules.length > 0) {
+        userSchedule = schedules.find(schedule =>
+            schedule.user &&
+            schedule.user.name_user === user.username &&
+            schedule.stateSchedule === 'PENDING' &&
+            new Date(schedule.dateSchedule).toISOString() === new Date(dateToSchedule).toISOString()
+        );
     }
+
 
     if (userSchedule) {
         return (
@@ -174,6 +213,7 @@ const TableTurnsDay = ({ day }) => {
                             {
                                 turns.map((turn, i) => {
                                     const isUserTurn = turn.idTurn === userSchedule.idTurn;
+                                    if (turn.status === 'BLOCK') return null;
                                     return (
                                         <div
                                             className={`absolute px-2 w-[80%] cursor-pointer ${!isUserTurn ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -248,7 +288,7 @@ const TableTurnsDay = ({ day }) => {
                 </div>
 
                 <div className="w-full grid grid-rows-[auto,1fr] grid-cols-1 border border-gray-200 rounded-md">
-                    <div className="col-start-1 col-end-7 grid grid-cols-6 text-center bg-primary rounded-t-sm text-black text-lg font-bold p-2">
+                    <div className="col-start-1 col-end-7 grid grid-cols-1 text-center bg-primary rounded-t-sm text-black text-lg font-bold p-2">
                         <h4>{toCapitalize(day)}</h4>
                     </div>
                     {
@@ -277,6 +317,7 @@ const TableTurnsDay = ({ day }) => {
                                     {
                                         turns.map((turn, i) => {
                                             const isDisabled = turn.numSchedules >= turn.maxCapacity;
+                                            if (turn.status === 'BLOCK') return null;
                                             return (
                                                 <div
                                                     className={`absolute px-2 w-[80%] cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -292,6 +333,7 @@ const TableTurnsDay = ({ day }) => {
                                                         color={turn.colorTurn}
                                                         isActive={turn.status === 'ACTIVE'}
                                                     />
+                                                    {isDisabled && (<span className='text-accent-red absolute top-0 left-4 text-sm font-semibold'>Cupos completos</span>)}
                                                 </div>
                                             );
                                         })

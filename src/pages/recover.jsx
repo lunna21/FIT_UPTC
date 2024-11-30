@@ -73,14 +73,17 @@ const ForgotPasswordPage = () => {
                     showPopUp({ text: 'Contraseña restablecida correctamente 💪', status: 'success' });
                     setTimeout(() => {
                         router.push('/login')
-                    } , 1500)
+                    }, 1500)
                 } else {
                     console.log(result)
                 }
             })
             .catch((err) => {
                 console.error('error', err.errors[0].longMessage)
-                showPopUp({ text: 'No se pudo restablecer la contraseña, intentalo nuevamente.', status: 'error' });
+                if (err.errors[0].longMessage == 'Incorrect code') {
+                    showPopUp({ text: 'El código de restablecimiento es incorrecto.', status: 'error' });
+                } else
+                    showPopUp({ text: 'No se pudo restablecer la contraseña, intentalo nuevamente.', status: 'error' });
             })
     }
 

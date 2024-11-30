@@ -7,7 +7,7 @@ export default async function getHandler(req, res) {
 
     if (day) {
         if(day !== 'LUNES' && day !== 'MARTES' && day !== 'MIERCOLES' && day !== 'JUEVES' && day !== 'VIERNES' && day !== 'SABADO'){
-            return res.status(400).json({ message: 'Día del agendamiento no permitido' });
+            return res.status(400).json({ message: 'Parece que no hay turnos disponibles ¡Intenta después 🫡!' });
         }
 
         try {
