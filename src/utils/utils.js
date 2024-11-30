@@ -125,3 +125,17 @@ export function toCapitalize(string) {
   }
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
+
+// Function to check if a date is in the format yyyy-mm-dd
+export function checkFormatDate(date) {
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  return dateRegex.test(date);
+}
+
+// entra con un string en formato HH:MM:SS y retorna un string en formato HH:MM AM/PM
+export const getFormatHour = (hour) => {
+  const [h, m] = hour.split(":");
+  const amPm = h >= 12 ? "PM" : "AM";
+  const newHour = h > 12 ? h - 12 : h;
+  return `${newHour}:${m} ${ amPm }`;
+};

@@ -53,7 +53,8 @@ export async function getTurnByDay(day) {
         }
 
         const turns = await response.json();
-        return turns.map(turn => ({
+
+        let formattedTurns = turns.map(turn => ({
             idTurn: turn.idTurn,
             maxCapacity: turn.maxCapacity,
             status: turn.status,
@@ -62,7 +63,21 @@ export async function getTurnByDay(day) {
             endTime: turn.endTime,
             createdTurnAt: turn.createdTurnAt,
             updatedTurnAt: turn.updatedTurnAt
+        }))
+
+        const sortedTurns = formattedTurns.sort((a, b) => {
+            const timeA = new Date(`1970-01-01T${a.startTime}Z`);
+            const timeB = new Date(`1970-01-01T${b.startTime}Z`);
+            return timeA - timeB;
+        });
+
+        formattedTurns = sortedTurns.map((turn, index) => ({
+            ...turn,
+            countTurn: index + 1
         }));
+
+        return formattedTurns;
+
     } catch (error) {
         console.error('Failed to fetch turns by day:', error);
         throw error.message;

@@ -25,7 +25,7 @@ const Button = ({
     const tailwindClassButton = `my-2 justify-${justify} items-center gap-2 ${sizeHeight} ${sizeWidth} overflow-hidden ${colorClasses[color]} flex disabled:opacity-50 disabled:cursor-not-allowed text-gray-dark py-1 px-16 font-semibold rounded-lg transition ease-in-out duration-255 overflow-auto`;
 
     return (
-        <div className={`group w-full`}>
+        <div className={`group w-full flex justify-center items-center`}>
             <button
                 type={type}
                 className={tailwindClassButton}

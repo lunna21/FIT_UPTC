@@ -17,7 +17,7 @@ export default ButtonBurger;
 
 const BurgerStyledWrapper = styled.div`
   display: none;
-  z-index: 200;
+  z-index: 120;
   .menuButton {
     display: flex;
     justify-content: center;

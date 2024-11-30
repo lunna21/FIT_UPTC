@@ -225,7 +225,7 @@ model schedule {
   date_schedule         DateTime                @db.DateTime(0)
   id_student            Int
   id_turn               Int
-  state_schedule        schedule_state_schedule @default(PENDING)
+  state_schedule        schedule_state_schedule @default(PENDING) // PENDING, ATTEND, MISSED, CANCELLED
   created_schedule_at   DateTime?               @default(now()) @db.Timestamp(0)
   updated_schedule_time DateTime?               @default(now()) @db.Timestamp(0)
   user                  user                    @relation(fields: [id_student], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "schedule_fk_student")

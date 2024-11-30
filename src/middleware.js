@@ -45,6 +45,14 @@ function statusPendingActions(path) {
   }
 }
 
+function statusInactiveActions(path) {
+  if (path === "/inactive") {
+    return NextResponse.next();
+  } else {
+    return NextResponse.redirect(new URL(BASE_URL + "/inactive").toString());
+  }
+}
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const actualUrl = new URL(req.url);
@@ -67,6 +75,8 @@ export default clerkMiddleware(async (auth, req) => {
           return statusActiveActions(actualUrl.pathname, role);
         case "PEN":
           return statusPendingActions(actualUrl.pathname);
+        case "INA":
+          return statusInactiveActions(actualUrl.pathname);
       }
     }
 
