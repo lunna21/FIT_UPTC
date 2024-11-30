@@ -10,11 +10,6 @@ const ModalFeedback = ({ isOpen, onClose, onAccept, setRating, rating }) => {
 
     if (!isOpen) return null;
 
-    const handleClick = () => {
-        onAccept(reason);
-        onClose();
-    }
-
     return (
         <div className="fixed bg-neutral-gray-medium text-neutral-gray-dark top-0 right-0 h-screen w-screen flex flex-col items-center justify-center z-[200]">
             <div className='w-[96%] max-w-[460px] h-[60%] bg-neutral-gray-light rounded-lg flex flex-col justify-between'>
@@ -49,7 +44,7 @@ const ModalFeedback = ({ isOpen, onClose, onAccept, setRating, rating }) => {
                         <>
                             <button
                                 className='bg-primary-medium hover:bg-primary-light w-1/2 h-12 text-neutral-gray-dark disabled:opacity-50 font-semibold rounded-lg transition ease-in-out duration-255'
-                                onClick={handleClick}
+                                onClick={(e) => onAccept(e, reason)}
                             >
                                 Enviar
                             </button>

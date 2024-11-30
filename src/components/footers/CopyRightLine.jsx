@@ -13,7 +13,7 @@ const CopyRightLine = () => {
 export default CopyRightLine;
 
 const CopyRightStyled = styled.div`
-    border-top: 1px solid #fff;
+    border-top: 1px solid hsl(0, 0%, 43.13725490196079%);
 
     @media (min-height: 768px) {
         font-size: 16px;

@@ -26,9 +26,7 @@ const Reserve = () => {
             </main>
 
             <footer>
-                <FooterMobile 
-                    withCommetSection={true}
-                />
+                <FooterMobile />
             </footer>
         </ReserveContainerStyled>
     )
