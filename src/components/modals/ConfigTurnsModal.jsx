@@ -1,6 +1,6 @@
 import { Modal, ModalContent, ModalBody, ModalHeader } from "@nextui-org/modal";
 
-import TableConfigTurns from '@/components/TableConfigTurns';
+import TableConfigTurns from '@/components/tables/TableConfigTurns';
 
 const ConfigTurnsModal = ({
     isOpen,

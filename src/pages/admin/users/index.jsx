@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminHeader from '@/components/headers/AdminHeader';
-import TableUser from '@/components/TableUser';
+import TableUser from '@/components/tables/TableUser';
 import { getUserByRole } from '@/db/user';
 import Loder from '@/components/Loader';
 

@@ -6,7 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 // Define access permissions based on roles
 const rolePermissions = {
   adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user", "/admin/schedules"], // Define as needed
-  stu: ["/", "/dashboard"],
+  stu: ["/", "/student/dashboard", "/student/reserve", "/student/profile"], // Define as needed
   emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*", "/employees/turns",], // Define as needed'], // Define as needed
 };
 
@@ -45,6 +45,14 @@ function statusPendingActions(path) {
   }
 }
 
+function statusInactiveActions(path) {
+  if (path === "/inactive") {
+    return NextResponse.next();
+  } else {
+    return NextResponse.redirect(new URL(BASE_URL + "/inactive").toString());
+  }
+}
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const actualUrl = new URL(req.url);
@@ -67,6 +75,8 @@ export default clerkMiddleware(async (auth, req) => {
           return statusActiveActions(actualUrl.pathname, role);
         case "PEN":
           return statusPendingActions(actualUrl.pathname);
+        case "INA":
+          return statusInactiveActions(actualUrl.pathname);
       }
     }
 

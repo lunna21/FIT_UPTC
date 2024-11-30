@@ -6,6 +6,7 @@ import Button from '@/components/buttons/Button';
 import Input from '@/components/inputs/InputValidation';
 import Loader from '@/components/Loader';
 import PopMessage from '@/components/PopMessage';
+import styled from 'styled-components';
 
 import useShowPopUp from '@/hooks/useShowPopUp';
 
@@ -76,7 +77,7 @@ const ChangePasswordPage = () => {
     }
 
     return (
-        <div className="w-screen h-screen flex justify-center items-center bg-gray-100">
+        <ContainerStyled className="w-screen h-screen flex justify-center items-center bg-gray-100">
             <div className="mx-auto max-w-md p-8 rounded-lg shadow-lg bg-white text-center">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">Bienvenid@!!</h1>
                 <p className="mb-4">Tu nombre de usuario para la aplicación es: <span className="font-semibold">{user?.username}</span></p>
@@ -115,8 +116,14 @@ const ChangePasswordPage = () => {
                     />
                 )
             }
-        </div>
+        </ContainerStyled>
     );
 };
 
 export default ChangePasswordPage;
+
+const ContainerStyled = styled.div`
+    @media (max-width: 768px) {
+        background-color: hsl(0, 0%, 91%);
+    }
+`

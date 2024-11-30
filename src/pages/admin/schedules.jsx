@@ -1,5 +1,5 @@
 import AdminHeader from "@/components/headers/AdminHeader"
-import TableConfigTurns from "@/components/TableConfigTurns"
+import TableConfigTurns from "@/components/tables/TableConfigTurns"
 
 const Schedules = () => {
     return (

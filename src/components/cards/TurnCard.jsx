@@ -1,4 +1,4 @@
-import React from "react";
+import { getFormatHour } from "@/utils/utils";
 
 const TurnCard = ({ turnName, startTime, endTime, color = "default", height, isActive=true }) => {
 
@@ -9,14 +9,6 @@ const TurnCard = ({ turnName, startTime, endTime, color = "default", height, isA
         purple: "bg-purple-500",
         orange: "bg-orange-500",
     }
-
-    // entra con un string en formato HH:MM:SS y retorna un string en formato HH:MM AM/PM
-    const getFormatHour = (hour) => {
-        const [h, m] = hour.split(":");
-        const amPm = h >= 12 ? "PM" : "AM";
-        const newHour = h > 12 ? h - 12 : h;
-        return `${newHour}:${m} ${ amPm }`;
-    };
 
     return (
         <div

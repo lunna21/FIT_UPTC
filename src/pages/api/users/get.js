@@ -10,6 +10,9 @@ export default async function gethandler(req, res) {
         if (username) {
             const user = await prisma.user.findUnique({
                 where: { name_user: username },
+                include: {
+                    person_user_id_personToperson: true,
+                }
             });
             if (user) {
                 const historyStatus = await prisma.history_user_status.findMany({

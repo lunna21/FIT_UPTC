@@ -38,6 +38,53 @@ export async function getTurns() {
     }
 }
 
+export async function getTurnByDay(day) {
+    try {
+        const response = await fetch(`/api/turns?day=${day}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw error;
+        }
+
+        const turns = await response.json();
+
+        let formattedTurns = turns.map(turn => ({
+            idTurn: turn.idTurn,
+            maxCapacity: turn.maxCapacity,
+            status: turn.status,
+            colorTurn: turn.colorTurn,
+            startTime: turn.startTime,
+            endTime: turn.endTime,
+            createdTurnAt: turn.createdTurnAt,
+            updatedTurnAt: turn.updatedTurnAt
+        }))
+
+        const sortedTurns = formattedTurns.sort((a, b) => {
+            const timeA = new Date(`1970-01-01T${a.startTime}Z`);
+            const timeB = new Date(`1970-01-01T${b.startTime}Z`);
+            return timeA - timeB;
+        });
+
+        formattedTurns = sortedTurns.map((turn, index) => ({
+            ...turn,
+            countTurn: index + 1
+        }));
+
+        return formattedTurns;
+
+    } catch (error) {
+        console.error('Failed to fetch turns by day:', error);
+        throw error.message;
+    }
+}
+
+
 export async function deleteTurn(idTurn) {
     try {
         const response = await fetch(`/api/turns/${idTurn}`, {
