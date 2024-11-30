@@ -137,8 +137,8 @@ const TurnModal = ({ isOpen, onClose, setTurns, setIsLoading, showMessagePopUp }
                                                     className={`flex-1 bg-transparent outline-none ${turn.status ? 'text-black' : 'text-gray-500'}`}
                                                 >
                                                     <option value="">Selecciona</option>
-                                                    <option value="ACTIVE">Público</option>
-                                                    <option value="BLOCK">Privado</option>
+                                                    <option value="ACTIVE">Activo</option>
+                                                    <option value="BLOCK">Bloqueado</option>
                                                 </select>
                                             </div>
                                         </div>

@@ -1,5 +1,6 @@
 import StudentHeader from '@/components/headers/StudentHeader'
 import TableTurnsDay from '@/components/tables/TableTurnsDay';
+import FooterMobile from '@/components/footers/Footer';
 
 import { getToday } from '@/utils/utils';
 
@@ -23,6 +24,10 @@ const Reserve = () => {
                     </div>
                 </section>
             </main>
+
+            <footer>
+                <FooterMobile />
+            </footer>
         </ReserveContainerStyled>
     )
 }

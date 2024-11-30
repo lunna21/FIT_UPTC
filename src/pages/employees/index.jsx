@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
+
 import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import TableUser from '@/components/tables/TableUser';
-import { getUserByRole } from '@/db/user';
 import Loder from '@/components/Loader';
+import Footer from '@/components/footers/Footer';
+
+import { getUserByRole } from '@/db/user';
+
 
 function Estudiantes() {
     const [estudiantes, setEstudiantes] = useState([]);
@@ -44,13 +48,19 @@ function Estudiantes() {
     return (
         <div>
             <EmployeeHeader />
-            <TableUser 
-                users={estudiantes} 
-                setIsLoading={setLoading} 
-                setInitUsers={setEstudiantes}
-                detailsUrl="/employees/users"
-                title={"Estudiantes"}
-            />
+            <main className='min-h-screen'>
+                <TableUser
+                    users={estudiantes}
+                    setIsLoading={setLoading}
+                    setInitUsers={setEstudiantes}
+                    detailsUrl="/employees/users"
+                    title={"Estudiantes"}
+                />
+            </main>
+
+            <footer>
+                <Footer />
+            </footer>
         </div>
     );
 }
