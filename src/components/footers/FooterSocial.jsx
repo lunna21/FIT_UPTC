@@ -12,7 +12,7 @@ const FooterSocial = () => {
     }
 
     return (
-        <div className='w-full flex justify-center gap-6 items-center'>
+        <div className='w-full flex justify-center gap-12 items-center'>
             <ButtonSocial
                 SocialIcon={FaFacebook}
                 href={`${SOCIAL_LINKS.facebook}`}

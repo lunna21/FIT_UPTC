@@ -17,6 +17,7 @@ import { toCapitalize, getDayOfWeek, getFormatHour } from '@/utils/utils'
 import { calculateTopPosition, calculateHeightCard } from '@/utils/turn';
 
 const TableTurnsDay = ({ dateToSchedule }) => {
+    console.log(dateToSchedule)
     const day = getDayOfWeek(dateToSchedule);
     const START_TIME = 5;
     const HOURS_GYM_ATTENTION = 15;
@@ -80,7 +81,7 @@ const TableTurnsDay = ({ dateToSchedule }) => {
             }
         };
 
-        if (user) {
+        if (user && day) {
             fetch();
         }
 
@@ -172,6 +173,14 @@ const TableTurnsDay = ({ dateToSchedule }) => {
             schedule.stateSchedule === 'PENDING' &&
             new Date(schedule.dateSchedule).toISOString() === new Date(dateToSchedule).toISOString()
         );
+    }
+
+    if(dateToSchedule === ''){
+        return (
+            <div className='flex justify-center items-center h-[300px]'>
+                <h2 className='text-2xl font-semibold text-center'>No hay fecha seleccionada</h2>
+            </div>
+        )
     }
 
 

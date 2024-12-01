@@ -17,9 +17,30 @@ export async function getUserById(id) {
     throw error.message;
   }
 }
+
 export async function getUserByUsername(username) {
   try {
     const response = await fetch(`/api/users?username=${username}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw error;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error.message;
+  }
+}
+
+export async function getUserByCode(code) {
+  try {
+    const response = await fetch(`/api/users/details?code=${code}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -136,7 +157,6 @@ export async function addUserStudent(formData, url_consent) {
 
 export async function addUserWithRole(formData) {
   try {
-    console.log(formData.role);
     if (formData.role !== 'ADM' && formData.role !== 'EMP') {
       throw "El tipo de usuario no es válido";
     }

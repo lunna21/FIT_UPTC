@@ -13,8 +13,6 @@ import Loader from "@/components/Loader";
 import logo from '@/assets/logo.png';
 import gym from '@/assets/gym.jpeg';
 
-import './login.css';
-
 function LoginPage() {
     const { isLoaded, userId } = useAuth(); // Obtener los estados aquí
     const router = useRouter();
