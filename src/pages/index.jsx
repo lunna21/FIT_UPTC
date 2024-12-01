@@ -1,5 +1,4 @@
 
-import '../global.css'
 import ButtonLogOut from '@/components/buttons/ButtonLogOut'
 import Search from '@/components/Search'
 const Home = () => {

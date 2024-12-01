@@ -113,12 +113,7 @@ export async function attendSchedule({ idStudent, date, idTurn }) {
 
     const schedules = await getSchedules(date);
 
-    console.log("Parametros", idStudent, idTurn);
-    console.log("Schedules", schedules);
-
     const schedule = schedules.find(schedule => schedule.idStudent === idStudent && schedule.idTurn === idTurn);
-
-    console.log("Schedule", schedule)
 
     if (!schedule) {
         throw 'No se encontró reserva del estudiante para este turno 🙄';

@@ -15,6 +15,9 @@ export default async function getHandler(req, res) {
                 where: {
                     day: day
                 },
+                orderBy: {
+                    start_time: 'asc'
+                }
             });
             const formattedTurns = turns.map(turn => ({
                 idTurn: turn.id_turn,
@@ -36,7 +39,11 @@ export default async function getHandler(req, res) {
         }
     } else {
         try {
-            const turns = await prisma.turn.findMany();
+            const turns = await prisma.turn.findMany({
+                orderBy: {
+                    start_time: 'asc'
+                }
+            });
             const formattedTurns = turns.map(turn => ({
                 idTurn: turn.id_turn,
                 maxCapacity: turn.max_capacity,

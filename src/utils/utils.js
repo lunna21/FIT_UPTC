@@ -34,7 +34,7 @@ export function getToday(yearsToSubtract = 0) {
 
 export function getValidDate(dateS) {
   let parts;
-  if (dateS.includes('-')) {
+  if (dateS) {
     parts = dateS.split('-');
   } else if (dateS.includes('/')) {
     parts = dateS.split('/');
@@ -142,6 +142,9 @@ export function checkFormatDate(date) {
 
 // entra con un string en formato HH:MM:SS y retorna un string en formato HH:MM AM/PM
 export const getFormatHour = (hour) => {
+  if (!hour) {
+    return hour;
+  }
   const [h, m] = hour.split(":");
   const amPm = h >= 12 ? "PM" : "AM";
   const newHour = h > 12 ? h - 12 : h;
@@ -153,6 +156,9 @@ export const getDayOfWeek = (date) => {
   const days = ["DOMINGO", "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO"];
 
   // Convertir manualmente la fecha al formato local
+  if(!date.includes("-")) {
+    return date;
+  }
   const [year, month, day] = date.split('-').map(Number);
   const dateObj = new Date(year, month - 1, day); // Crear la fecha localmente
 

@@ -21,7 +21,7 @@ export default async function putHandler(req, res) {
         });
 
         if (currentSchedule.state_schedule === 'ATTEND') {
-            return res.status(400).json({ message: 'No se puede modificar una reserva con estado ATTEND.' });
+            return res.status(400).json({ message: 'Ya asististe al turno 🧐.' });
         }
 
         const updatedSchedule = await prisma.schedule.update({

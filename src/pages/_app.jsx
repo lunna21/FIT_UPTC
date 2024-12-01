@@ -4,8 +4,14 @@ import { Montserrat, Poppins } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { esMX } from '@clerk/localizations'
 
+
 import Layout from '@/components/Layout';
-import '../global.css';
+
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import 'driver.js/dist/driver.css';
+import '@/styles/global.css'
+import '@/styles/login.css';
+import '@/styles/register.css';
 
 const montserrat = Montserrat({
     weight: ['400', '500', '600', '700'],

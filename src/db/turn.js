@@ -92,25 +92,26 @@ export async function getTurnsByHourOfDay(day, hour) {
     try {
         const turns = await getTurnByDay(day);
 
-        const turn = turns.find(turn => {
+        const targetTime = new Date(`1970-01-01T${hour}Z`);
+
+        const actualTurn = turns.find(turn => {
             const startTime = new Date(`1970-01-01T${turn.startTime}Z`);
             const endTime = new Date(`1970-01-01T${turn.endTime}Z`);
-            const targetTime = new Date(`1970-01-01T${hour}Z`);
-
             return targetTime >= startTime && targetTime <= endTime;
         });
 
-        if (!turn) {
-            throw { message: 'Parece que no hay turno disponible ¡Intenta después 🫡!' };
-        }
+        const nextTurn = turns.find(turn => {
+            const startTime = new Date(`1970-01-01T${turn.startTime}Z`);
+            return startTime > targetTime;
+        });
 
         return {
-            actualTurn: turn,
-            nextTurn: turn.isLast ? null : turns[turn.countTurn]
+            actualTurn,
+            nextTurn: nextTurn || null
         };
     } catch (error) {
         console.error('Failed to fetch turn by hour of day:', error);
-        throw error.message;
+        throw error;
     }
 }
 

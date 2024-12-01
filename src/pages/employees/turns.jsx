@@ -23,6 +23,9 @@ import ButtonSearch from "@/components/buttons/ButtonSearch";
 import InputAnimated from "@/components/inputs/InputAnimated";
 
 const Turns = () => {
+    // const TODAY = getToday();
+    const TODAY = getToday();
+
     const [isOpen, setIsOpen] = useState(false);
     const [showMenuConfig, setShowMenuConfig] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -46,12 +49,12 @@ const Turns = () => {
     } = useShowPopUp();
 
     useEffect(() => {
-        setDay(getDayOfWeek(getToday()));
+        setDay(getDayOfWeek(TODAY));
         // esto es solamente para pruebas, para que funcione como deberia se debe descomentar la linea de arriba y borrar la de abajo
         // setDay("LUNES");
 
         setCurrentTime(getTime());
-        //setCurrentTime("10:00:00");
+        // setCurrentTime("17:00:00");
 
         if (user) {
             handleUser();
@@ -59,12 +62,12 @@ const Turns = () => {
 
         const intervalId = setInterval(() => {
             setCurrentTime(getTime());
-            //setCurrentTime("10:00:00");
-        }, 5000);
+            // setCurrentTime("17:00:00");
+        }, 1000);
 
         return () => clearInterval(intervalId);
 
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (turn) {
@@ -75,20 +78,33 @@ const Turns = () => {
                     handleTurnByHour(currentTime);
                 }
             }
-        } else if (currentTime && oneLoad) {
-            handleTurnByHour(currentTime);
+
+            if (turn.isLast && userDb) {
+                enableTomorrowTurns(false);
+                setTurn({ ...turn, isLast: false });
+            }
+        } else if (currentTime) {
+            if (oneLoad) {
+                handleTurnByHour(currentTime);
+            }
+            if (comparateTimes(currentTime, nextTurn?.startTime)) {
+                handleTurnByHour(currentTime);
+            }
         }
-    }, [currentTime]);
+    }, [currentTime, userDb]);
 
     const handleTurnByHour = async (hour) => {
         try {
             setOneLoad(false);
             setIsLoading(true);
             const turns = await getTurnsByHourOfDay(day, hour);
+
+            console.log(turns)
+
             let actualTurn = null;
             let nextTurn = null;
 
-            if(turns) {
+            if (turns) {
                 actualTurn = turns.actualTurn;
                 nextTurn = turns.nextTurn;
             }
@@ -129,7 +145,7 @@ const Turns = () => {
             await attendSchedule({
                 idStudent: user.idUser,
                 // date: "2024-12-02",
-                date: getToday(),
+                date: TODAY,
                 idTurn: turn.idTurn
             });
 
@@ -142,19 +158,27 @@ const Turns = () => {
         }
     }
 
-    const enableTomorrowTurns = async (e) => {
+    const enableTomorrowTurns = async (showMessage = true) => {
         try {
             if (userDb) {
-                if (turn.day === "SABADO") {
+                if (turn?.day === "SABADO") {
                     await updateReservationDate(userDb.id_user, 2);
                 } else {
                     await updateReservationDate(userDb.id_user);
                 }
+                if (showMessage) {
+                    showPopUp({ status: "success", text: "Turnos para la proxima fecha publicados" });
+                }
+            } else {
+                console.error("No hay user aún")
+                if (showMessage) {
+                    showPopUp({ status: "error", text: "Error al activar los turnos de mañana" });
+                }
             }
-
-            showPopUp({ status: "success", text: "Turnos de para la proxima fecha publicados" });
         } catch (error) {
-            showPopUp({ status: "error", text: typeof error === "string" ? error : "Error al activar los turnos de mañana" });
+            console.log(error);
+            if (showMessage)
+                showPopUp({ status: "error", text: typeof error === "string" ? error : "Error al activar los turnos de mañana" });
         }
     }
 
@@ -176,7 +200,7 @@ const Turns = () => {
                 </button>
 
                 {showMenuConfig && (
-                    <ul className="absolute min-w-80 mt-2 right-32 top-8 bg-white border rounded shadow-lg z-50">
+                    <ul className="absolute min-w-80 mt-2 right-4 sm:right-32 top-8 bg-white border rounded shadow-lg z-50">
                         <li
                             className="py-2 px-4 cursor-pointer hover:bg-primary-medium flex items-center gap-4"
                             onClick={() => setIsOpen(true)}
@@ -202,20 +226,25 @@ const Turns = () => {
                             <Loader />
                         </div>
                     ) : (
-                        <div className="bg-neutral-white rounded-lg shadow-lg py-6 px-24 mx-auto max-w-4xl">
+                        <div className="relative bg-neutral-white rounded-lg shadow-lg py-6 px-4 sm:px-24 mx-auto max-w-4xl">
+                            <div className="absolute top-0 right-0 w-50 text-center bg-black text-white py-2 px-4 rounded-lg shadow-md">
+                                <p className="text-md font-semibold inline">{toCapitalize(getDayOfWeek(TODAY))} - </p>
+                                <p className="text-md inline">{getFormatHour(currentTime)}</p>
+                            </div>
                             {
                                 turn ? (
                                     <>
-                                        <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6">
+                                        <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6 mt-6">
                                             Turno {turn.countTurn} ({getFormatHour(turn.startTime)} - {getFormatHour(turn.endTime)})
                                         </h1>
                                         <div className="w-full flex flex-col justify-center gap-4 mt-6">
-                                            <div className="bg-white py-1 px-24 rounded-full flex gap-4 items-center justify-center border border-neutral-black border-dashed">
+                                            <div className="bg-white py-1 px-4 sm:px-24 rounded-full flex gap-4 items-center justify-center border border-neutral-black border-dashed sm:bg-white sm:py-1">
                                                 <InputAnimated
                                                     onChange={handleChangeCode}
                                                 />
                                                 <ButtonSearch
                                                     onClick={handleClickSearch}
+                                                    className="sm:ml-0 ml-auto"
                                                 />
                                             </div>
                                             {
@@ -232,8 +261,8 @@ const Turns = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6">
-                                            No hay turno en esta hora 😵‍💫
+                                        <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6 mt-10">
+                                            No hay turno a esta hora 😵‍💫
                                         </h1>
                                         {
                                             nextTurn && (

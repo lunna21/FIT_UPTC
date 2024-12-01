@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 // import { disable } from '@/db/user';
 import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
-import "@/pages/employees/driver.css";
 
 import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
 import useShowPopUp from '@/hooks/useShowPopUp';

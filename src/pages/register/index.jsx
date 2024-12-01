@@ -15,7 +15,6 @@ import useShowPopUp from '@/hooks/useShowPopUp'
 import { calculateAge, getToday } from '@/utils/utils'
 import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
 
-import './register.css'
 import Modal from './Modal';
 
 //Import Icons
@@ -262,7 +261,10 @@ const Register = () => {
         const reader = new FileReader();
         reader.readAsDataURL(selectedFile);
         reader.onloadend = async () => {
-            const base64File = reader.result.split(',')[1];
+            let base64File = null;
+            if(reader?.result) {
+                base64File = reader.result.split(',')[1];
+            } 
             try {
                 await signUp({
                     formData,
