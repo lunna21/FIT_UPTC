@@ -4,7 +4,7 @@ const useShowPopUp = () => {
     const [status, setStatus] = useState("")
     const [text, setText] = useState('Error')
     const [isShow, setIsShow] = useState(false)
-    const DURATION = 2500;
+    const DURATION = 4000;
 
     const showPopUp = ({ status, text }) => {
         setStatus(status);

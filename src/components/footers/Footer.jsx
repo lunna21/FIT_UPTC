@@ -4,7 +4,7 @@ import FooterSocial from "./FooterSocial";
 import FooterFeedback from "./FooterFeedback";
 
 import Image from 'next/image';
-import zonaLogos from '@/assets/zonaLogosUptc.svg';
+import zonaLogos from '@/assets/zonaLogosUptc.jpg';
 
 import styled from 'styled-components';
 
@@ -14,8 +14,8 @@ const Footer = () => {
         <div className="w-full bg-neutral-gray-dark">
             <div className="flex justify-around">
                 <SocialImageStyled className="flex flex-col justify-center items-center mt-4">
-                    <figure className="max-w-[320px] bg-neutral-gray-light py-2 px-4 rounded-md mb-2">
-                        <Image src={zonaLogos} alt="Logo UPTC" className="h-12 w-auto object-fit" priority />
+                    <figure className="bg-neutral-gray-light p-1 rounded-md mb-2">
+                        <Image src={zonaLogos} alt="Logo UPTC" className="w-auto object-cover" priority height={100}/>
                     </figure>
                     <FooterSocial />
                 </SocialImageStyled>

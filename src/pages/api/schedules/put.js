@@ -16,6 +16,14 @@ export default async function putHandler(req, res) {
     }
 
     try {
+        const currentSchedule = await prisma.schedule.findUnique({
+            where: { id_schedule: parseInt(id_schedule) },
+        });
+
+        if (currentSchedule.state_schedule === 'ATTEND') {
+            return res.status(400).json({ message: 'No se puede modificar una reserva con estado ATTEND.' });
+        }
+
         const updatedSchedule = await prisma.schedule.update({
             where: { id_schedule: parseInt(id_schedule) },
             data: { state_schedule },

@@ -19,9 +19,17 @@ export function convertToKB(size) {
 }
 
 export function getToday(yearsToSubtract = 0) {
-  const today = new Date();
-  today.setFullYear(today.getFullYear() - yearsToSubtract);
-  return today.toISOString().split('T')[0];
+  const now = new Date();
+
+  // Convertir la fecha actual al huso horario UTC-5
+  const utcOffset = 5 * 60 * 60 * 1000; // 5 horas en milisegundos
+  const adjustedTime = new Date(now.getTime() - utcOffset);
+
+  // Ajustar el año si es necesario
+  adjustedTime.setFullYear(adjustedTime.getFullYear() - yearsToSubtract);
+
+  // Formatear la fecha al formato YYYY-MM-DD
+  return adjustedTime.toISOString().split('T')[0];
 }
 
 export function getValidDate(dateS) {
@@ -137,12 +145,34 @@ export const getFormatHour = (hour) => {
   const [h, m] = hour.split(":");
   const amPm = h >= 12 ? "PM" : "AM";
   const newHour = h > 12 ? h - 12 : h;
-  return `${newHour}:${m} ${ amPm }`;
+  return `${newHour}:${m} ${amPm}`;
 };
 
 // recibe date en string formato yyyy-mm-dd y retorna el día de la semana
 export const getDayOfWeek = (date) => {
-  const days = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
-  const dateObj = new Date(date);
+  const days = ["DOMINGO", "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO"];
+
+  // Convertir manualmente la fecha al formato local
+  const [year, month, day] = date.split('-').map(Number);
+  const dateObj = new Date(year, month - 1, day); // Crear la fecha localmente
+
   return days[dateObj.getDay()];
+};
+
+export const getTime = () => {
+  const now = new Date();
+
+  const hours = String(now.getHours()).padStart(2, '0'); // Horas locales
+  const minutes = String(now.getMinutes()).padStart(2, '0'); // Minutos locales
+  const seconds = String(now.getSeconds()).padStart(2, '0'); // Segundos locales
+
+  return `${hours}:${minutes}:${seconds}`;
+};
+
+// retorna true si maxTime es mayor a minTime
+export const comparateTimes = (maxTime, minTime) => {
+  const max = getTime(maxTime);
+  const min = getTime(minTime);
+
+  return max > min;
 }

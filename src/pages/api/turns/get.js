@@ -14,7 +14,7 @@ export default async function getHandler(req, res) {
             const turns = await prisma.turn.findMany({
                 where: {
                     day: day
-                }
+                },
             });
             const formattedTurns = turns.map(turn => ({
                 idTurn: turn.id_turn,

@@ -1,12 +1,28 @@
+import { useState, useEffect } from 'react'
+
 import StudentHeader from '@/components/headers/StudentHeader'
 import TableTurnsDay from '@/components/tables/TableTurnsDay';
 import FooterMobile from '@/components/footers/Footer';
 
-import { getToday } from '@/utils/utils';
+import { getReservationDate } from '@/db/reservationDate';
 
 import styled from 'styled-components';
 
 const Reserve = () => {
+    const [reservationDate, setReservationDate] = useState(null);
+
+    useEffect(() => {
+        async function fetchReservationDate() {
+            try {
+                const data = await getReservationDate();
+                setReservationDate(data.reservation_date.split('T')[0]);
+            } catch (error) {
+                console.error('Failed to fetch reservation date:', error);
+            }
+        }
+
+        fetchReservationDate();
+    }, []);
 
     return (
         <ReserveContainerStyled>
@@ -19,7 +35,7 @@ const Reserve = () => {
 
                     <div className="reserve-main_container-table">
                         <TableTurnsDay
-                            dateToSchedule={"2024-12-01"}
+                            dateToSchedule={reservationDate}
                         />
                     </div>
                 </section>

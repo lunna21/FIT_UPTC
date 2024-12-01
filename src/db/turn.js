@@ -21,6 +21,7 @@ export async function getTurns() {
             acc[day].push({
                 idTurn: turn.idTurn,
                 maxCapacity: turn.maxCapacity,
+                day: turn.day,
                 status: turn.status,
                 colorTurn: turn.colorTurn,
                 startTime: turn.startTime,
@@ -58,6 +59,7 @@ export async function getTurnByDay(day) {
             idTurn: turn.idTurn,
             maxCapacity: turn.maxCapacity,
             status: turn.status,
+            day: turn.day,
             colorTurn: turn.colorTurn,
             startTime: turn.startTime,
             endTime: turn.endTime,
@@ -73,13 +75,41 @@ export async function getTurnByDay(day) {
 
         formattedTurns = sortedTurns.map((turn, index) => ({
             ...turn,
-            countTurn: index + 1
+            countTurn: index + 1,
+            isLast: index === sortedTurns.length - 1
         }));
 
         return formattedTurns;
 
     } catch (error) {
         console.error('Failed to fetch turns by day:', error);
+        throw error.message;
+    }
+}
+
+// retorna el turno actual y el siguiente turno
+export async function getTurnsByHourOfDay(day, hour) {
+    try {
+        const turns = await getTurnByDay(day);
+
+        const turn = turns.find(turn => {
+            const startTime = new Date(`1970-01-01T${turn.startTime}Z`);
+            const endTime = new Date(`1970-01-01T${turn.endTime}Z`);
+            const targetTime = new Date(`1970-01-01T${hour}Z`);
+
+            return targetTime >= startTime && targetTime <= endTime;
+        });
+
+        if (!turn) {
+            throw { message: 'Parece que no hay turno disponible ¡Intenta después 🫡!' };
+        }
+
+        return {
+            actualTurn: turn,
+            nextTurn: turn.isLast ? null : turns[turn.countTurn]
+        };
+    } catch (error) {
+        console.error('Failed to fetch turn by hour of day:', error);
         throw error.message;
     }
 }

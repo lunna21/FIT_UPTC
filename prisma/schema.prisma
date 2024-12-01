@@ -266,12 +266,10 @@ model turn {
 model reservation_date_history {
   id_history      Int      @id @default(autoincrement())
   reservation_date DateTime     @db.Date
-  updated_by      Int
-  updated_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_by      Int           @unique(map: "reservation_date_history_fk_updatedby")
+  updated_at      DateTime @default(now()) @unique @db.Timestamp(0)
 
   user_reservation_date_history_updated_byTouser user @relation(fields: [updated_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "reservation_date_history_fk_updatedby")
-
-  @@index([updated_by], map: "reservation_date_history_fk_updatedby")
 }
 
 enum inscription_detail_audit_change_type {
