@@ -89,6 +89,10 @@ export default clerkMiddleware(async (auth, req) => {
   console.log(actualUrl.pathname);
   console.log(userId);
 
+  if(actualUrl.pathname.startsWith("/docs") && BASE_URL.includes("localhost")) {
+    return NextResponse.next()
+  }
+
   // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
   if (actualUrl.pathname.startsWith("/api")) {
     console.log("API request");

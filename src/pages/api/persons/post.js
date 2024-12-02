@@ -3,6 +3,86 @@ import { validatePerson } from '@/utils/validations';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/persons/post:
+ *   post:
+ *     summary: Crea una nueva persona
+ *     tags: [Personas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               document_number_person:
+ *                 type: string
+ *                 description: Número de documento de la persona
+ *               id_document_type:
+ *                 type: integer
+ *                 description: ID del tipo de documento
+ *               first_name_person:
+ *                 type: string
+ *                 description: Nombre de la persona
+ *               last_name_person:
+ *                 type: string
+ *                 description: Apellido de la persona
+ *               phone_number_person:
+ *                 type: string
+ *                 description: Número de teléfono de la persona
+ *               birthdate_person:
+ *                 type: string
+ *                 format: date
+ *                 description: Fecha de nacimiento de la persona
+ *               created_person_by:
+ *                 type: string
+ *                 description: Usuario que crea la persona
+ *     responses:
+ *       201:
+ *         description: Persona creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 document_number_person:
+ *                   type: string
+ *                 id_document_type:
+ *                   type: integer
+ *                 first_name_person:
+ *                   type: string
+ *                 last_name_person:
+ *                   type: string
+ *                 phone_number_person:
+ *                   type: string
+ *                 birthdate_person:
+ *                   type: string
+ *                   format: date
+ *                 created_person_by:
+ *                   type: string
+ *                 created_person_at:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error del sistema
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 export default async function postHandler(req, res) {
   try {
     const data = req.body;

@@ -22,13 +22,17 @@
     "fituptc": "file:",
     "framer-motion": "11.11.11",
     "next": "^15.0.1",
+    "next-connect": "^1.0.0",
     "nodemailer": "^6.9.16",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "react-icons": "5.3.0",
     "react-paginate": "^8.2.0",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-dist": "^5.18.2",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "autoprefixer": "10.4.20",
