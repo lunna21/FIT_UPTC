@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-const Button = ({ 
+const Button = ({
     buttonText,
     onClick = () => { },
     Icon,
@@ -18,7 +18,8 @@ const Button = ({
     const colorClasses = {
         'primary-medium': 'bg-primary-medium hover:bg-primary-light text-neutral-gray-dark',
         'green': 'bg-green-500  text-white hover:bg-green-400', // Clases para el color verde
-        'red': 'bg-accent-red hover:bg-accent-redLight text-white hover:bg-red-500' // Clases para el color rojo
+        'red': 'bg-red-700 hover:bg-accent-redLight text-white hover:bg-red-500', // Clases para el color rojo
+        'blue': 'bg-blue-500 hover:bg-blue-400 text-white hover:bg-blue-400' // Clases para el color azul
     };
 
     // Usa las clases de color basadas en la propiedad `color`

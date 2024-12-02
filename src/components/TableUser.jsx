@@ -3,7 +3,6 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/router';
 import "../pages/employees/driver.css";
 
-
 import Search from '@/components/Search';
 import PopMessage from '@/components/PopMessage';
 import ModalDisableUsers from "@/components/ModalDisableUsers";
@@ -31,25 +30,19 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     const [showNoResultsMessage, setShowNoResultsMessage] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [timeOut, setTimeout]=useState(null);
+    const [timeOut, setTimeout] = useState(null);
 
     const handleDeleteUser = async (id, numberDocument) => {
         try {
             setIsLoading(true);
-            // Espera a que las operaciones de eliminación se completen
             await disable(id);
-            // await deletePersonByDocumentNumber(numberDocument);
-
-            // Simula un tiempo de espera para la operación de eliminación
             setTimeout(() => {
                 setIsLoading(false);
-            }, 10000); // 2 segundos
+            }, 10000);
 
             setMessage('El usuario fue deshabilitado exitosamente');
             setShowMessage(true);
             setMessageColor('bg-green-500');
-            // setEstudiantes(prevEstudiantes => prevEstudiantes.filter(est => est.idUser !== id));
-
         } catch (error) {
             console.error("Error inhabilitando el usuario:", error);
             setMessage('Error inhabilitando el usuario');
@@ -59,7 +52,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
         }
     }
 
-       useEffect(() => {
+    useEffect(() => {
         if (search === '') {
             setEstudiantes(initEstudiantes);
             setCurrentPage(1);
@@ -70,10 +63,14 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                 const firstName = estudiante.person.firstNamePerson.toLowerCase();
                 const lastName = estudiante.person.lastNamePerson.toLowerCase();
                 const studentCode = estudiante.inscriptionDetails[0]?.studentCode?.toLowerCase() || '';
+                const searchTerm = search.toLowerCase();
                 return (
                     firstName.startsWith(search.toLowerCase()) ||
                     lastName.startsWith(search.toLowerCase()) ||
-                    studentCode.startsWith(search.toLowerCase())
+                    studentCode.startsWith(search.toLowerCase()) ||
+                    firstName.includes(searchTerm) ||
+                    lastName.includes(searchTerm) ||
+                    studentCode.includes(searchTerm)
                 );
             });
             setEstudiantes(filteredEstudiantes);
@@ -100,7 +97,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
     };
 
     function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        return str.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     const offset = (currentPage - 1) * itemsPerPage;
@@ -115,7 +112,6 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
             handleDeleteUser(selectedUser.id, selectedUser.documentNumber, reason);
         }
     };
-
 
     return (
         <div className="min-h-screen bg-neutral-gray-light p-6" onClick={() => setShowFilter(false)}>
@@ -211,7 +207,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                         className="border-b border-neutral-gray-light hover:bg-primary-light cursor-pointer transition-colors duration-200"
                                     >
                                         <td className="px-6 py-4 font-montserrat">
-                                            {capitalize(estudiante.person.firstNamePerson)} {capitalize(estudiante.person.lastNamePerson)}
+                                            {capitalize(`${estudiante.person.firstNamePerson} ${estudiante.person.lastNamePerson}`)}
                                         </td>
                                         <td className="px-6 py-4 font-montserrat flex justify-center">
                                             {estudiante.inscriptionDetails[0]?.studentCode || 'N/A'}
@@ -230,8 +226,8 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                                                     }`}>
                                                     {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
                                                         estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
-                                                        estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
-                                                            estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
+                                                            estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
+                                                                estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
                                                     {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
                                                         estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
                                                             <TiWarning className="inline-block ml-2" />}
@@ -271,6 +267,7 @@ export default function TableUser({ estudiantes: initEstudiantes, setIsLoading }
                         currentPage={currentPage}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
+                        disablePrevious={totalPages === 0}
                     />
                     {showMessage && (
                         <PopMessage
