@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { driver } from 'driver.js';
-import 'driver.js/dist/driver.css';
 import { TbHelpSquareRoundedFilled } from "react-icons/tb";
-import "..//../pages/employees/driver.css";
 import { useUser } from '@clerk/nextjs';
 
 const ButtonHelp = () => {

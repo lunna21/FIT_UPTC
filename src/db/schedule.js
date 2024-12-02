@@ -69,7 +69,7 @@ export async function createSchedule(schedule) {
     }
 }
 
-export async function updateSchedule({idSchedule, stateSchedule}) {
+export async function updateSchedule({ idSchedule, stateSchedule }) {
     const formattedSchedule = {
         id_schedule: idSchedule,
         state_schedule: stateSchedule
@@ -103,5 +103,30 @@ export async function updateSchedule({idSchedule, stateSchedule}) {
     } catch (error) {
         console.error('Failed to update schedule:', error);
         throw error.message;
+    }
+}
+
+export async function attendSchedule({ idStudent, date, idTurn }) {
+    if (!idStudent || !date || !idTurn) {
+        throw 'Faltan datos para atender la reserva';
+    }
+
+    const schedules = await getSchedules(date);
+
+    const schedule = schedules.find(schedule => schedule.idStudent === idStudent && schedule.idTurn === idTurn);
+
+    if (!schedule) {
+        throw 'No se encontró reserva del estudiante para este turno 🙄';
+    }
+
+    if (schedule.stateSchedule === 'ATTEND') {
+        throw 'La reserva ya fue atendida 🤔';
+    }
+
+    if (schedule.stateSchedule === "CANCELLED") {
+        throw 'La reserva fue cancelada 😢';
+    }
+    else {
+        return await updateSchedule({ idSchedule: schedule.id_schedule, stateSchedule: 'ATTEND' });
     }
 }

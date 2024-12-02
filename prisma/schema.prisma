@@ -42,6 +42,18 @@ model estatement_u {
   inscription_detail inscription_detail[]
 }
 
+model feedback {
+  id_feedback Int      @id @default(autoincrement())
+  id_user     Int
+  rating      Int      @db.TinyInt
+  comment     String?  @db.Text
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+
+  user_feedback_id_userTouser user @relation(fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "feedback_fk_iduser")
+
+  @@index([id_user], map: "feedback_fk_iduser")
+}
+
 model history_user_status {
   id_history                                             Int          @id @default(autoincrement())
   id_user_status                                         String?      @db.Char(3)
@@ -190,6 +202,8 @@ model user {
   role_user_user_id_role_userTorole_user                                role_user                  @relation("user_id_role_userTorole_user", fields: [id_role_user], references: [id_role_user], onDelete: NoAction, onUpdate: NoAction, map: "user_fk_idroleuser")
   user_audit_user_audit_change_useraudit_byTouser                       user_audit[]               @relation("user_audit_change_useraudit_byTouser")
   user_audit_user_audit_id_userTouser                                   user_audit[]               @relation("user_audit_id_userTouser")
+  feedback                                                              feedback[]
+  reservation_date_history_user_reservation_date_history_updated_byTouser reservation_date_history[]
 
   @@index([id_person], map: "user_fk_idperson")
   @@index([id_role_user], map: "user_fk_idroleuser")
@@ -247,6 +261,15 @@ model turn {
   updated_turn_at DateTime?   @default(now()) @db.Timestamp(0)
   color_turn      String?     @default("rgba(49, 49, 49, 0.72)") @db.VarChar(30)
   schedule        schedule[]
+}
+
+model reservation_date_history {
+  id_history      Int      @id @default(autoincrement())
+  reservation_date DateTime     @db.Date
+  updated_by      Int           @unique(map: "reservation_date_history_fk_updatedby")
+  updated_at      DateTime @default(now()) @unique @db.Timestamp(0)
+
+  user_reservation_date_history_updated_byTouser user @relation(fields: [updated_by], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "reservation_date_history_fk_updatedby")
 }
 
 enum inscription_detail_audit_change_type {

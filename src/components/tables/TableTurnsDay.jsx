@@ -17,6 +17,7 @@ import { toCapitalize, getDayOfWeek, getFormatHour } from '@/utils/utils'
 import { calculateTopPosition, calculateHeightCard } from '@/utils/turn';
 
 const TableTurnsDay = ({ dateToSchedule }) => {
+    console.log(dateToSchedule)
     const day = getDayOfWeek(dateToSchedule);
     const START_TIME = 5;
     const HOURS_GYM_ATTENTION = 15;
@@ -80,7 +81,7 @@ const TableTurnsDay = ({ dateToSchedule }) => {
             }
         };
 
-        if (user) {
+        if (user && day) {
             fetch();
         }
 
@@ -172,6 +173,14 @@ const TableTurnsDay = ({ dateToSchedule }) => {
             schedule.stateSchedule === 'PENDING' &&
             new Date(schedule.dateSchedule).toISOString() === new Date(dateToSchedule).toISOString()
         );
+    }
+
+    if(dateToSchedule === ''){
+        return (
+            <div className='flex justify-center items-center h-[300px]'>
+                <h2 className='text-2xl font-semibold text-center'>No hay fecha seleccionada</h2>
+            </div>
+        )
     }
 
 
@@ -295,16 +304,16 @@ const TableTurnsDay = ({ dateToSchedule }) => {
                         isLoading ? (
                             <div className="w-full grid grid-cols-1 gap-4 px-8 py-4">
                                 {Array.from({ length: 2 }).map((_, index) => (
-                                    <div key={index} className="animate-pulse flex space-x-4">
+                                    <div key={index} className="flex space-x-4">
                                         <div className="flex-1 space-y-16 py-1">
                                             <div className="h-[100px] bg-gray-400 rounded w-full p-2 flex flex-col gap-2 justify-center items-center">
-                                                <div className="h-3 bg-gray-500 rounded w-2/4"></div>
-                                                <div className="h-3 bg-gray-500 rounded w-3/4"></div>
+                                                <div className="h-3 bg-gray-500 rounded animate-pulse w-2/4"></div>
+                                                <div className="h-3 bg-gray-500 rounded animate-pulse w-3/4"></div>
                                             </div>
                                             <div className="space-y-10">
                                                 <div className="h-[100px] bg-gray-400 rounded w-full flex flex-col gap-2 justify-center items-center">
-                                                    <div className="h-3 bg-gray-500 rounded w-2/4"></div>
-                                                    <div className="h-3 bg-gray-500 rounded w-3/4"></div>
+                                                    <div className="h-3 bg-gray-500 rounded animate-pulse w-2/4"></div>
+                                                    <div className="h-3 bg-gray-500 rounded animate-pulse w-3/4"></div>
                                                 </div>
                                             </div>
                                         </div>

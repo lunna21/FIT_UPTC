@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
-import '@react-pdf-viewer/core/lib/styles/index.css';
 import Button from '@/components/buttons/Button';
 import PopMessage from "@/components/PopMessage";
 import useShowPopUp from '@/hooks/useShowPopUp'

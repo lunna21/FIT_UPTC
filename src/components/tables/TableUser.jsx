@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 // import { disable } from '@/db/user';
 import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
-import "@/pages/employees/driver.css";
 
 import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
 import useShowPopUp from '@/hooks/useShowPopUp';
+
+import { sendEmail } from '@/db/email';
+import emailChangeStatus from '@/emails/emailChangeStatus';
 
 import Search from '@/components/Search';
 import ButtonHelp from '@/components/buttons/ButtonHelp';
@@ -146,7 +147,17 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                 return estu
             }))
 
-            console.log(response.message)
+            await sendEmail({
+                email: selectedUser.emailUser,
+                subject: `Cambio de estado de cuenta UPTC FIT`,
+                text: `Hola ${capitalize(selectedUser.person.firstNamePerson)} ${capitalize(selectedUser.person.lastNamePerson)}, tu cuenta ha sido ${statusUserChange === 'ACT' ? 'activada' : statusUserChange === 'INA' ? 'inactivada' : 'dejada pendiente'}.`,
+                html: emailChangeStatus({
+                    status: statusUserChange,
+                    firstName: selectedUser.person.firstNamePerson,
+                    lastName: selectedUser.person.lastNamePerson
+                })
+            })
+
             showPopUp({ text: response.message, status: "success" })
         } catch (error) {
             console.error('Error updating user status:', error);
@@ -195,13 +206,19 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                                     <FaFilter className='w-5 h-5 text-neutral-gray-medium transition-all duration-120 hover:text-primary-medium' />
                                 </button>
                                 {showFilter && (
-                                    <ul className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
+                                    <ul className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-50">
                                         <li onClick={() => handleFilterChangeStatus("")} className="p-2 cursor-pointer hover:bg-primary-medium">Todos</li>
                                         <li onClick={() => handleFilterChangeStatus('ACT')} className="p-2 cursor-pointer hover:bg-primary-medium">Activo</li>
                                         <li onClick={() => handleFilterChangeStatus('PEN')} className="p-2 cursor-pointer hover:bg-primary-medium">Pendiente</li>
                                         <li onClick={() => handleFilterChangeStatus('INA')} className="p-2 cursor-pointer hover:bg-primary-medium">Inactivo</li>
-                                        <li onClick={() => handeleFilterChangeRol('EMP')} className="p-2 cursor-pointer hover:bg-primary-medium">Empleado</li>
-                                        <li onClick={() => handeleFilterChangeRol('STU')} className="p-2 cursor-pointer hover:bg-primary-medium">Estudiante</li>
+                                        {
+                                            title === 'Usuarios' && (
+                                                <>
+                                                    <li onClick={() => handeleFilterChangeRol('EMP')} className="p-2 cursor-pointer hover:bg-primary-medium">Empleado</li>
+                                                    <li onClick={() => handeleFilterChangeRol('STU')} className="p-2 cursor-pointer hover:bg-primary-medium">Estudiante</li>
+                                                </>
+                                            )
+                                        }
                                     </ul>
                                 )}
                             </div>
@@ -226,8 +243,21 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                                     </th>
                                     <th id='column' className="px-6 py-4 font-montserrat">
                                         <span className="flex items-center justify-center">
-                                            Código
-                                            <FaIdCard className='w-5 h-5 ml-2' />
+
+
+                                            {
+                                                title === 'Usuarios' ? (
+                                                    <>
+                                                        Documento
+                                                        <FaIdCard className='w-5 h-5 ml-2' />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Código
+                                                        <FaIdCard className='w-5 h-5 ml-2' />
+                                                    </>
+                                                )
+                                            }
                                         </span>
                                     </th>
                                     <th id='column_email' className="px-6 py-4 font-montserrat">
@@ -306,21 +336,32 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                                                     {capitalize(user.person.firstNamePerson)} {capitalize(user.person.lastNamePerson)}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
-                                                    {user.inscriptionDetails[0]?.studentCode || ' — '}
+                                                    {
+                                                        title === 'Usuarios' ? (
+                                                            <>
+                                                                {user.person.idDocumentType} {user.person.documentNumberPerson}
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                {user.inscriptionDetails[0]?.studentCode || ' — '}
+                                                            </>
+                                                        )
+                                                    }
+
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat">
                                                     {user.emailUser}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
-                                                {
-                                                    title === 'Usuarios' ? (
-                                                        <td className='px-6 py-4 font-montserrat text-center'>
-                                                            {user.idRoleUser === 'EMP' ? 'Empleado' : 'Estudiante'}
-                                                        </td>
-                                                    ) : (       
-                                                        user.person.phoneNumberPerson
-                                                    )
-                                                }
+                                                    {
+                                                        title === 'Usuarios' ? (
+                                                            <td className='px-6 py-4 font-montserrat text-center'>
+                                                                {user.idRoleUser === 'EMP' ? 'Empleado' : 'Estudiante'}
+                                                            </td>
+                                                        ) : (
+                                                            user.person.phoneNumberPerson
+                                                        )
+                                                    }
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat relative">
                                                     <button className='w-full flex justify-center' onClick={(e) => handleMenuStatus(e, user.idUser)}>
