@@ -13,13 +13,13 @@ import useCustomSignUp from '@/hooks/useCustomSignUp'
 import useShowPopUp from '@/hooks/useShowPopUp'
 
 import { calculateAge, getToday } from '@/utils/utils'
-import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput } from '@/utils/inputValidation'
+import { validateEmailInput, validateNumberInput, validateTextInput, validatePhoneNumberInput, validateDateInput, validateAlphanumericInput } from '@/utils/inputValidation'
 
 import './register.css'
 import Modal from './Modal';
 
 //Import Icons
-import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom , MdOutlineRealEstateAgent} from "react-icons/md";
+import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom, MdOutlineRealEstateAgent } from "react-icons/md";
 import { RiFileAddFill } from "react-icons/ri";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoInformationCircleSharp, IoPersonAddSharp } from "react-icons/io5";
@@ -517,6 +517,7 @@ const Register = () => {
                                         onKeyDown={validateTextInput}
                                         Icon={MdDriveFileRenameOutline}
 
+
                                     />
                                     < ValidationInput
                                         placeholder="Ingresa la dosis del medicamento"
@@ -524,8 +525,9 @@ const Register = () => {
                                         onChange={handleMedicationChange}
                                         id="dosage"
                                         name="dosage"
-                                        onKeyDown={validateTextInput}
+                                        onKeyDown={validateAlphanumericInput}
                                         Icon={GiMedicines}
+                                        type="alphaNumeric"
 
                                     />
 

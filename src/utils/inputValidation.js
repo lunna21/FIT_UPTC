@@ -30,11 +30,15 @@ export const validateEmailInput = (email) => {
     };
 };
 
-// Function to validate alphanumeric input (letters and numbers allowed)
-export const validateAlphanumericInput = (e) => {
-    return /[^a-zA-Z0-9]/;
+// Function to validate alphanumeric input (letters and numbers and spaces allowed)
+export const validateAlphanumericInput = (input) => {
+    const regex = /^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ]+$/; 
+    const isValid = regex.test(input);
+    return {
+        isValid,
+        message: isValid ? '' : 'Los datos ingresados no son válidos. Solo se permiten letras, números y espacios.'
+    };
 };
-
 // Function to validate phone number input (only numbers and specific symbols allowed)
 export const validatePhoneNumberInput = (e) => {
     return /[^0-9+\-() ]/;

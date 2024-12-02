@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdError } from 'react-icons/md';
-
+import { validateAlphanumericInput } from '@/utils/inputValidation'
 const ValidationInput = ({
   label,
   type = 'text',
@@ -117,6 +117,15 @@ const ValidationInput = ({
         } else {
           setError('');
         }
+        break;
+      case 'alphaNumeric':
+        const { isValid, message } = validateAlphanumericInput(value);
+        if (!isValid) {
+          setError(message);
+        } else {
+          setError('');
+        }
+        break;
       default:
         if (validation) {
           const validationError = validation(value);
@@ -132,7 +141,7 @@ const ValidationInput = ({
   return (
     <div className="w-full p-1 box-border">
       <label htmlFor={name} className="block text-black font-medium text-sm py-2">
-        {label} 
+        {label}
       </label>
       <div className={`flex items-center gap-2 p-2 bg-gray-100 rounded-lg ${error ? 'border border-red-500' : ''}`}>
         {Icon && <Icon className="text-gray-500" />}
