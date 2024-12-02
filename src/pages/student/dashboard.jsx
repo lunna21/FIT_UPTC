@@ -21,8 +21,6 @@ const Dashboard = () => {
         setLoadedVideos((prev) => ({ ...prev, [id]: true }));
     };
 
-    console.log(loadedVideos)
-
     return (
         <div className="flex flex-col min-h-screen bg-neutral-gray-light">
             <StudentHeader />
