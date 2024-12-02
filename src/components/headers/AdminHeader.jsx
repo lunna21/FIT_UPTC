@@ -5,6 +5,7 @@ const AdminHeader = () => {
         { name: 'Usuarios', href: '/admin/users' },
         { name: 'Crear usuario', href: '/admin/create-user' },
         { name: 'Horarios', href: '/admin/schedules' },
+        { name: "Opiniones", href: '/admin/feedback'}
     ]
 
     return (

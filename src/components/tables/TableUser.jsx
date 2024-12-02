@@ -21,6 +21,8 @@ import { GrStatusInfo } from "react-icons/gr";
 import { GoPencil } from "react-icons/go";
 import { TiWarning } from "react-icons/ti";
 
+import { toCapitalize } from '@/utils/utils'
+
 export default function TableUser({ users: initUsers, setIsLoading, setInitUsers, detailsUrl, title }) {
     const { updateStatus } = useUpdateStatusUser();
     const {
@@ -115,11 +117,6 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
         router.push(`${detailsUrl}/${id}`);
     };
 
-    function capitalize(str) {
-        if (!str) return '';
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    }
-
     const offset = (currentPage - 1) * itemsPerPage;
     const currentData = filteredData.slice(offset, offset + itemsPerPage);
 
@@ -150,7 +147,7 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
             await sendEmail({
                 email: selectedUser.emailUser,
                 subject: `Cambio de estado de cuenta UPTC FIT`,
-                text: `Hola ${capitalize(selectedUser.person.firstNamePerson)} ${capitalize(selectedUser.person.lastNamePerson)}, tu cuenta ha sido ${statusUserChange === 'ACT' ? 'activada' : statusUserChange === 'INA' ? 'inactivada' : 'dejada pendiente'}.`,
+                text: `Hola ${toCapitalize(selectedUser.person.firstNamePerson)} ${toCapitalize(selectedUser.person.lastNamePerson)}, tu cuenta ha sido ${statusUserChange === 'ACT' ? 'activada' : statusUserChange === 'INA' ? 'inactivada' : 'dejada pendiente'}.`,
                 html: emailChangeStatus({
                     status: statusUserChange,
                     firstName: selectedUser.person.firstNamePerson,
@@ -333,7 +330,7 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                                                 className="border-b border-neutral-gray-light hover:bg-primary-light cursor-pointer transition-colors duration-200"
                                             >
                                                 <td className="px-6 py-4 font-montserrat">
-                                                    {capitalize(user.person.firstNamePerson)} {capitalize(user.person.lastNamePerson)}
+                                                    {toCapitalize(user.person.firstNamePerson)} {toCapitalize(user.person.lastNamePerson)}
                                                 </td>
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
                                                     {
@@ -355,9 +352,9 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                                                 <td className="px-6 py-4 font-montserrat flex justify-center">
                                                     {
                                                         title === 'Usuarios' ? (
-                                                            <td className='px-6 py-4 font-montserrat text-center'>
+                                                            <p className='px-6 py-4 font-montserrat text-center'>
                                                                 {user.idRoleUser === 'EMP' ? 'Empleado' : 'Estudiante'}
-                                                            </td>
+                                                            </p>
                                                         ) : (
                                                             user.person.phoneNumberPerson
                                                         )
@@ -457,7 +454,7 @@ export default function TableUser({ users: initUsers, setIsLoading, setInitUsers
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onAccept={handleStatus}
-                        nameUser={capitalize(selectedUser?.person?.firstNamePerson) + ' ' + capitalize(selectedUser?.person?.lastNamePerson)}
+                        nameUser={toCapitalize(selectedUser?.person?.firstNamePerson) + ' ' + toCapitalize(selectedUser?.person?.lastNamePerson)}
                         status={statusUserChange === 'ACT' ? 'Activar' : statusUserChange === 'INA' ? 'Inactivar' : 'Dejar pendiente'}
                     />
                 </div>

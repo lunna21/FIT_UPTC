@@ -1,18 +1,21 @@
-import EmployeeHeader from '@/components/headers/EmployeeHeader';
-import Footer from '@/components/footers/Footer';
+import Loader from '@/components/Loader'
+import { useRouter } from "next/router";
+import { useEffect } from 'react'
 
-const Dashboard = () => {
+const DashBoard = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push("/employees")
+    }, [])
+
     return (
-        <div>
-            <EmployeeHeader />
-            <main className='min-h-screen'>
-                <h1>Dashboard</h1>
-            </main>
-            <footer>
-                <Footer />
-            </footer>
+        <div className="w-screen min-h-screen flex justify-center items-center">
+            <div>
+                <Loader />
+            </div>
         </div>
     );
 }
 
-export default Dashboard;
+export default DashBoard;

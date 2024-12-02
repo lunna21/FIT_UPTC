@@ -20,12 +20,6 @@ export default async function handler(req, res) {
 
     const inputDate = new Date(date_schedule);
 
-    console.log(inputDate.toDateString())
-
-    console.log(today.toDateString())
-
-    console.log(tomorrow.toDateString())
-
     if (
         inputDate.toDateString() !== today.toDateString() &&
         inputDate.toDateString() !== tomorrow.toDateString()
@@ -73,8 +67,6 @@ export default async function handler(req, res) {
                 user: true,
             }
         });
-
-        console.log(newSchedule);
 
         res.status(201).json(newSchedule);
     } catch (error) {

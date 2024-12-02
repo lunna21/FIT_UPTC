@@ -2,6 +2,14 @@ export async function updateReservationDate(id, daysAfter = 1) {
     let reservationDate = new Date();
     reservationDate.setDate(reservationDate.getDate() + daysAfter);
 
+    // Convertir explícitamente la fecha a UTC-5
+    const toUTCMinus5 = (date) => {
+        const offsetMillis = 5 * 60 * 60 * 1000; // UTC-5 en milisegundos
+        return new Date(date.getTime() - offsetMillis);
+    };
+
+    const adjustedDate = toUTCMinus5(reservationDate);
+    
     try {
         const response = await fetch(`/api/reservation-date`, {
             method: 'PUT',
@@ -10,7 +18,7 @@ export async function updateReservationDate(id, daysAfter = 1) {
             },
             body: JSON.stringify({
                 idUser: id,
-                newDate: reservationDate
+                newDate: adjustedDate
             })
         });
 
@@ -43,7 +51,7 @@ export async function getReservationDate() {
 
         const data = await response.json();
 
-        if(data.length > 0) {
+        if (data.length > 0) {
             return data[0];
         } else {
             return {};
