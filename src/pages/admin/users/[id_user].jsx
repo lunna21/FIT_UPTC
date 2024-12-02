@@ -1,12 +1,13 @@
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import StudentHeader from '@/components/headers/StudentHeader';
-import { useUser } from '@clerk/nextjs'
+import AdminHeader from '@/components/headers/AdminHeader';
 
 import Button from '@/components/buttons/Button';
 import PopMessage from "@/components/PopMessage";
-import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
 
-import { getUserDetailById, getUserByUsername } from '@/db/user';
+
+import { getUserDetailById } from '@/db/user';
 import Loader from '@/components/Loader';
 import InputValidation from '@/components/inputs/InputValidation';
 // import ModalViewConsents from '@/components/modals/ModalViewConsents';
@@ -16,7 +17,7 @@ import { sendEmail } from '@/db/email';
 import emailChangeStatus from '@/emails/emailChangeStatus';
 import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
 import useShowPopUp from '@/hooks/useShowPopUp';
-import Footer from '@/components/footers/Footer';
+import Link from 'next/link';
 
 //icons
 import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom, MdOutlineRealEstateAgent, MdVerified, MdError } from "react-icons/md";
@@ -42,9 +43,10 @@ const formatName = (name) => {
     return name.split(' ').map(capitalizeFirstLetter).join(' ');
 };
 
-function Profile() {
+function Details() {
+    const router = useRouter();
+    const { id_user } = router.query;
     const { user } = useUser();
-
     const [estudiante, setEstudiante] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -54,6 +56,8 @@ function Profile() {
     const [showMedicationInputs, setShowMedicationInputs] = useState(false); // Nuevo estado
     const today = getToday(14);
     const [errors, setErrors] = useState({ typeDocument: '', numberDocument: '' });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userData, setUserData] = useState(null);
     const [showMenuStatus, setShowMenuStatus] = useState(false);
     const [formData, setFormData] = useState({
         typeDocument: '',
@@ -99,7 +103,9 @@ function Profile() {
     // const userStatus = userData?.historyUserStatus?.length > 0 ? userData.historyUserStatus[0].idUserStatus : 'Desconocido';
 
     const handleChange = (e, section) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
+
+
 
         if (name == 'terms') {
             setFormData({
@@ -201,27 +207,28 @@ function Profile() {
         setShowMedications(!showMedications);
     };
 
+
+
     useEffect(() => {
-        const fetchEstudiante = async (userClerk) => {
-            try {
-                const user = await getUserByUsername(userClerk.username);
-                const student = await getUserDetailById(user.id_user);
-                setEstudiante(student);
-            } catch (error) {
-                console.error(error)
+        if (id_user) {
+            const fetchEstudiante = async () => {
+                try {
+                    const student = await getUserDetailById(id_user);
+                    setEstudiante(student);
+                } catch (error) {
+                    setError(error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+
+            fetchEstudiante().catch(error => {
+                console.error('Error fetching user details:', error);
                 setError(error);
                 showPopUp({ text: error.message, status: 'error' });
-            } finally {
-                setLoading(false);
-            }
+            });
         }
-
-        if (user?.username) {
-            console.log('Fetching student...');
-            fetchEstudiante(user)
-        }
-
-    }, [user]);
+    }, [id_user]);
 
     if (loading) {
         return (
@@ -264,32 +271,100 @@ function Profile() {
         updatedMedications.splice(index, 1);
         setFormData({ ...formData, medications: updatedMedications });
     };
+    const handleMenuStatus = (e, id) => {
+        e.stopPropagation();
+        setShowMenuStatus(!showMenuStatus);
+    }
+    const handleAdminStatusUser = (e, status) => {
+        e.stopPropagation();
+        setStatusUserChange(status);
+        setIsModalOpen(true);
+    }
+    const handleStatus = async (reason) => {
 
-    if (!estudiante || Object.keys(estudiante).length === 0) {
-        return (
-            <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">
-                <h1 className="text-2xl font-bold text-neutral-gray-dark">No se encontró el estudiante</h1>
-            </div>
-        )
+        try {
+            if (!estudiante.idUser || !statusUserChange || !reason || !estudiante.nameUser) {
+                throw { message: 'Error inhabilitando el usuario' };
+            }
+            const response = await updateStatus({
+                idUser: estudiante.idUser,
+                status: statusUserChange,
+                reason: reason,
+                username: estudiante.nameUser
+            })
+            await sendEmail({
+                email: estudiante.emailUser,
+                subject: `Cambio de estado de cuenta UPTC FIT`,
+                text: `Hola ${toCapitalize(estudiante.person.firstNamePerson)} ${toCapitalize(estudiante.person.lastNamePerson)}, tu cuenta ha sido ${statusUserChange === 'ACT' ? 'activada' : statusUserChange === 'INA' ? 'inactivada' : 'dejada pendiente'}.`,
+                html: emailChangeStatus({
+                    status: statusUserChange,
+                    firstName: estudiante.person.firstNamePerson,
+                    lastName: estudiante.person.lastNamePerson
+                })
+            })
+            setEstudiante({ ...estudiante, historyUserStatus: [{ idUserStatus: statusUserChange }] });
+            showPopUp({ text: response.message, status: "success" })
+
+        } catch (error) {
+            console.error('Error updating user status:', error);
+            showPopUp({ text: error?.message, status: "error" })
+        } finally {
+            setIsModalOpen(false);
+        }
     }
 
-    let inscriptionDetail = null;
-    if (estudiante?.inscriptionDetail) {
-        inscriptionDetail = estudiante.inscriptionDetail[0];
-    }
+    const inscriptionDetail = estudiante.inscriptionDetails[0];
 
     return (
         <>
-            <StudentHeader />
+            <AdminHeader />
             <div className="w-full mx-auto rounded-lg overflow-hidden flex flex-col items-start mt-4">
-                <div className="flex flex-col w-full sm:w-[65vw] mx-auto justify-between rounded-lg bg-neutral-gray-light">
-                    <div>
+                <div className="flex flex-col w-[65vw] mx-auto justify-between rounded-lg bg-neutral-gray-light">
+                    <div className>
                         <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-0 my-4 text-center">
-                            Mi perfil
+                            Detalles del Estudiante
                         </h1>
+                        <div className='relative w-full flex justify-center'>
+                            <button onClick={(e) => handleMenuStatus(e, estudiante.idUser)}
+                                className={`relative px-2 py-1 rounded-full flex items-center font-semibold 
+                                transition ease-in-out duration-200 hover:opacity-60 shadow-md ${estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'bg-green-500 text-white' :
+                                        estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'bg-red-500 text-white' :
+                                            'bg-gray-500 text-white'
+                                    }`}>
+                                {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? 'Activo' :
+                                    estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? 'Pendiente' :
+                                        estudiante.historyUserStatus[0]?.idUserStatus === 'INA' ? 'Inactivo' :
+                                            estudiante.historyUserStatus[0]?.idUserStatus || 'Desconocido'}
+                                {estudiante.historyUserStatus[0]?.idUserStatus === 'ACT' ? <FaCheckCircle className="inline-block ml-1 text-xl" /> :
+                                    estudiante.historyUserStatus[0]?.idUserStatus === 'PEN' ? <TiWarning className="inline-block ml-1 text-xl" /> :
+                                        <TiWarning className="inline-block ml-2" />}
+                            </button>
+                            {showMenuStatus && (
+                                <ul className='absolute top-0  mt-10 min-w-[120px] bg-white rounded-md z-50 shadow-lg'>
+                                    {[
+                                        { name: 'Pendiente', status: 'PEN' },
+                                        { name: 'Activo', status: 'ACT' },
+                                        { name: 'Inactivo', status: 'INA' }
+                                    ].map((item, index) => {
+                                        if (estudiante.historyUserStatus[0].idUserStatus === item.status) {
+                                            return null;
+                                        }
+                                        return (
+                                            <li
+                                                key={index}
+                                                className='hover:bg-primary-light px-4 py-1 rounded-md cursor-pointer'
+                                                onClick={(e) => handleAdminStatusUser(e, item.status)}
+                                            >
+                                                {item.name}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            )}
+                        </div>
                     </div>
-                    <form className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-4 sm:p-1" onSubmit={handleSubmit}>
-                        <div className='w-full sm:w-96 bg-gray-700 bg-opacity-25 rounded-xl p-4 max-w-xl mx-auto'>
+                    <form className="grid grid-cols-2 gap-2.5 p-4" onSubmit={handleSubmit}>
+                        <div className='w-96 bg-gray-700 bg-opacity-25 rounded-xl p-4 max-w-xl mx-auto'>
                             <h2 className="text-xl font-bold mb-4 ">1. Datos Personales</h2>
                             <div className="flex flex-col mb-4">
                                 <label className="block text-blackColor font-medium text-sm py-1" htmlFor="typeDocument">Tipo de Documento (*)</label>
@@ -469,7 +544,7 @@ function Profile() {
 
                         </div>
                         <div className='w-full flex flex-col gap-8'>
-                            <div className="bg-gray-700 bg-opacity-25 rounded-xl p-4 w-full sm:w-96 max-w-xl mx-auto">
+                            <div className="bg-gray-700 bg-opacity-25 rounded-xl p-4 w-96 max-w-xl mx-auto">
                                 <h2 className="text-xl font-bold mb-4">2. Información de Contacto de Emergencia</h2>
                                 < InputValidation
                                     placeholder="Nombre completo del contacto"
@@ -529,7 +604,7 @@ function Profile() {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-700 bg-opacity-25 rounded-xl p-4 w-full sm:w-96 max-w-xl mx-auto">
+                            <div className="bg-gray-700 bg-opacity-25 rounded-xl p-4 w-96 max-w-xl mx-auto">
                                 <h2 className="text-xl font-bold mb-4">3. Medicamentos Preescritos</h2>
                                 <div className="mt-2 w-full bg-gray-100 p-4 rounded">
                                     <div className="overflow-x-auto">
@@ -650,12 +725,18 @@ function Profile() {
                             />
                         )
                     }
-                </div >
+                    <ModalChangeStatusUser
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onAccept={handleStatus}
+                        nameUser={toCapitalize(estudiante.person.firstNamePerson) + ' ' + toCapitalize(estudiante?.person?.lastNamePerson)}
+                        status={statusUserChange === 'ACT' ? 'Activar' : statusUserChange === 'INA' ? 'Inactivar' : 'Dejar pendiente'}
+                    />
 
-                <Footer />
+                </div >
             </div >
         </>
     );
 }
 
-export default Profile;
+export default Details;

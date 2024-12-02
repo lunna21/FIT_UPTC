@@ -63,7 +63,8 @@ const prisma = new PrismaClient();
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Faltan parametro(s)" / "El estado del usuario no es permitido."
+ *                   example: "Faltan parametro(s)"
+ *                 example: "El estado del usuario no es permitido."
  *       404:
  *         description: El ID del modificador no existe
  *         content:

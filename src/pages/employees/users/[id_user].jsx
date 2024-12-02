@@ -5,7 +5,7 @@ import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import Button from '@/components/buttons/Button';
 import PopMessage from "@/components/PopMessage";
 import { useUser } from '@clerk/nextjs';
-
+import Link from 'next/link';
 
 import { getUserDetailById } from '@/db/user';
 import Loader from '@/components/Loader';
@@ -17,7 +17,6 @@ import { sendEmail } from '@/db/email';
 import emailChangeStatus from '@/emails/emailChangeStatus';
 import useUpdateStatusUser from '@/hooks/useUpdateStatusUser';
 import useShowPopUp from '@/hooks/useShowPopUp';
-import Link from 'next/link';
 
 //icons
 import { MdOutlinePermIdentity, MdEmail, MdDriveFileRenameOutline, MdBloodtype, MdFamilyRestroom, MdOutlineRealEstateAgent, MdVerified, MdError } from "react-icons/md";

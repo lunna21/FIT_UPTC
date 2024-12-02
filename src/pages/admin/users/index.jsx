@@ -50,7 +50,7 @@ function Users() {
                 users={users} 
                 setIsLoading={setLoading} 
                 setInitUsers={setUsers}
-                detailsUrl="#"
+                detailsUrl="/admin/users"
                 title="Usuarios"
             />
         </div>

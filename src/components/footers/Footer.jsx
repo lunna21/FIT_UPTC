@@ -14,15 +14,14 @@ const Footer = () => {
         <div className="w-full bg-neutral-gray-dark">
             <div className="flex justify-around">
                 <SocialImageStyled className="flex flex-col justify-center items-center mt-4">
-                    <figure className="p-1 rounded-md mb-2">
-                        <Image src={zonaLogos} alt="Logo UPTC" className="w-auto object-cover" priority height={100}/>
+                    <figure className="p-1 rounded-md mb-2 max-h-36 max-w-80 object-cover">
+                        <Image src={zonaLogos} alt="Logo UPTC" className="w-full h-full object-contain" priority/>
                     </figure>
                     <FooterSocial />
                 </SocialImageStyled>
 
                 <FooterFeedback />
             </div>
-
 
             <CopyRightLine />
         </div>

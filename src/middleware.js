@@ -5,13 +5,13 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 // Define access permissions based on roles
 const rolePermissions = {
-  adm: ["/", "/admin/dashboard", "/admin/users", "/admin/create-user", "/admin/schedules", "/admin/feedback"], // Define as needed
+  adm: ["/", "/admin/dashboard", "/admin/users", "/admin/users/*", "/admin/create-user", "/admin/schedules", "/admin/feedback"], // Define as needed
   stu: ["/", "/student/dashboard", "/student/reserve", "/student/profile"], // Define as needed
   emp: ["/", "/employees/dashboard", "/employees", "/employees/users/*", "/employees/turns",], // Define as needed'], // Define as needed
 };
 
 // Define public routes that don't require authentication
-const publicRoutes = ["/login", "/register", "/verification", "/recover"];
+const publicRoutes = ["/login", "/register", "/verification", "/recover", "/docs"];
 
 function statusActiveActions(path, role) {
   if (path === "/") {
@@ -63,6 +63,10 @@ export default clerkMiddleware(async (auth, req) => {
   // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
   if (actualUrl.pathname.startsWith("/api")) {
     console.log("API request");
+    return NextResponse.next();
+  }
+
+  if (actualUrl.pathname.startsWith("/docs")) {
     return NextResponse.next();
   }
 
