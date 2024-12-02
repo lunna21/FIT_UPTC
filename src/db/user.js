@@ -195,17 +195,9 @@ export async function getUserByRole(role) {
         "Content-Type": "application/json",
       },
     });
-<<<<<<< Updated upstream
     if (!response.ok) {
       const error = await response.json();
       throw error;
-=======
-    if (response.ok) {
-      return response.json();
-    } else {
-      console.error("Error fetching users by role:", response);
-      throw new Error("Error al obtener usuarios por rol, comprueba la información enviada");
->>>>>>> Stashed changes
     }
     return response.json();
   } catch (error) {

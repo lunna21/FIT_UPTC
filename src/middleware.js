@@ -1,11 +1,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-<<<<<<< Updated upstream
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-=======
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
->>>>>>> Stashed changes
 
 // Define access permissions based on roles
 const rolePermissions = {
@@ -17,7 +13,6 @@ const rolePermissions = {
 // Define public routes that don't require authentication
 const publicRoutes = ["/login", "/register", "/verification", "/recover"];
 
-<<<<<<< Updated upstream
 function statusActiveActions(path, role) {
   if (path === "/") {
     const dashboardRoute =
@@ -41,19 +36,12 @@ function statusActiveActions(path, role) {
 
   return NextResponse.next();
 }
-=======
-// actions when the user's status is ACT
-// function statusActiveActions(path) {
-
-// }
->>>>>>> Stashed changes
 
 function statusPendingActions(path) {
   if (path === "/pending") {
     return NextResponse.next();
   } else {
     return NextResponse.redirect(new URL(BASE_URL + "/pending").toString());
-<<<<<<< Updated upstream
   }
 }
 
@@ -62,8 +50,6 @@ function statusInactiveActions(path) {
     return NextResponse.next();
   } else {
     return NextResponse.redirect(new URL(BASE_URL + "/inactive").toString());
-=======
->>>>>>> Stashed changes
   }
 }
 
@@ -71,7 +57,6 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn, sessionClaims } = await auth();
   const actualUrl = new URL(req.url);
 
-<<<<<<< Updated upstream
   console.log(actualUrl.pathname);
   console.log(userId);
 
@@ -83,20 +68,6 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Permitir el acceso a los archivos en la carpeta public/consents
   if (actualUrl.pathname.startsWith("/consents")) {
-=======
-  const actualUrl = new URL(req.url);
-
-  console.log(actualUrl.pathname);
-  console.log(userId);
-
-  if(actualUrl.pathname.startsWith("/docs") && BASE_URL.includes("localhost")) {
-    return NextResponse.next()
-  }
-
-  // Permitir el acceso a la API -- cambiar esto para restringir por roles en el futuro
-  if (actualUrl.pathname.startsWith("/api")) {
-    console.log("API request");
->>>>>>> Stashed changes
     return NextResponse.next();
   }
 
