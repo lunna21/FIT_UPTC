@@ -1,6 +1,108 @@
 // import { users } from '@clerk/clerk-sdk-node';
 import { getAuth, clerkClient } from '@clerk/nextjs/server'
 
+/**
+ * @swagger
+ * /api/users/clerk:
+ *   get:
+ *     summary: Retrieve a user by username
+ *     description: Fetches a user from the Clerk API using the provided username.
+ *     parameters:
+ *       - in: query
+ *         name: username
+ *         required: true
+ *         description: The username of the user to retrieve.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       400:
+ *         description: Username is required or user not found
+ *       500:
+ *         description: Error in the request
+ *   post:
+ *     summary: Create a new user
+ *     description: Creates a new user in the Clerk system with the provided email, password, and username.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                 token:
+ *                   type: object
+ *       500:
+ *         description: Error in user creation
+ *   put:
+ *     summary: Update user metadata
+ *     description: Updates the role and status of a user in the Clerk system.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User metadata updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: object
+ *       400:
+ *         description: Role and Status are required
+ *       401:
+ *         description: No Logged In User
+ *       500:
+ *         description: Error updating user metadata
+ *   default:
+ *     summary: Method Not Allowed
+ *     description: The requested method is not allowed for this endpoint.
+ *     responses:
+ *       405:
+ *         description: Method Not Allowed
+ */
 export default async function handler(req, res) {
     // Await the resolution of clerkClient
     const client = await clerkClient();

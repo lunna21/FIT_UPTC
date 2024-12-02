@@ -2,6 +2,71 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/reservation-date/put:
+ *   put:
+ *     summary: Actualiza la fecha de reserva
+ *     description: Actualiza la fecha de reserva en la base de datos.
+ *     tags:
+ *       - Reservation Date
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idUser:
+ *                 type: string
+ *                 description: ID del usuario que actualiza la fecha de reserva
+ *                 example: "12345"
+ *               newDate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Nueva fecha de reserva
+ *                 example: "2023-12-31T23:59:59Z"
+ *     responses:
+ *       200:
+ *         description: Fecha de reserva actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_history:
+ *                   type: string
+ *                   description: ID del historial de la fecha de reserva
+ *                 updated_by:
+ *                   type: string
+ *                   description: ID del usuario que actualizó la fecha de reserva
+ *                 reservation_date:
+ *                   type: string
+ *                   format: date-time
+ *                   description: Nueva fecha de reserva
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Descripción del error
+ *                   example: "Faltan datos para actualizar la fecha de reserva"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Descripción del error
+ *                   example: "Internal server error"
+ */
 async function updateReservationDateHandler(req, res) {
     const { idUser, newDate } = req.body;
 

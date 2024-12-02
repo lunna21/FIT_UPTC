@@ -2,6 +2,57 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Obtiene un usuario por ID
+ *     description: Retorna un usuario específico junto con su historial de estado.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_user:
+ *                   type: integer
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 id_status:
+ *                   type: integer
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error en la búsqueda del usuario
+ *   delete:
+ *     summary: Elimina un usuario por ID
+ *     description: Elimina un usuario específico y todas sus entradas relacionadas en las tablas foráneas.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error al eliminar el usuario
+ */
 export default async function handler(req, res) {
     const { id } = req.query; // 'id'
     const id_user = parseInt(id); // asegurar 'id' es un número entero

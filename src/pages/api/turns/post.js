@@ -2,6 +2,107 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/turns/post:
+ *   post:
+ *     summary: Crea un nuevo turno
+ *     tags: [Turns]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - max_capacity
+ *               - day
+ *               - start_time
+ *               - end_time
+ *             properties:
+ *               max_capacity:
+ *                 type: integer
+ *                 description: Capacidad máxima del turno
+ *               day:
+ *                 type: string
+ *                 description: Día de la semana
+ *               start_time:
+ *                 type: string
+ *                 format: time
+ *                 description: Hora de inicio del turno (HH:MM)
+ *               end_time:
+ *                 type: string
+ *                 format: time
+ *                 description: Hora de fin del turno (HH:MM)
+ *               color_turn:
+ *                 type: string
+ *                 description: Color del turno
+ *               status:
+ *                 type: string
+ *                 description: Estado del turno
+ *     responses:
+ *       201:
+ *         description: Turno creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 idTurn:
+ *                   type: integer
+ *                   description: ID del turno
+ *                 maxCapacity:
+ *                   type: integer
+ *                   description: Capacidad máxima del turno
+ *                 day:
+ *                   type: string
+ *                   description: Día de la semana
+ *                 status:
+ *                   type: string
+ *                   description: Estado del turno
+ *                 colorTurn:
+ *                   type: string
+ *                   description: Color del turno
+ *                 startTime:
+ *                   type: string
+ *                   format: time
+ *                   description: Hora de inicio del turno (HH:MM)
+ *                 endTime:
+ *                   type: string
+ *                   format: time
+ *                   description: Hora de fin del turno (HH:MM)
+ *                 createdTurnAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: Fecha de creación del turno
+ *                 updatedTurnAt:
+ *                   type: string
+ *                   format: date-time
+ *                   description: Fecha de actualización del turno
+ *       400:
+ *         description: Error en la solicitud
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error
+ *                 error:
+ *                   type: string
+ *                   description: Detalles del error
+ */
 export default async function postHandler(req, res) {
 
     const { max_capacity, day, start_time, end_time, color_turn, status } = req.body;

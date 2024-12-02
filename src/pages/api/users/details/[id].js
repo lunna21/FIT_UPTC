@@ -2,6 +2,172 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/users/details/{id}:
+ *   get:
+ *     summary: Obtiene los detalles de un usuario por ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del usuario
+ *     responses:
+ *       200:
+ *         description: Detalles del usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 idUser:
+ *                   type: integer
+ *                 idPerson:
+ *                   type: integer
+ *                 documentNumberPerson:
+ *                   type: string
+ *                 idRoleUser:
+ *                   type: integer
+ *                 nameUser:
+ *                   type: string
+ *                 passwordUser:
+ *                   type: string
+ *                 creationDateUser:
+ *                   type: string
+ *                   format: date-time
+ *                 emailUser:
+ *                   type: string
+ *                 roleUser:
+ *                   type: object
+ *                   properties:
+ *                     idRoleUser:
+ *                       type: integer
+ *                     nameRoleUser:
+ *                       type: string
+ *                 historyUserStatus:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idHistoryUserStatus:
+ *                         type: integer
+ *                       idUser:
+ *                         type: integer
+ *                       idUserStatus:
+ *                         type: integer
+ *                       changeDate:
+ *                         type: string
+ *                         format: date-time
+ *                       changeReason:
+ *                         type: string
+ *                 userAudit:
+ *                   type: object
+ *                 person:
+ *                   type: object
+ *                   properties:
+ *                     idPerson:
+ *                       type: integer
+ *                     documentNumberPerson:
+ *                       type: string
+ *                     idDocumentType:
+ *                       type: integer
+ *                     firstNamePerson:
+ *                       type: string
+ *                     lastNamePerson:
+ *                       type: string
+ *                     phoneNumberPerson:
+ *                       type: string
+ *                     emailPerson:
+ *                       type: string
+ *                     birthdatePerson:
+ *                       type: string
+ *                       format: date
+ *                     createdPersonBy:
+ *                       type: string
+ *                     createdPersonAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedPersonBy:
+ *                       type: string
+ *                     updatedPersonAt:
+ *                       type: string
+ *                       format: date-time
+ *                 inscriptionDetails:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idInscriptionDetail:
+ *                         type: integer
+ *                       idStudent:
+ *                         type: integer
+ *                       idEstatement:
+ *                         type: integer
+ *                       studentCode:
+ *                         type: string
+ *                       idEmergencyContact:
+ *                         type: integer
+ *                       idEps:
+ *                         type: integer
+ *                       bloodType:
+ *                         type: string
+ *                       idAllergy:
+ *                         type: integer
+ *                       urlConsent:
+ *                         type: string
+ *                       createdAtInscriptionDetail:
+ *                         type: string
+ *                         format: date-time
+ *                       allergy:
+ *                         type: object
+ *                       emergencyContact:
+ *                         type: object
+ *                         properties:
+ *                           idEmergencyContact:
+ *                             type: integer
+ *                           fullNameEmergencyContact:
+ *                             type: string
+ *                           relationshipEmergencyContact:
+ *                             type: string
+ *                           phoneNumberEmergencyContact:
+ *                             type: string
+ *                       eps:
+ *                         type: object
+ *                         properties:
+ *                           idEps:
+ *                             type: integer
+ *                           nameEps:
+ *                             type: string
+ *                       estatement:
+ *                         type: object
+ *                         properties:
+ *                           idEstatement:
+ *                             type: integer
+ *                           nameEstatement:
+ *                             type: string
+ *                       medications:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             idPrescriptionMedication:
+ *                               type: integer
+ *                             namePrescriptionMedication:
+ *                               type: string
+ *                             dosePrescriptionMedication:
+ *                               type: string
+ *                             recipeReason:
+ *                               type: string
+ *       400:
+ *         description: El id del usuario es requerido
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error fetching user details
+ */
 export default async function getHandler(req, res) {
   const { id } = req.query;
 

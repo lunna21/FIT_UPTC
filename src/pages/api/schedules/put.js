@@ -2,6 +2,66 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/schedules/put:
+ *   put:
+ *     summary: Actualiza el estado de una reserva
+ *     description: Actualiza el estado de una reserva en la base de datos.
+ *     tags:
+ *       - Schedules
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_schedule
+ *               - state_schedule
+ *             properties:
+ *               id_schedule:
+ *                 type: integer
+ *                 description: ID de la reserva
+ *               state_schedule:
+ *                 type: string
+ *                 description: Nuevo estado de la reserva
+ *                 enum: [PENDING, ATTEND, MISSED, CANCELLED]
+ *     responses:
+ *       200:
+ *         description: Reserva actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_schedule:
+ *                   type: integer
+ *                 state_schedule:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                 turn:
+ *                   type: object
+ *       400:
+ *         description: Datos requeridos faltantes o estado de la reserva no válido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 export default async function putHandler(req, res) {
 
     const { id_schedule, state_schedule } = req.body;

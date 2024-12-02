@@ -2,6 +2,61 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/persons/delete:
+ *   delete:
+ *     summary: Elimina una persona por su número de documento
+ *     description: Elimina una persona y todas las entradas relacionadas en las tablas foráneas.
+ *     parameters:
+ *       - in: query
+ *         name: document_number
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: El número de documento de la persona a eliminar
+ *     responses:
+ *       200:
+ *         description: Persona eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Persona eliminada correctamente
+ *       404:
+ *         description: Persona no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Persona no encontrada
+ *       500:
+ *         description: Error al eliminar la persona
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error al eliminar la persona
+ *       405:
+ *         description: Método no permitido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Método no permitido
+ */
 export default async function deleteHandler(req, res) {
     const { document_number } = req.query;
 

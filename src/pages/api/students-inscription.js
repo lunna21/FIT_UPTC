@@ -5,6 +5,42 @@ import { auth } from '@clerk/nextjs';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/students-inscription:
+ *   get:
+ *     summary: Obtiene la lista de estudiantes con sus detalles.
+ *     description: Retorna una lista de estudiantes inscritos con sus detalles personales.
+ *     responses:
+ *       200:
+ *         description: Lista de estudiantes obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nombreCompleto:
+ *                     type: string
+ *                     description: Nombre completo del estudiante.
+ *                   codigoEstudiantil:
+ *                     type: string
+ *                     description: Código estudiantil del estudiante.
+ *                   correoElectronico:
+ *                     type: string
+ *                     description: Correo electrónico del estudiante.
+ *                   numeroTelefono:
+ *                     type: string
+ *                     description: Número de teléfono del estudiante.
+ *                   estado:
+ *                     type: string
+ *                     description: Estado del estudiante.
+ *       401:
+ *         description: No autorizado. El usuario no está autenticado.
+ *       500:
+ *         description: Error interno del servidor.
+ */
 export async function GET() {
   try {
     // Verificar autenticación con Clerk

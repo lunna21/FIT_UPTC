@@ -5,6 +5,117 @@ import { generateUsername } from '@/utils/utils';
 
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /api/users/post:
+ *   post:
+ *     summary: Crea un nuevo usuario y sus datos asociados.
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               document_number_person:
+ *                 type: string
+ *                 description: Número de documento de la persona.
+ *               id_role_user:
+ *                 type: string
+ *                 description: ID del rol del usuario.
+ *               email_user:
+ *                 type: string
+ *                 description: Correo electrónico del usuario.
+ *               password_user:
+ *                 type: string
+ *                 description: Contraseña del usuario.
+ *               inscription_detail:
+ *                 type: object
+ *                 description: Detalles de inscripción del usuario.
+ *                 properties:
+ *                   student_code:
+ *                     type: string
+ *                     description: Código de estudiante.
+ *                   emergency_contact:
+ *                     type: object
+ *                     description: Contacto de emergencia.
+ *                     properties:
+ *                       full_name_emecont:
+ *                         type: string
+ *                         description: Nombre completo del contacto de emergencia.
+ *                       relationship_emecont:
+ *                         type: string
+ *                         description: Relación con el contacto de emergencia.
+ *                       phone_number_emecont:
+ *                         type: string
+ *                         description: Número de teléfono del contacto de emergencia.
+ *                   eps:
+ *                     type: string
+ *                     description: Nombre de la EPS.
+ *                   blood_type:
+ *                     type: string
+ *                     description: Tipo de sangre.
+ *                   url_consent:
+ *                     type: string
+ *                     description: URL del consentimiento.
+ *                   allergy:
+ *                     type: object
+ *                     description: Detalles de la alergia.
+ *                     properties:
+ *                       name_allergy:
+ *                         type: string
+ *                         description: Nombre de la alergia.
+ *                   medications:
+ *                     type: array
+ *                     description: Lista de medicamentos.
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         name_presmed:
+ *                           type: string
+ *                           description: Nombre del medicamento.
+ *                         dose_persmed:
+ *                           type: string
+ *                           description: Dosis del medicamento.
+ *                         recipe_reason:
+ *                           type: string
+ *                           description: Razón de la receta.
+ *     responses:
+ *       201:
+ *         description: Usuario creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   description: Datos del usuario creado.
+ *                 inscription_detail:
+ *                   type: object
+ *                   description: Detalles de inscripción del usuario.
+ *       400:
+ *         description: Error en la solicitud.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error.
+ *       500:
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Mensaje de error.
+ */
 export default async function postHandler(req, res) {
     try {
         const data = req.body;
