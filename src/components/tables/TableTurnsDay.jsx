@@ -17,7 +17,6 @@ import { toCapitalize, getDayOfWeek, getFormatHour } from '@/utils/utils'
 import { calculateTopPosition, calculateHeightCard } from '@/utils/turn';
 
 const TableTurnsDay = ({ dateToSchedule }) => {
-    console.log(dateToSchedule)
     const day = getDayOfWeek(dateToSchedule);
     const START_TIME = 5;
     const HOURS_GYM_ATTENTION = 15;

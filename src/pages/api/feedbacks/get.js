@@ -9,7 +9,15 @@ export default async function handler(req, res) {
         try {
             const feedbacks = id_user
                 ? await prisma.feedback.findMany({ where: { id_user: parseInt(id_user) } })
-                : await prisma.feedback.findMany();
+                : await prisma.feedback.findMany({
+                    include: {
+                        user_feedback_id_userTouser: {
+                            include: {
+                                person_user_id_personToperson: true
+                            }
+                        }
+                    }
+                });
             res.status(200).json(feedbacks);
         } catch (error) {
             console.error('Error fetching feedbacks:', error);

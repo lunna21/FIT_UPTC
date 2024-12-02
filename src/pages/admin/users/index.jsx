@@ -27,9 +27,6 @@ function Users() {
         fetchUsers();
     }, []);
 
-    console.log(users);
-
-
     if (loading) {
         return (
             <div className="min-h-screen bg-neutral-gray-light p-6 flex items-center justify-center">

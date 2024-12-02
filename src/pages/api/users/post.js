@@ -97,6 +97,9 @@ export default async function postHandler(req, res) {
 
             const newUser = await prisma.user.create({
                 data: userData,
+                include: {
+                    person_user_id_personToperson: true,
+                }
             });
 
             let newInscriptionDetail = null;

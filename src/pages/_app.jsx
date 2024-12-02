@@ -12,6 +12,7 @@ import 'driver.js/dist/driver.css';
 import '@/styles/global.css'
 import '@/styles/login.css';
 import '@/styles/register.css';
+import '@/styles/driver.css'
 
 const montserrat = Montserrat({
     weight: ['400', '500', '600', '700'],
