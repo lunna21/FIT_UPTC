@@ -66,6 +66,11 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
+  // Permitir el acceso a los archivos en la carpeta public/consents
+  if (actualUrl.pathname.startsWith("/consents")) {
+    return NextResponse.next();
+  }
+
   if (userId) {
     const { role, status } = sessionClaims?.metadata;
 
