@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
+<<<<<<< Updated upstream
 
 import EmployeeHeader from '@/components/headers/EmployeeHeader';
 import TableUser from '@/components/tables/TableUser';
+=======
+import estudiantes from '@/fakeData/estudiantes';
+import HeaderMenu from '@/components/headers/HeaderMenu';
+import TableUser from '@/components/TableUser';
+import { getUserByRole } from '@/db/user';
+>>>>>>> Stashed changes
 import Loder from '@/components/Loader';
 import Footer from '@/components/footers/Footer';
 

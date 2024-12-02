@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdError } from 'react-icons/md';
-
+import { validateAlphanumericInput } from '@/utils/inputValidation'
 const ValidationInput = ({
   label,
   type = 'text',
@@ -12,10 +12,12 @@ const ValidationInput = ({
   required = false,
   validation,
   max,
-  min
+  min,
+  readOnly = false
 }) => {
   const [error, setError] = useState('');
   const [touched, setTouched] = useState(false);
+  const [readOnlyMessage, setReadOnlyMessage] = useState('');
   const currentDate = new Date();
   const inputDate = new Date(value);
 
@@ -117,6 +119,15 @@ const ValidationInput = ({
         } else {
           setError('');
         }
+        break;
+      case 'alphaNumeric':
+        const { isValid, message } = validateAlphanumericInput(value);
+        if (!isValid) {
+          setError(message);
+        } else {
+          setError('');
+        }
+        break;
       default:
         if (validation) {
           const validationError = validation(value);
@@ -129,10 +140,17 @@ const ValidationInput = ({
     handleValidation(value);
   }, [value, touched]);
 
+  const handleClick = () => {
+    if (readOnly) {
+      setReadOnlyMessage('Este campo no es modificable.');
+      setTimeout(() => setReadOnlyMessage(''), 2000); 
+    }
+  };
+
   return (
     <div className="w-full p-1 box-border">
       <label htmlFor={name} className="block text-black font-medium text-sm py-2">
-        {label} 
+        {label}
       </label>
       <div className={`flex items-center gap-2 p-2 bg-gray-100 rounded-lg ${error ? 'border border-red-500' : ''}`}>
         {Icon && <Icon className="text-gray-500" />}
@@ -151,11 +169,18 @@ const ValidationInput = ({
           required={required}
           max={type === 'number' ? max : undefined}
           min={type === 'number' ? min : undefined}
+          readOnly={readOnly}
+          onClick={handleClick}
         />
         {error && touched && <MdError className="text-red-500 ml-2 text-2xl" />}
       </div>
       {error && touched && (
         <p className="text-red-500 font-bold text-sm mt-1">{error}</p>
+      )}
+      {readOnlyMessage && (
+        <div className="text-red-500 font-bold text-sm mt-1">
+          {readOnlyMessage}
+        </div>
       )}
     </div>
   );
