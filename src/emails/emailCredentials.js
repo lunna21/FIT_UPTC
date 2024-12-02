@@ -1,6 +1,9 @@
+import { toCapitalize } from "@/utils/utils";
+
 function emailCredential({ firstName, lastName, username, password, redirectUrl }) {
 
     if(!firstName || !lastName || !username || !password || !redirectUrl) {
+        console.error('Missing required fields');
         return null
     }
 
@@ -13,7 +16,7 @@ function emailCredential({ firstName, lastName, username, password, redirectUrl 
 
     <!-- Content -->
     <div style="padding: 20px; background-color: #fff;">
-        <p style="margin: 0 0 15px;">Hola <strong>${firstName} ${lastName}</strong>,</p>
+        <p style="margin: 0 0 15px;">Hola <strong>${toCapitalize(firstName + " " + lastName)}</strong>,</p>
         <p style="margin: 0 0 15px;">Por favor, ve a iniciar sesión haciendo clic en el siguiente enlace:</p>
         <p style="margin: 0 0 20px; text-align: center;">
             <a href="${redirectUrl}" style="display: inline-block; background-color: #FFCC29; color: #333; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 4px;">

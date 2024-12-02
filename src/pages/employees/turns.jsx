@@ -99,8 +99,6 @@ const Turns = () => {
             setIsLoading(true);
             const turns = await getTurnsByHourOfDay(day, hour);
 
-            console.log(turns)
-
             let actualTurn = null;
             let nextTurn = null;
 
@@ -262,7 +260,7 @@ const Turns = () => {
                                 ) : (
                                     <>
                                         <h1 className="text-3xl font-poppins font-bold text-neutral-gray-dark mb-6 mt-10">
-                                            No hay turno a esta hora 😵‍💫
+                                            No hay un turno programado para este momento.
                                         </h1>
                                         {
                                             nextTurn && (

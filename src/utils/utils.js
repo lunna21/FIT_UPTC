@@ -128,10 +128,12 @@ export function generatePassword() {
 
 export function toCapitalize(string) {
   if (typeof string !== 'string') {
-    console.error('Input must be a string');
     return
   }
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  return string
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 }
 
 // Function to check if a date is in the format yyyy-mm-dd

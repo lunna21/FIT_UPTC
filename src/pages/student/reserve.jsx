@@ -21,9 +21,7 @@ const Reserve = () => {
             }
         }
 
-        if(reservationDate) {
-            fetchReservationDate();
-        }
+        fetchReservationDate();
     }, []);
 
     return (

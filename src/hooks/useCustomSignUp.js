@@ -51,6 +51,8 @@ const useCustomSignUp = () => {
             const username = user.user.name_user;
             const email = user.user.email_user;
 
+            const personDb = user.user.person_user_id_personToperson;
+
             await addUserInClerk({
                 email: email,
                 password: password,
@@ -62,10 +64,10 @@ const useCustomSignUp = () => {
             await sendEmail({
                 email: email,
                 subject: 'Bienvenido a UPTC FIT',
-                text: `Hola ${formData.firstName} ${formData.lastName},\n\nPor favor, ve a iniciar sesión haciendo clic en el siguiente enlace: ${redirectUrl}\n\nPuedes ingresar con las siguientes credenciales:\nUsuario: **${username}**\nContraseña: **${password}**\n\nSi no solicitaste este mensaje, por favor responde a este correo.\n\nSaludos,\nUPTC FIT`,
+                text: `Hola ${personDb.first_name_person} ${personDb.last_name_person},\n\nPor favor, ve a iniciar sesión haciendo clic en el siguiente enlace: ${redirectUrl}\n\nPuedes ingresar con las siguientes credenciales:\nUsuario: **${username}**\nContraseña: **${password}**\n\nSi no solicitaste este mensaje, por favor responde a este correo.\n\nSaludos,\nUPTC FIT`,
                 html: emailCredential({
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
+                    firstName: personDb.first_name_person,
+                    lastName: personDb.last_name_person,
                     username: username,
                     password: password,
                     redirectUrl: redirectUrl,

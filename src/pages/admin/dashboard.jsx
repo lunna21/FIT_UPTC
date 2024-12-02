@@ -1,12 +1,20 @@
-import AdminHeader from "@/components/headers/AdminHeader";
+
+import Loader from '@/components/Loader'
+import { useRouter } from "next/router";
+import { useEffect } from 'react'
 
 const DashBoard = () => {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push("/admin/users")
+    }, [])
+
     return (
-        <div>
-            <AdminHeader />
-            <main>
-                <h2>Users</h2>
-            </main>
+        <div className="w-screen min-h-screen flex justify-center items-center">
+            <div>
+                <Loader />
+            </div>
         </div>
     );
 }

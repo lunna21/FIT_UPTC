@@ -10,6 +10,7 @@ async function updateReservationDateHandler(req, res) {
     }
 
     const date = new Date(newDate);
+
     if (date.toString() === 'Invalid Date') {
         return res.status(400).json({ message: 'Formato invalido de la fecha' });
     }
@@ -34,6 +35,7 @@ async function updateReservationDateHandler(req, res) {
             if(reservationDates[0].reservation_date.toISOString().split('T')[0] === date.toISOString().split('T')[0]) {
                 return res.status(400).json({ message: 'La fecha de reserva ya fue actualizada' });
             }
+
             const updatedReservationDate = await prisma.reservation_date_history.update({
                 where: { 
                     id_history: reservationDates[0].id_history
